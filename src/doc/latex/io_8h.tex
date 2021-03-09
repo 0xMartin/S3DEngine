@@ -1,0 +1,165 @@
+\hypertarget{io_8h}{}\doxysection{engine2d/io.h File Reference}
+\label{io_8h}\index{engine2d/io.h@{engine2d/io.h}}
+
+
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$  
+
+
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+\doxysubsection*{2D Engine}
+\label{_amgrp66c0dad68e18ab259801af592d8bea11}%
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$
+
+\begin{DoxyAuthor}{Author}
+Martin Krcma 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28. 2. 2021 $<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+\end{DoxyDate}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{io_8h_a182b0a7572892b12aab4e5b348be3055}\label{io_8h_a182b0a7572892b12aab4e5b348be3055}} 
+\#define {\bfseries DEFAULT\+\_\+\+LOG\+\_\+\+ERR\+\_\+\+FILE}~\char`\"{}error.\+txt\char`\"{}
+\item 
+bool \mbox{\hyperlink{io_8h_aee78f43c6b177730f6244cd8a807254a}{read\+String\+From\+File}} (const char $\ast$const path, char $\ast$buffer, unsigned int size)
+\begin{DoxyCompactList}\small\item\em read\+String\+From\+File \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{io_8h_a62f83fc6536d15a630de7c2c0bd26872}{write\+String\+To\+File}} (const char $\ast$const path, char $\ast$buffer)
+\begin{DoxyCompactList}\small\item\em write\+String\+To\+File \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{io_8h_a53b1033fb1591f2bb03008703b6b3d19}{append\+String\+To\+File}} (const char $\ast$const path, char $\ast$buffer)
+\begin{DoxyCompactList}\small\item\em append\+String\+To\+File \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{io_8h_a621e90f6529e1a74c2e11a2f547cd382}{read\+Data\+From\+File}} (const char $\ast$const path, void $\ast$data)
+\begin{DoxyCompactList}\small\item\em read\+Data\+From\+File \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{io_8h_a227f2d51c301c0a57cfcc41aea372ade}{write\+Data\+To\+File}} (const char $\ast$const path, void $\ast$data)
+\begin{DoxyCompactList}\small\item\em write\+Data\+To\+File \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{io_8h_aa8d39802a3d93937d648fc517c64f6e7}{log\+Error}} (const char $\ast$const str)
+\begin{DoxyCompactList}\small\item\em write\+Data\+To\+File \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{io_8h_a53b1033fb1591f2bb03008703b6b3d19}\label{io_8h_a53b1033fb1591f2bb03008703b6b3d19}} 
+\index{io.h@{io.h}!appendStringToFile@{appendStringToFile}}
+\index{appendStringToFile@{appendStringToFile}!io.h@{io.h}}
+\doxysubsubsection{\texorpdfstring{appendStringToFile()}{appendStringToFile()}}
+{\footnotesize\ttfamily bool append\+String\+To\+File (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{path,  }\item[{char $\ast$}]{buffer }\end{DoxyParamCaption})}
+
+
+
+append\+String\+To\+File 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em buffer} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{io_8h_aa8d39802a3d93937d648fc517c64f6e7}\label{io_8h_aa8d39802a3d93937d648fc517c64f6e7}} 
+\index{io.h@{io.h}!logError@{logError}}
+\index{logError@{logError}!io.h@{io.h}}
+\doxysubsubsection{\texorpdfstring{logError()}{logError()}}
+{\footnotesize\ttfamily bool log\+Error (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{str }\end{DoxyParamCaption})}
+
+
+
+write\+Data\+To\+File 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{io_8h_a621e90f6529e1a74c2e11a2f547cd382}\label{io_8h_a621e90f6529e1a74c2e11a2f547cd382}} 
+\index{io.h@{io.h}!readDataFromFile@{readDataFromFile}}
+\index{readDataFromFile@{readDataFromFile}!io.h@{io.h}}
+\doxysubsubsection{\texorpdfstring{readDataFromFile()}{readDataFromFile()}}
+{\footnotesize\ttfamily bool read\+Data\+From\+File (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{path,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+read\+Data\+From\+File 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{io_8h_aee78f43c6b177730f6244cd8a807254a}\label{io_8h_aee78f43c6b177730f6244cd8a807254a}} 
+\index{io.h@{io.h}!readStringFromFile@{readStringFromFile}}
+\index{readStringFromFile@{readStringFromFile}!io.h@{io.h}}
+\doxysubsubsection{\texorpdfstring{readStringFromFile()}{readStringFromFile()}}
+{\footnotesize\ttfamily bool read\+String\+From\+File (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{path,  }\item[{char $\ast$}]{buffer,  }\item[{unsigned int}]{size }\end{DoxyParamCaption})}
+
+
+
+read\+String\+From\+File 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em buffer} & \\
+\hline
+{\em size} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{io_8h_a227f2d51c301c0a57cfcc41aea372ade}\label{io_8h_a227f2d51c301c0a57cfcc41aea372ade}} 
+\index{io.h@{io.h}!writeDataToFile@{writeDataToFile}}
+\index{writeDataToFile@{writeDataToFile}!io.h@{io.h}}
+\doxysubsubsection{\texorpdfstring{writeDataToFile()}{writeDataToFile()}}
+{\footnotesize\ttfamily bool write\+Data\+To\+File (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{path,  }\item[{void $\ast$}]{data }\end{DoxyParamCaption})}
+
+
+
+write\+Data\+To\+File 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{io_8h_a62f83fc6536d15a630de7c2c0bd26872}\label{io_8h_a62f83fc6536d15a630de7c2c0bd26872}} 
+\index{io.h@{io.h}!writeStringToFile@{writeStringToFile}}
+\index{writeStringToFile@{writeStringToFile}!io.h@{io.h}}
+\doxysubsubsection{\texorpdfstring{writeStringToFile()}{writeStringToFile()}}
+{\footnotesize\ttfamily bool write\+String\+To\+File (\begin{DoxyParamCaption}\item[{const char $\ast$const}]{path,  }\item[{char $\ast$}]{buffer }\end{DoxyParamCaption})}
+
+
+
+write\+String\+To\+File 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em buffer} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}

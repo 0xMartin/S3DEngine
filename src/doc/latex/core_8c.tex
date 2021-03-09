@@ -1,0 +1,142 @@
+\hypertarget{core_8c}{}\doxysection{engine2d/core.c File Reference}
+\label{core_8c}\index{engine2d/core.c@{engine2d/core.c}}
+
+
+Implementation of \mbox{\hyperlink{core_8h}{core.\+h}} $<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$  
+
+
+{\ttfamily \#include \char`\"{}core.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}engine\+\_\+object.\+h\char`\"{}}\newline
+\doxysubsection*{2D Engine}
+\label{_amgrp66c0dad68e18ab259801af592d8bea11}%
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$
+
+\begin{DoxyAuthor}{Author}
+Martin Krcma 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28. 2. 2021 $<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+\end{DoxyDate}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{core_8c_af900396d7b72ff2a7002e8befe8cf8f1}\label{core_8c_af900396d7b72ff2a7002e8befe8cf8f1}} 
+float {\bfseries f} = 0
+\item 
+bool \mbox{\hyperlink{core_8c_abcf7e5db5b8a2ccfa3665b8a29276616}{CORE\+\_\+init}} (int argc, char $\ast$$\ast$argv, \mbox{\hyperlink{structCORE}{CORE}} $\ast$core)
+\begin{DoxyCompactList}\small\item\em CORE\+\_\+init. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{core_8c_a11f932f56e368d507680ff0ffe9bada9}{CORE\+\_\+set\+Contex}} (\mbox{\hyperlink{structContext}{Context}} $\ast$contx)
+\begin{DoxyCompactList}\small\item\em CORE\+\_\+set\+CData. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{core_8c_ac5159bacffdbecd44cdef992c702fd0e}{CORE\+\_\+run}} ()
+\begin{DoxyCompactList}\small\item\em CORE\+\_\+run. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{core_8c_a6bacf0ee01cf07def52058bfc3feef82}\label{core_8c_a6bacf0ee01cf07def52058bfc3feef82}} 
+void \mbox{\hyperlink{core_8c_a6bacf0ee01cf07def52058bfc3feef82}{CORE\+\_\+stop}} ()
+\begin{DoxyCompactList}\small\item\em CORE\+\_\+stop. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{core_8c_aac6d99923324583414be7f77a63a09ed}\label{core_8c_aac6d99923324583414be7f77a63a09ed}} 
+bool \mbox{\hyperlink{core_8c_aac6d99923324583414be7f77a63a09ed}{CORE\+\_\+destruct}} ()
+\begin{DoxyCompactList}\small\item\em CORE\+\_\+destruct. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{core_8c_aed561186b2918b815993234d6f7be890}{Context\+\_\+init}} (\mbox{\hyperlink{structContext}{Context}} $\ast$contx)
+\begin{DoxyCompactList}\small\item\em Context\+\_\+init. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{core_8c_af4be83eca20f97bdade9405c3faf5642}{Context\+\_\+destruct}} (\mbox{\hyperlink{structContext}{Context}} $\ast$contx)
+\begin{DoxyCompactList}\small\item\em Context\+\_\+destruct. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of \mbox{\hyperlink{core_8h}{core.\+h}} $<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{core_8c_af4be83eca20f97bdade9405c3faf5642}\label{core_8c_af4be83eca20f97bdade9405c3faf5642}} 
+\index{core.c@{core.c}!Context\_destruct@{Context\_destruct}}
+\index{Context\_destruct@{Context\_destruct}!core.c@{core.c}}
+\doxysubsubsection{\texorpdfstring{Context\_destruct()}{Context\_destruct()}}
+{\footnotesize\ttfamily bool Context\+\_\+destruct (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structContext}{Context}} $\ast$}]{contx }\end{DoxyParamCaption})}
+
+
+
+Context\+\_\+destruct. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em contx} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{core_8c_aed561186b2918b815993234d6f7be890}\label{core_8c_aed561186b2918b815993234d6f7be890}} 
+\index{core.c@{core.c}!Context\_init@{Context\_init}}
+\index{Context\_init@{Context\_init}!core.c@{core.c}}
+\doxysubsubsection{\texorpdfstring{Context\_init()}{Context\_init()}}
+{\footnotesize\ttfamily bool Context\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structContext}{Context}} $\ast$}]{contx }\end{DoxyParamCaption})}
+
+
+
+Context\+\_\+init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{core_8c_abcf7e5db5b8a2ccfa3665b8a29276616}\label{core_8c_abcf7e5db5b8a2ccfa3665b8a29276616}} 
+\index{core.c@{core.c}!CORE\_init@{CORE\_init}}
+\index{CORE\_init@{CORE\_init}!core.c@{core.c}}
+\doxysubsubsection{\texorpdfstring{CORE\_init()}{CORE\_init()}}
+{\footnotesize\ttfamily bool CORE\+\_\+init (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv,  }\item[{\mbox{\hyperlink{structCORE}{CORE}} $\ast$}]{core }\end{DoxyParamCaption})}
+
+
+
+CORE\+\_\+init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & \\
+\hline
+{\em argv} & \\
+\hline
+{\em core} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{core_8c_ac5159bacffdbecd44cdef992c702fd0e}\label{core_8c_ac5159bacffdbecd44cdef992c702fd0e}} 
+\index{core.c@{core.c}!CORE\_run@{CORE\_run}}
+\index{CORE\_run@{CORE\_run}!core.c@{core.c}}
+\doxysubsubsection{\texorpdfstring{CORE\_run()}{CORE\_run()}}
+{\footnotesize\ttfamily bool CORE\+\_\+run (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+CORE\+\_\+run. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em core} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{core_8c_a11f932f56e368d507680ff0ffe9bada9}\label{core_8c_a11f932f56e368d507680ff0ffe9bada9}} 
+\index{core.c@{core.c}!CORE\_setContex@{CORE\_setContex}}
+\index{CORE\_setContex@{CORE\_setContex}!core.c@{core.c}}
+\doxysubsubsection{\texorpdfstring{CORE\_setContex()}{CORE\_setContex()}}
+{\footnotesize\ttfamily bool CORE\+\_\+set\+Contex (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structContext}{Context}} $\ast$}]{contx }\end{DoxyParamCaption})}
+
+
+
+CORE\+\_\+set\+CData. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em contx} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}

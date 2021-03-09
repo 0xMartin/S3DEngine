@@ -1,0 +1,510 @@
+\hypertarget{render_8h}{}\doxysection{engine2d/render.h File Reference}
+\label{render_8h}\index{engine2d/render.h@{engine2d/render.h}}
+
+
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$  
+
+
+{\ttfamily \#include $<$GL/gl.\+h$>$}\newline
+{\ttfamily \#include $<$GL/glu.\+h$>$}\newline
+{\ttfamily \#include $<$GL/glut.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}util.\+h\char`\"{}}\newline
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structColor}{Color}}
+\item 
+struct \mbox{\hyperlink{structPoint2D}{Point2D}}
+\end{DoxyCompactItemize}
+\doxysubsection*{2D Engine}
+\label{_amgrp66c0dad68e18ab259801af592d8bea11}%
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$
+
+\begin{DoxyAuthor}{Author}
+Martin Krcma 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+8. 3. 2021 $<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+\end{DoxyDate}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{render_8h_aba2a7fe77a7501e5844370eec0185207}\label{render_8h_aba2a7fe77a7501e5844370eec0185207}} 
+\#define {\bfseries COLOR\+\_\+\+BLACK}~\{0.\+0,   0.\+0,    0.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a23c70d699a5a775bc2e1ebeb8603f630}\label{render_8h_a23c70d699a5a775bc2e1ebeb8603f630}} 
+\#define {\bfseries COLOR\+\_\+\+BLUE}~\{0.\+0,   0.\+0,    1.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a82573859711fce56f1aa0a76b18a9b18}\label{render_8h_a82573859711fce56f1aa0a76b18a9b18}} 
+\#define {\bfseries COLOR\+\_\+\+CYAN}~\{0.\+0,   1.\+0,    1.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a29b8c0b35303d54c7b8159169ed858a6}\label{render_8h_a29b8c0b35303d54c7b8159169ed858a6}} 
+\#define {\bfseries COLOR\+\_\+\+DARKGRAY}~\{0.\+25,  0.\+25,   0.\+25,   1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a3aaf3b0287d26dfb6ecb3b1c46e950c8}\label{render_8h_a3aaf3b0287d26dfb6ecb3b1c46e950c8}} 
+\#define {\bfseries COLOR\+\_\+\+GRAY}~\{0.\+5,   0.\+5,    0.\+5,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_afc9149f5de51bd9ac4f5ebbfa153f018}\label{render_8h_afc9149f5de51bd9ac4f5ebbfa153f018}} 
+\#define {\bfseries COLOR\+\_\+\+GREEN}~\{0.\+0,   1.\+0,    0.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_ac5e243a66c8610a381bc2da8ead2633e}\label{render_8h_ac5e243a66c8610a381bc2da8ead2633e}} 
+\#define {\bfseries COLOR\+\_\+\+LIGHTGRAY}~\{0.\+75,  0.\+75,   0.\+75,   1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a8deb0beccea721b35bdb1b4f7264fe75}\label{render_8h_a8deb0beccea721b35bdb1b4f7264fe75}} 
+\#define {\bfseries COLOR\+\_\+\+MAGENTA}~\{1.\+0,   0.\+0,    1.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_aef75f616b9a3fdb10d38395dfb996873}\label{render_8h_aef75f616b9a3fdb10d38395dfb996873}} 
+\#define {\bfseries COLOR\+\_\+\+ORANGE}~\{1.\+0,   0.\+78,   0.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_adc400e6efc54843fb9400270bbc61368}\label{render_8h_adc400e6efc54843fb9400270bbc61368}} 
+\#define {\bfseries COLOR\+\_\+\+PINK}~\{1.\+0,   0.\+69,   0.\+69,   1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_ad86358bf19927183dd7b4ae215a29731}\label{render_8h_ad86358bf19927183dd7b4ae215a29731}} 
+\#define {\bfseries COLOR\+\_\+\+RED}~\{1.\+0,   0.\+0,    0.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a9b44987ffdc2af19b635206b94334b69}\label{render_8h_a9b44987ffdc2af19b635206b94334b69}} 
+\#define {\bfseries COLOR\+\_\+\+WHITE}~\{1.\+0,   1.\+0,    1.\+0,    1.\+0\}
+\item 
+\mbox{\Hypertarget{render_8h_a4534b577b74a58b0f4b7be027af664e0}\label{render_8h_a4534b577b74a58b0f4b7be027af664e0}} 
+\#define {\bfseries COLOR\+\_\+\+YELLOW}~\{1.\+0,   1.\+0,    0.\+0,    1.\+0\}
+\item 
+\#define {\bfseries COLOR\+\_\+\+DARKER}(n,  c)
+\item 
+\#define {\bfseries COLOR\+\_\+\+LIGHTER}(n,  c)
+\item 
+\mbox{\Hypertarget{render_8h_a6096c8334e3a88c4e23c2a3bc9e9e21e}\label{render_8h_a6096c8334e3a88c4e23c2a3bc9e9e21e}} 
+\#define {\bfseries E2\+D\+\_\+\+STROKE\+\_\+\+ROMAN}~GLUT\+\_\+\+STROKE\+\_\+\+ROMAN
+\item 
+\mbox{\Hypertarget{render_8h_a26b48a64926138c37adef42c79badb97}\label{render_8h_a26b48a64926138c37adef42c79badb97}} 
+\#define {\bfseries E2\+D\+\_\+\+STROKE\+\_\+\+MONO\+\_\+\+ROMAN}~GLUT\+\_\+\+STROKE\+\_\+\+MONO\+\_\+\+ROMAN
+\item 
+\mbox{\Hypertarget{render_8h_a961ca70a40a4ab83e7b4b5065b633ac1}\label{render_8h_a961ca70a40a4ab83e7b4b5065b633ac1}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+9\+\_\+\+BY\+\_\+15}~GLUT\+\_\+\+BITMAP\+\_\+9\+\_\+\+BY\+\_\+15
+\item 
+\mbox{\Hypertarget{render_8h_a47856b2de7d2a6e40136193a647b5a90}\label{render_8h_a47856b2de7d2a6e40136193a647b5a90}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+8\+\_\+\+BY\+\_\+13}~GLUT\+\_\+\+BITMAP\+\_\+8\+\_\+\+BY\+\_\+13
+\item 
+\mbox{\Hypertarget{render_8h_a58e4f64195f3c7cb6b51db6e4e164704}\label{render_8h_a58e4f64195f3c7cb6b51db6e4e164704}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+\+TIMES\+\_\+\+ROMAN\+\_\+10}~GLUT\+\_\+\+BITMAP\+\_\+\+TIMES\+\_\+\+ROMAN\+\_\+10
+\item 
+\mbox{\Hypertarget{render_8h_a836fb4eeb579c5eeac61977dc6fefc00}\label{render_8h_a836fb4eeb579c5eeac61977dc6fefc00}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+\+TIMES\+\_\+\+ROMAN\+\_\+24}~GLUT\+\_\+\+BITMAP\+\_\+\+TIMES\+\_\+\+ROMAN\+\_\+24
+\item 
+\mbox{\Hypertarget{render_8h_a99f2b8f0deb44aa576bcfde1d210f567}\label{render_8h_a99f2b8f0deb44aa576bcfde1d210f567}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+\+HELVETICA\+\_\+10}~GLUT\+\_\+\+BITMAP\+\_\+\+HELVETICA\+\_\+10
+\item 
+\mbox{\Hypertarget{render_8h_a5b5eedde34b0bc4a675a172ef0566b10}\label{render_8h_a5b5eedde34b0bc4a675a172ef0566b10}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+\+HELVETICA\+\_\+12}~GLUT\+\_\+\+BITMAP\+\_\+\+HELVETICA\+\_\+12
+\item 
+\mbox{\Hypertarget{render_8h_a661a4c23bdf6b503506e15bac616b6eb}\label{render_8h_a661a4c23bdf6b503506e15bac616b6eb}} 
+\#define {\bfseries E2\+D\+\_\+\+BITMAP\+\_\+\+HELVETICA\+\_\+18}~GLUT\+\_\+\+BITMAP\+\_\+\+HELVETICA\+\_\+18
+\item 
+void \mbox{\hyperlink{render_8h_a704caff13dfb780b071c82dd076ac222}{Render\+\_\+set\+Color\+RGB}} (GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+set\+Color\+RGB. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_ad085741d245e495c9a24ff10bd92dce1}{Render\+\_\+set\+Color}} (\mbox{\hyperlink{structColor}{Color}} $\ast$color)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+set\+Color. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a161a00dd8292566e0f1c5b345f7e535a}{Render\+\_\+set\+Alpha}} (GLfloat alpha)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+set\+Alpha. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_ab831adc59d1dddde715eab0aa30702ae}{Render\+\_\+enable\+Pt\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Render\+\_\+set\+Color. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a6722b4b9acdc5e9c343c8b4dc8aa2c24}{Render\+\_\+disable\+Pt\+Color}} ()
+\begin{DoxyCompactList}\small\item\em Render\+\_\+set\+Color. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a1e114de3704da36a2431399e13a98c2c}{Render\+\_\+clear}} (\mbox{\hyperlink{structColor}{Color}} $\ast$color)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+clear. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a8bb66592b1914889640f553391b02022}{Render\+\_\+draw\+Line}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p1, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p2)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Line. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a36d9d58933e1d1345075b6fd7db7a430}{Render\+\_\+draw\+Lines}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, size\+\_\+t count)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Lines. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a96a6a9c5531d34093f63fff0ee6a218d}{Render\+\_\+draw\+Triangle}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p1, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p2, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p3)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Triangle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_ab9674a2473e07f55ec2e785d36f854cc}{Render\+\_\+draw\+Quad}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p1, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p2, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p3, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p4)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Quad. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a62a25531028a75f594eb0a5f86044700}{Render\+\_\+draw\+Polygon}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, size\+\_\+t count)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Polygon. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_aa391117a8d9c4fa3de90869ea06d49cc}{Render\+\_\+fill\+Triangle}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p1, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p2, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p3)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+fill\+Triangle. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a2b273e98b4275fb2f26824967bc33d0f}{Render\+\_\+fill\+Quad}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p1, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p2, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p3, \mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p4)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+fill\+Quad. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a8b400d2c039e6039aa49cedc2af672e5}{Render\+\_\+fill\+Polygon}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, size\+\_\+t count)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+fill\+Polygon. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a40e263946f849bd23b256efc6b0fb4dc}{Render\+\_\+draw\+Ellipse}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, GLfloat rx, GLfloat ry)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Ellipse. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a13f825f31dcc439237ead02842ef073b}{Render\+\_\+\+Fill\+Ellipse}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, GLfloat rx, GLfloat ry)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+\+Fill\+Ellipse. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a3be296f24f909e9188096bd156e690f5}{Render\+\_\+draw\+Image}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, \mbox{\hyperlink{structTexture}{Texture}} $\ast$texture, bool position)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+Image. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a22517a523315378e533bc9de852f5f80}{Render\+\_\+set\+Font}} (void $\ast$font, GLint size)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+set\+Font. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{render_8h_a5ed8b7c001c7995f5d498bb5fbc3fa54}{Render\+\_\+draw\+String}} (\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$p, const char $\ast$const str)
+\begin{DoxyCompactList}\small\item\em Render\+\_\+draw\+String. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{render_8h_a5c29e6070575dea1a8196c3883128f7e}\label{render_8h_a5c29e6070575dea1a8196c3883128f7e}} 
+\index{render.h@{render.h}!COLOR\_DARKER@{COLOR\_DARKER}}
+\index{COLOR\_DARKER@{COLOR\_DARKER}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{COLOR\_DARKER}{COLOR\_DARKER}}
+{\footnotesize\ttfamily \#define COLOR\+\_\+\+DARKER(\begin{DoxyParamCaption}\item[{}]{n,  }\item[{}]{c }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    (\{\(\backslash\)}
+\DoxyCodeLine{    n.red = c.red * 0.8;\(\backslash\)}
+\DoxyCodeLine{    n.green = c.green * 0.8;\(\backslash\)}
+\DoxyCodeLine{    n.blue = c.blue * 0.8;\})}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{render_8h_ab55df8644dc5ed733949796977714e22}\label{render_8h_ab55df8644dc5ed733949796977714e22}} 
+\index{render.h@{render.h}!COLOR\_LIGHTER@{COLOR\_LIGHTER}}
+\index{COLOR\_LIGHTER@{COLOR\_LIGHTER}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{COLOR\_LIGHTER}{COLOR\_LIGHTER}}
+{\footnotesize\ttfamily \#define COLOR\+\_\+\+LIGHTER(\begin{DoxyParamCaption}\item[{}]{n,  }\item[{}]{c }\end{DoxyParamCaption})}
+
+{\bfseries Value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{    (\{\(\backslash\)}
+\DoxyCodeLine{    n.red = MIN(1.0, c.red * 1.2);\(\backslash\)}
+\DoxyCodeLine{    n.green = MIN(1.0, c.green * 1.2);\(\backslash\)}
+\DoxyCodeLine{    n.blue = MIN(1.0, c.blue * 1.2);\})}
+
+\end{DoxyCode}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{render_8h_a1e114de3704da36a2431399e13a98c2c}\label{render_8h_a1e114de3704da36a2431399e13a98c2c}} 
+\index{render.h@{render.h}!Render\_clear@{Render\_clear}}
+\index{Render\_clear@{Render\_clear}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_clear()}{Render\_clear()}}
+{\footnotesize\ttfamily void Render\+\_\+clear (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structColor}{Color}} $\ast$}]{color }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+clear. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a6722b4b9acdc5e9c343c8b4dc8aa2c24}\label{render_8h_a6722b4b9acdc5e9c343c8b4dc8aa2c24}} 
+\index{render.h@{render.h}!Render\_disablePtColor@{Render\_disablePtColor}}
+\index{Render\_disablePtColor@{Render\_disablePtColor}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_disablePtColor()}{Render\_disablePtColor()}}
+{\footnotesize\ttfamily void Render\+\_\+disable\+Pt\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+set\+Color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a40e263946f849bd23b256efc6b0fb4dc}\label{render_8h_a40e263946f849bd23b256efc6b0fb4dc}} 
+\index{render.h@{render.h}!Render\_drawEllipse@{Render\_drawEllipse}}
+\index{Render\_drawEllipse@{Render\_drawEllipse}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawEllipse()}{Render\_drawEllipse()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Ellipse (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{GLfloat}]{rx,  }\item[{GLfloat}]{ry }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Ellipse. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em rx} & \\
+\hline
+{\em ry} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a3be296f24f909e9188096bd156e690f5}\label{render_8h_a3be296f24f909e9188096bd156e690f5}} 
+\index{render.h@{render.h}!Render\_drawImage@{Render\_drawImage}}
+\index{Render\_drawImage@{Render\_drawImage}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawImage()}{Render\_drawImage()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Image (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{\mbox{\hyperlink{structTexture}{Texture}} $\ast$}]{texture,  }\item[{bool}]{position }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Image. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em texture} & \\
+\hline
+{\em position} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a8bb66592b1914889640f553391b02022}\label{render_8h_a8bb66592b1914889640f553391b02022}} 
+\index{render.h@{render.h}!Render\_drawLine@{Render\_drawLine}}
+\index{Render\_drawLine@{Render\_drawLine}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawLine()}{Render\_drawLine()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Line (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p1,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p2 }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Line. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a36d9d58933e1d1345075b6fd7db7a430}\label{render_8h_a36d9d58933e1d1345075b6fd7db7a430}} 
+\index{render.h@{render.h}!Render\_drawLines@{Render\_drawLines}}
+\index{Render\_drawLines@{Render\_drawLines}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawLines()}{Render\_drawLines()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Lines (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{size\+\_\+t}]{count }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Lines. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em count} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a62a25531028a75f594eb0a5f86044700}\label{render_8h_a62a25531028a75f594eb0a5f86044700}} 
+\index{render.h@{render.h}!Render\_drawPolygon@{Render\_drawPolygon}}
+\index{Render\_drawPolygon@{Render\_drawPolygon}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawPolygon()}{Render\_drawPolygon()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Polygon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{size\+\_\+t}]{count }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Polygon. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em count} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_ab9674a2473e07f55ec2e785d36f854cc}\label{render_8h_ab9674a2473e07f55ec2e785d36f854cc}} 
+\index{render.h@{render.h}!Render\_drawQuad@{Render\_drawQuad}}
+\index{Render\_drawQuad@{Render\_drawQuad}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawQuad()}{Render\_drawQuad()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Quad (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p1,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p2,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p3,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p4 }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Quad. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+{\em p4} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a5ed8b7c001c7995f5d498bb5fbc3fa54}\label{render_8h_a5ed8b7c001c7995f5d498bb5fbc3fa54}} 
+\index{render.h@{render.h}!Render\_drawString@{Render\_drawString}}
+\index{Render\_drawString@{Render\_drawString}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawString()}{Render\_drawString()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+String (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{const char $\ast$const}]{str }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+String. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em str} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a96a6a9c5531d34093f63fff0ee6a218d}\label{render_8h_a96a6a9c5531d34093f63fff0ee6a218d}} 
+\index{render.h@{render.h}!Render\_drawTriangle@{Render\_drawTriangle}}
+\index{Render\_drawTriangle@{Render\_drawTriangle}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_drawTriangle()}{Render\_drawTriangle()}}
+{\footnotesize\ttfamily void Render\+\_\+draw\+Triangle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p1,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p2,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p3 }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+draw\+Triangle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_ab831adc59d1dddde715eab0aa30702ae}\label{render_8h_ab831adc59d1dddde715eab0aa30702ae}} 
+\index{render.h@{render.h}!Render\_enablePtColor@{Render\_enablePtColor}}
+\index{Render\_enablePtColor@{Render\_enablePtColor}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_enablePtColor()}{Render\_enablePtColor()}}
+{\footnotesize\ttfamily void Render\+\_\+enable\+Pt\+Color (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+set\+Color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a13f825f31dcc439237ead02842ef073b}\label{render_8h_a13f825f31dcc439237ead02842ef073b}} 
+\index{render.h@{render.h}!Render\_FillEllipse@{Render\_FillEllipse}}
+\index{Render\_FillEllipse@{Render\_FillEllipse}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_FillEllipse()}{Render\_FillEllipse()}}
+{\footnotesize\ttfamily void Render\+\_\+\+Fill\+Ellipse (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{GLfloat}]{rx,  }\item[{GLfloat}]{ry }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+\+Fill\+Ellipse. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em rx} & \\
+\hline
+{\em ry} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a8b400d2c039e6039aa49cedc2af672e5}\label{render_8h_a8b400d2c039e6039aa49cedc2af672e5}} 
+\index{render.h@{render.h}!Render\_fillPolygon@{Render\_fillPolygon}}
+\index{Render\_fillPolygon@{Render\_fillPolygon}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_fillPolygon()}{Render\_fillPolygon()}}
+{\footnotesize\ttfamily void Render\+\_\+fill\+Polygon (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p,  }\item[{size\+\_\+t}]{count }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+fill\+Polygon. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+{\em count} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a2b273e98b4275fb2f26824967bc33d0f}\label{render_8h_a2b273e98b4275fb2f26824967bc33d0f}} 
+\index{render.h@{render.h}!Render\_fillQuad@{Render\_fillQuad}}
+\index{Render\_fillQuad@{Render\_fillQuad}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_fillQuad()}{Render\_fillQuad()}}
+{\footnotesize\ttfamily void Render\+\_\+fill\+Quad (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p1,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p2,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p3,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p4 }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+fill\+Quad. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+{\em p4} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_aa391117a8d9c4fa3de90869ea06d49cc}\label{render_8h_aa391117a8d9c4fa3de90869ea06d49cc}} 
+\index{render.h@{render.h}!Render\_fillTriangle@{Render\_fillTriangle}}
+\index{Render\_fillTriangle@{Render\_fillTriangle}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_fillTriangle()}{Render\_fillTriangle()}}
+{\footnotesize\ttfamily void Render\+\_\+fill\+Triangle (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p1,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p2,  }\item[{\mbox{\hyperlink{structPoint2D}{Point2D}} $\ast$}]{p3 }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+fill\+Triangle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p1} & \\
+\hline
+{\em p2} & \\
+\hline
+{\em p3} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a161a00dd8292566e0f1c5b345f7e535a}\label{render_8h_a161a00dd8292566e0f1c5b345f7e535a}} 
+\index{render.h@{render.h}!Render\_setAlpha@{Render\_setAlpha}}
+\index{Render\_setAlpha@{Render\_setAlpha}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_setAlpha()}{Render\_setAlpha()}}
+{\footnotesize\ttfamily void Render\+\_\+set\+Alpha (\begin{DoxyParamCaption}\item[{GLfloat}]{alpha }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+set\+Alpha. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em alpha} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_ad085741d245e495c9a24ff10bd92dce1}\label{render_8h_ad085741d245e495c9a24ff10bd92dce1}} 
+\index{render.h@{render.h}!Render\_setColor@{Render\_setColor}}
+\index{Render\_setColor@{Render\_setColor}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_setColor()}{Render\_setColor()}}
+{\footnotesize\ttfamily void Render\+\_\+set\+Color (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structColor}{Color}} $\ast$}]{color }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+set\+Color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em color} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a704caff13dfb780b071c82dd076ac222}\label{render_8h_a704caff13dfb780b071c82dd076ac222}} 
+\index{render.h@{render.h}!Render\_setColorRGB@{Render\_setColorRGB}}
+\index{Render\_setColorRGB@{Render\_setColorRGB}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_setColorRGB()}{Render\_setColorRGB()}}
+{\footnotesize\ttfamily void Render\+\_\+set\+Color\+RGB (\begin{DoxyParamCaption}\item[{GLfloat}]{red,  }\item[{GLfloat}]{green,  }\item[{GLfloat}]{blue,  }\item[{GLfloat}]{alpha }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+set\+Color\+RGB. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em red} & \\
+\hline
+{\em green} & \\
+\hline
+{\em blue} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{render_8h_a22517a523315378e533bc9de852f5f80}\label{render_8h_a22517a523315378e533bc9de852f5f80}} 
+\index{render.h@{render.h}!Render\_setFont@{Render\_setFont}}
+\index{Render\_setFont@{Render\_setFont}!render.h@{render.h}}
+\doxysubsubsection{\texorpdfstring{Render\_setFont()}{Render\_setFont()}}
+{\footnotesize\ttfamily void Render\+\_\+set\+Font (\begin{DoxyParamCaption}\item[{void $\ast$}]{font,  }\item[{GLint}]{size }\end{DoxyParamCaption})}
+
+
+
+Render\+\_\+set\+Font. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em font} & \\
+\hline
+{\em size} & \\
+\hline
+\end{DoxyParams}

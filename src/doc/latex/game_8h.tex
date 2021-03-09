@@ -1,0 +1,117 @@
+\hypertarget{game_8h}{}\doxysection{objects/game.h File Reference}
+\label{game_8h}\index{objects/game.h@{objects/game.h}}
+
+
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$  
+
+
+{\ttfamily \#include \char`\"{}../engine2d/engine\+\_\+object.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}player.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structBoard}{Board}}
+\item 
+struct \mbox{\hyperlink{struct__Game}{\+\_\+\+Game}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Tic\+Tac\+Toe}
+\label{_amgrp14b344840b34d08071ee13b3a8bd18c2}%
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$
+
+\begin{DoxyAuthor}{Author}
+Martin Krcma 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+28. 2. 2021 $<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+\end{DoxyDate}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{game_8h_a57156d39c530aec3fba3a9dad8c2dc6a}\label{game_8h_a57156d39c530aec3fba3a9dad8c2dc6a}} 
+typedef struct \mbox{\hyperlink{struct__Game}{\+\_\+\+Game}} {\bfseries Game}
+\item 
+bool \mbox{\hyperlink{game_8h_a2fc1e72ceafc1a88d56d3ce168cf8aee}{GAME\+\_\+init}} (\mbox{\hyperlink{struct__Game}{Game}} $\ast$game, \mbox{\hyperlink{structPlayer}{Player}} $\ast$player1, \mbox{\hyperlink{structPlayer}{Player}} $\ast$player2, unsigned int size)
+\begin{DoxyCompactList}\small\item\em GAME\+\_\+init. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{game_8h_a0d123b17e37135598630640e70a95bcf}{GAME\+\_\+destruct}} (\mbox{\hyperlink{struct__Game}{Game}} $\ast$game)
+\begin{DoxyCompactList}\small\item\em GAME\+\_\+destruct. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{game_8h_a27fe9f80f4c75b2631e2598a4eebddda}{GAME\+\_\+reset}} (\mbox{\hyperlink{struct__Game}{Game}} $\ast$game)
+\begin{DoxyCompactList}\small\item\em GAME\+\_\+reset. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{game_8h_ab497ff27b2fc87a8c167874765a84881}{GAME\+\_\+check\+For\+Win}} (\mbox{\hyperlink{struct__Game}{Game}} $\ast$game)
+\begin{DoxyCompactList}\small\item\em GAME\+\_\+check\+For\+Win. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+$<$-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---$>$ 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{game_8h_ab497ff27b2fc87a8c167874765a84881}\label{game_8h_ab497ff27b2fc87a8c167874765a84881}} 
+\index{game.h@{game.h}!GAME\_checkForWin@{GAME\_checkForWin}}
+\index{GAME\_checkForWin@{GAME\_checkForWin}!game.h@{game.h}}
+\doxysubsubsection{\texorpdfstring{GAME\_checkForWin()}{GAME\_checkForWin()}}
+{\footnotesize\ttfamily void GAME\+\_\+check\+For\+Win (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct__Game}{Game}} $\ast$}]{game }\end{DoxyParamCaption})}
+
+
+
+GAME\+\_\+check\+For\+Win. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em game} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{game_8h_a0d123b17e37135598630640e70a95bcf}\label{game_8h_a0d123b17e37135598630640e70a95bcf}} 
+\index{game.h@{game.h}!GAME\_destruct@{GAME\_destruct}}
+\index{GAME\_destruct@{GAME\_destruct}!game.h@{game.h}}
+\doxysubsubsection{\texorpdfstring{GAME\_destruct()}{GAME\_destruct()}}
+{\footnotesize\ttfamily void GAME\+\_\+destruct (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct__Game}{Game}} $\ast$}]{game }\end{DoxyParamCaption})}
+
+
+
+GAME\+\_\+destruct. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em game} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{game_8h_a2fc1e72ceafc1a88d56d3ce168cf8aee}\label{game_8h_a2fc1e72ceafc1a88d56d3ce168cf8aee}} 
+\index{game.h@{game.h}!GAME\_init@{GAME\_init}}
+\index{GAME\_init@{GAME\_init}!game.h@{game.h}}
+\doxysubsubsection{\texorpdfstring{GAME\_init()}{GAME\_init()}}
+{\footnotesize\ttfamily bool GAME\+\_\+init (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct__Game}{Game}} $\ast$}]{game,  }\item[{\mbox{\hyperlink{structPlayer}{Player}} $\ast$}]{player1,  }\item[{\mbox{\hyperlink{structPlayer}{Player}} $\ast$}]{player2,  }\item[{unsigned int}]{size }\end{DoxyParamCaption})}
+
+
+
+GAME\+\_\+init. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em game} & \\
+\hline
+{\em player1} & \\
+\hline
+{\em player2} & \\
+\hline
+{\em size} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{game_8h_a27fe9f80f4c75b2631e2598a4eebddda}\label{game_8h_a27fe9f80f4c75b2631e2598a4eebddda}} 
+\index{game.h@{game.h}!GAME\_reset@{GAME\_reset}}
+\index{GAME\_reset@{GAME\_reset}!game.h@{game.h}}
+\doxysubsubsection{\texorpdfstring{GAME\_reset()}{GAME\_reset()}}
+{\footnotesize\ttfamily void GAME\+\_\+reset (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{struct__Game}{Game}} $\ast$}]{game }\end{DoxyParamCaption})}
+
+
+
+GAME\+\_\+reset. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em game} & \\
+\hline
+\end{DoxyParams}
