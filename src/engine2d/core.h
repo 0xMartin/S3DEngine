@@ -12,6 +12,7 @@
 #ifndef GAME_CORE_H
 #define GAME_CORE_H
 
+#include "api.h"
 #include "util.h"
 #include "linkedlist.h"
 #include "vector.h"
@@ -66,45 +67,45 @@ typedef struct {
  * @param core
  * @return
  */
-bool CORE_init(int argc, char **argv, CORE * core);
+E2API bool E2APIENTRY CORE_init(int argc, char **argv, CORE * core);
 
 /**
  * @brief CORE_setCData
  * @param contx
  * @return
  */
-bool CORE_setContex(Context * contx);
+E2API bool E2APIENTRY CORE_setContex(Context * contx);
 
 /**
  * @brief CORE_run
  * @param core
  * @return
  */
-bool CORE_run();
+E2API bool E2APIENTRY CORE_run();
 
 /**
  * @brief CORE_stop
  */
-void CORE_stop();
+E2API void E2APIENTRY CORE_stop();
 
 /**
  * @brief CORE_destruct
  */
-bool CORE_destruct();
+E2API bool E2APIENTRY CORE_destruct();
 
 /**
  * @brief Context_init
  * @param data
  * @return
  */
-bool Context_init(Context * contx);
+E2API bool E2APIENTRY Context_init(Context * contx);
 
 /**
  * @brief Context_destruct
  * @param contx
  * @return
  */
-bool Context_destruct(Context * contx);
+E2API bool E2APIENTRY Context_destruct(Context * contx);
 
 
 #endif // CORE_H
