@@ -120,7 +120,7 @@ bool Vector_shuffle(Vector * vector) {
     unsigned int rnd;
     Vector_Element * tmp;
     for(unsigned int i = 0; i < vector->count && i < vector->size; ++i) {
-        rnd = randInt(vector->count);
+        rnd = UTIL_randInt(vector->count);
         if(rnd < vector->count) {
             tmp = vector->elements[i];
             vector->elements[i] = vector->elements[rnd];

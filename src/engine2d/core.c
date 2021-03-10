@@ -16,6 +16,13 @@
 
 static CORE * _core = NULL;
 
+static Event_Key    _key_event_press    = {.press = true};
+static Event_Key    _key_event_release  = {.press = false};
+static Event_Mouse  _mouse_event_move;
+static Event_Mouse  _mouse_event_button;
+static Event_Render _render_event;
+static Event_Update _update_event;
+
 
 /* Private func declaration -------------------------------------------------------- */
 
@@ -78,7 +85,7 @@ static void evt_releaseKey(unsigned char key, int x, int y, bool ctrl, bool alt,
  * @param x         X position of mouse cursore
  * @param y         Y position of mouse cursore
  */
-static void CORE_evt_mouseMove(int x, int y);
+static void evt_mouseMove(int x, int y);
 
 /**
  * @brief Mouse button event
@@ -87,7 +94,7 @@ static void CORE_evt_mouseMove(int x, int y);
  * @param x         none
  * @param y         none
  */
-static void CORE_evt_mouseButton(int button, int state, int x, int y);
+static void evt_mouseButton(int button, int state, int x, int y);
 
 /**
  * @brief GLUT reshape function
@@ -104,6 +111,11 @@ static void updateLoop();
 
 /**
  * @brief Main render loop
+ */
+static void renderLoop();
+
+/**
+ * @brief Render scene
  */
 static void renderScene();
 
@@ -124,10 +136,8 @@ bool CORE_init(int argc, char **argv, CORE * core) {
                            );
     glutCreateWindow(core->windonw_title);
 
-
     //rendering
     glutDisplayFunc(renderScene);
-    glutIdleFunc(renderScene);
     glutReshapeFunc(reshape);
 
     //control events
@@ -136,8 +146,8 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     glutKeyboardUpFunc(keyboardUpFunc);
     glutSpecialUpFunc(specialUpFunc);
     glutIgnoreKeyRepeat(1);
-    glutMouseFunc(CORE_evt_mouseButton);
-    glutPassiveMotionFunc(CORE_evt_mouseMove);
+    glutMouseFunc(evt_mouseButton);
+    glutPassiveMotionFunc(evt_mouseMove);
 
     //opengl config
     glDepthFunc(GL_NEVER);
@@ -171,7 +181,7 @@ bool CORE_run() {
 
     _core->running = true;
     updateLoop();
-    //renderLoop();
+    renderLoop();
     glutMainLoop();
 
     return true;
@@ -249,12 +259,15 @@ static void renderScene() {
         return;
     }
 
+    _render_event.window_width = _core->window_width;
+    _render_event.window_height = _core->window_height;
+
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
         if(el->data != NULL) {
             obj = (E_Obj*) el->data;
-            if(obj->render) obj->render(obj, _core->context);
+            if(obj->render) obj->render(obj, _core->context, &_render_event);
         }
         el = LinkedList_next(el);
     }
@@ -279,20 +292,47 @@ static void renderScene() {
 static void updateLoop() {
     if(_core == NULL) return;
     if(!_core->running) return;
-    //f += 0.5f;
+
+    if(_core->context != NULL) {
+        if(_core->context->gameData != NULL) {
+            struct timespec time = UTIL_getSystemTime();
+            _update_event.ns_time = time.tv_nsec;
+            _update_event.s_time = time.tv_sec;
+
+            E_Obj * obj;
+            LinkedList_Element * el = _core->context->gameData->first;
+            while(el != NULL) {
+                if(el->data != NULL) {
+                    obj = (E_Obj*) el->data;
+                    if(obj->update) obj->update(obj, _core->context,
+                                                &_update_event);
+                }
+                el = LinkedList_next(el);
+            }
+        }
+    }
+
+    f += 0.5f;
     glutTimerFunc(1000.0/_core->ups, updateLoop, 0);
+}
+
+static void renderLoop() {
+    if(_core == NULL) return;
+    if(!_core->running) return;
+    glutPostRedisplay();
+    glutTimerFunc(1000.0/_core->fps, renderLoop, 0);
 }
 
 static void keyboardFunc(unsigned char key, int x, int y) {
     int mod = glutGetModifiers();
     evt_pressKey(key, x, y, mod == GLUT_ACTIVE_CTRL,
-                      mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT);
+                 mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT);
 }
 
 static void keyboardUpFunc(unsigned char key, int x, int y) {
     int mod = glutGetModifiers();
     evt_releaseKey(key, x, y, mod == GLUT_ACTIVE_CTRL,
-                        mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT);
+                   mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT);
 }
 
 static void specialFunc(int key, int x, int y) {
@@ -304,17 +344,91 @@ static void specialUpFunc(int key, int x, int y) {
 }
 
 static void evt_pressKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift) {
+    _key_event_press.key = key;
+    _key_event_press.ctrl = ctrl;
+    _key_event_press.alt = alt;
+    _key_event_press.shift = shift;
 
+    if(_core == NULL) return;
+    if(!_core->running) return;
+    if(_core->context == NULL) return;
+    if(_core->context->gameData == NULL) return;
+
+    E_Obj * obj;
+    LinkedList_Element * el = _core->context->gameData->first;
+    while(el != NULL) {
+        if(el->data != NULL) {
+            obj = (E_Obj*) el->data;
+            if(obj->pressKeyEvt) obj->pressKeyEvt(obj, _core->context,
+                                                  &_key_event_press);
+        }
+        el = LinkedList_next(el);
+    }
 }
 
-static void evt_releaseKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift) {
+static void evt_releaseKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift) {    
+    _key_event_release.key = key;
+    _key_event_release.ctrl = ctrl;
+    _key_event_release.alt = alt;
+    _key_event_release.shift = shift;
 
+    if(_core == NULL) return;
+    if(!_core->running) return;
+    if(_core->context == NULL) return;
+    if(_core->context->gameData == NULL) return;
+
+    E_Obj * obj;
+    LinkedList_Element * el = _core->context->gameData->first;
+    while(el != NULL) {
+        if(el->data != NULL) {
+            obj = (E_Obj*) el->data;
+            if(obj->releaseKeyEvt) obj->releaseKeyEvt(obj, _core->context,
+                                                      &_key_event_release);
+        }
+        el = LinkedList_next(el);
+    }
 }
 
-static void CORE_evt_mouseMove(int x, int y) {
+static void evt_mouseMove(int x, int y) {
+    _mouse_event_move.x = x;
+    _mouse_event_move.y = y;
 
+    if(_core == NULL) return;
+    if(!_core->running) return;
+    if(_core->context == NULL) return;
+    if(_core->context->gameData == NULL) return;
+
+    E_Obj * obj;
+    LinkedList_Element * el = _core->context->gameData->first;
+    while(el != NULL) {
+        if(el->data != NULL) {
+            obj = (E_Obj*) el->data;
+            if(obj->mouseMoveEvt) obj->mouseMoveEvt(obj, _core->context,
+                                                    &_mouse_event_move);
+        }
+        el = LinkedList_next(el);
+    }
 }
 
-static void CORE_evt_mouseButton(int button, int state, int x, int y) {
+static void evt_mouseButton(int button, int state, int x, int y) {
+    _mouse_event_button.button = button;
+    _mouse_event_button.state = state;
+    _mouse_event_button.x = x;
+    _mouse_event_button.y = y;
 
+    if(_core == NULL) return;
+    if(!_core->running) return;
+    if(_core->context == NULL) return;
+    if(_core->context->gameData == NULL) return;
+
+    E_Obj * obj;
+    LinkedList_Element * el = _core->context->gameData->first;
+    while(el != NULL) {
+        if(el->data != NULL) {
+            obj = (E_Obj*) el->data;
+            if(obj->mouseButtonEvt) obj->mouseButtonEvt(obj, _core->context,
+                                                        &_mouse_event_button);
+        }
+        el = LinkedList_next(el);
+    }
 }

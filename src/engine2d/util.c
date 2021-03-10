@@ -66,7 +66,7 @@ bool UTIL_loadBMP(Texture * texture, const char * path) {
     return true;
 }
 
-int randInt(int n) {
+int UTIL_randInt(int n) {
     if ((n - 1) == RAND_MAX) {
         return rand();
     } else {
@@ -76,4 +76,22 @@ int randInt(int n) {
         while((r = rand()) >= end);
         return r % n;
     }
+}
+
+__syscall_slong_t UTIL_getSystemNanoTime() {
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    return ts.tv_nsec;
+}
+
+__time_t UTIL_getSystemSeconds() {
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    return ts.tv_sec;
+}
+
+struct timespec UTIL_getSystemTime() {
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    return ts;
 }

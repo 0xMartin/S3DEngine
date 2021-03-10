@@ -14,6 +14,7 @@
 
 #include "core.h"
 #include "linkedlist.h"
+#include "event.h"
 
 
 typedef struct _E_Obj_Data {
@@ -24,11 +25,12 @@ typedef struct _E_Obj_Data {
 typedef struct _E_Obj {
     LinkedList * data;  /** object data, list consisting only from E_Obj_Data */
     void (*destruct)(struct _E_Obj * obj, Context * cntx);  /** Destruct object */
-    void (*render)(struct _E_Obj * obj, Context * cntx);    /** Render object */
-    void (*update)(struct _E_Obj * obj, Context * cntx);    /** Update object */
-    void (*mouseClickEvt)(struct _E_Obj * obj, Context * cntx); /** Mouse click event */
-    void (*keyPressedEvt)(struct _E_Obj * obj, Context * cntx); /** Key pressed event */
-    void (*keyReleasedEvt)(struct _E_Obj * obj, Context * cntx);    /** Key released event */
+    void (*render)(struct _E_Obj * obj, Context * cntx, Event_Render * evt);    /** Render object */
+    void (*update)(struct _E_Obj * obj, Context * cntx, Event_Update * evt);    /** Update object */
+    void (*mouseMoveEvt)(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt); /** Mouse move event */
+    void (*mouseButtonEvt)(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt); /** Mouse button event */
+    void (*pressKeyEvt)(struct _E_Obj * obj, Context * cntx, Event_Key * evt); /** Key pressed event */
+    void (*releaseKeyEvt)(struct _E_Obj * obj, Context * cntx, Event_Key * evt);    /** Key released event */
 } E_Obj;
 
 

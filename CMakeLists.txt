@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 2.8)
 
 project(TicTacToe C)
 
-file(GLOB sources "src/*.c" "src/engine2d/*.c" "src/objects/*.c")
-file(GLOB headers "src/*.h" "src/engine2d/*.h" "src/objects/*.h")
+file(GLOB sources "src/*.c" "src/engine2d/*.c" "src/engine2d/ui/*.c" "src/objects/*.c")
+file(GLOB headers "src/*.h" "src/engine2d/*.h" "src/engine2d/ui/*.h" "src/objects/*.h")
 list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin/data/)
 
-add_compile_options(-Wall -Wextra -pthread -std=c11)
+add_compile_options(-Wall -Wextra -std=c11)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

@@ -20,6 +20,8 @@
 #endif
 
 #include <stdbool.h>
+#include <time.h>
+
 
 #define MAX(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
 #define MIN(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
@@ -45,6 +47,24 @@ bool UTIL_loadBMP(Texture * texture, const char * path);
  * @param n
  * @return
  */
-int randInt(int n);
+int UTIL_randInt(int n);
+
+/**
+ * @brief UTIL_getSystemNanoTime
+ * @return
+ */
+__syscall_slong_t UTIL_getSystemNanoTime();
+
+/**
+ * @brief UTIL_getSystemSeconds
+ * @return
+ */
+__time_t UTIL_getSystemSeconds();
+
+/**
+ * @brief UTIL_getSystemTime
+ * @return
+ */
+struct timespec UTIL_getSystemTime();
 
 #endif // UTIL_H

@@ -14,6 +14,8 @@
 
 #include "api.h"
 #include "util.h"
+#include "event.h"
+#include "io.h"
 #include "linkedlist.h"
 #include "vector.h"
 #include "render.h"

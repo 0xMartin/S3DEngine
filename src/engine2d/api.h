@@ -52,40 +52,12 @@
 #  define E2APIENTRY
 #endif /* WIN32 && !CYGWIN */
 
-/*
- * WINDOWS: Include windows.h here to define APIENTRY.
- * It is also useful when applications include this file by
- * including only glut.h, since glut.h depends on windows.h.
- * Applications needing to include windows.h with parms other
- * than "WIN32_LEAN_AND_MEAN" may include windows.h before
- * glut.h or gl.h.
- */
-#if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-#endif
-#include <windows.h>
-#endif
-
 #ifndef E2API
 #define E2API extern
 #endif
 
 #ifndef E2APIENTRY
 #define E2APIENTRY
-#endif
-
-#ifndef APIENTRY
-#define APIENTRY E2APIENTRY
-#endif
-
-/* "P" suffix to be used for a pointer to a function */
-#ifndef APIENTRYP
-#define APIENTRYP APIENTRY *
-#endif
-
-#ifndef E2APIENTRYP
-#define E2APIENTRYP E2APIENTRY *
 #endif
 
 
