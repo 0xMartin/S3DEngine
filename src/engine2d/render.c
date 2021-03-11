@@ -25,7 +25,7 @@ static bool ENABLE_PT_COLOR = false;
 static void applyPtColor(Point2D * p) {
     if(p != NULL) {
         if(ENABLE_PT_COLOR) {
-            glColor4f(p->color.red, p->color.green, p->color.blue, p->color.alpha);
+            glColor4f(p->color.red, p->color.green, p->color.blue, 1.0);
         }
     }
 }
@@ -44,7 +44,8 @@ void Render_setColor(Color * color) {
     if(color != NULL) {
         if(IN_RANGE(color->red, 0.0, 1.0) &&
                 IN_RANGE(color->green, 0.0, 1.0) &&
-                IN_RANGE(color->blue, 0.0, 1.0)) {
+                IN_RANGE(color->blue, 0.0, 1.0) &&
+                IN_RANGE(color->alpha, 0.0, 1.0)) {
             COLOR = *color;
         }
     }
@@ -156,6 +157,18 @@ void Render_drawPolygon(Point2D * p, size_t count) {
     }
 }
 
+void Render_drawRectangle(Point2D * p, size_t width, size_t height) {
+    if(p != NULL && width > 0 && height > 0) {
+        glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(p->x, p->y);
+        glVertex2f(p->x + width, p->y);
+        glVertex2f(p->x + width, p->y + height);
+        glVertex2f(p->x, p->y + height);
+        glEnd();
+    }
+}
+
 void Render_fillTriangle(Point2D * p1, Point2D * p2, Point2D * p3) {
     if(p1 != NULL && p2 != NULL && p3 != NULL) {
         if(!ENABLE_PT_COLOR) {
@@ -226,8 +239,20 @@ void Render_drawEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
     }
 }
 
-void Render_FillEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
+void Render_fillEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
 
+}
+
+void Render_fillRectangle(Point2D * p, size_t width, size_t height) {
+    if(p != NULL && width > 0 && height > 0) {
+        glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+        glBegin(GL_QUADS);
+        glVertex2f(p->x, p->y);
+        glVertex2f(p->x + width, p->y);
+        glVertex2f(p->x + width, p->y + height);
+        glVertex2f(p->x, p->y + height);
+        glEnd();
+    }
 }
 
 void Render_drawImage(Point2D * p, Texture * texture, bool position) {
@@ -279,11 +304,11 @@ void Render_setFont(void * font, GLint size) {
     }
 }
 
-void Render_drawString(Point2D * p, const char * const str) {
-    if(p != NULL && str != NULL) {
+void Render_drawString(GLfloat x, GLfloat y, const char * const str) {
+    if(str != NULL) {
         if(strlen(str) > 0) {
             glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
-            glRasterPos2f(p->x, p->y);
+            glRasterPos2f(x, y);
             const char * c  = str;
             while(*c){
                 glutBitmapCharacter(FONT, *c);

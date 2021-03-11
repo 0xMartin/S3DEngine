@@ -83,7 +83,7 @@ bool LinkedList_removeElement(LinkedList * list, LinkedList_Element * element, b
         //find element in list by index
         if(element == current) {
             //destruct data
-            if(destruct && element->destruct) element->destruct(element);
+            if(destruct && element->destruct) element->destruct(element->ptr);
             //reconnect linked list
             if(last == NULL) {
                 list->first = element->next;
@@ -164,8 +164,8 @@ void LinkedList_dectruct(LinkedList * list) {
 
     LinkedList_Element * element = list->first;
     while(element != NULL) {
-        if(element->destruct) element->destruct(element);
-        element->data = NULL;
+        if(element->destruct) element->destruct(element->ptr);
+        element->ptr = NULL;
         element = element->next;
     }
 }

@@ -11,3 +11,38 @@
 
 #include "engine_object.h"
 
+
+#define DEFAULT_DATA_VECTOR_SIZE 10
+#define DATA_VECTOR_ALLOC_STEP 10
+
+
+bool E_Obj_init(E_Obj * obj) {
+    if(obj == NULL) return false;
+
+    obj->data = NULL;
+    obj->destruct = NULL;
+    obj->mouseButtonEvt = NULL;
+    obj->mouseMoveEvt = NULL;
+    obj->pressKeyEvt = NULL;
+    obj->releaseKeyEvt = NULL;
+    obj->render = NULL;
+    obj->update = NULL;
+
+    return true;
+}
+
+void E_Obj_destruct(E_Obj * obj) {
+    if(obj == NULL) return;
+
+    if(obj->destruct && obj->data) obj->destruct(obj->data);
+}
+
+bool E_Obj_insertToList(LinkedList * list, E_Obj * obj) {
+    if(obj == NULL || list == NULL) return false;
+
+    LinkedList_Element * element = malloc(sizeof(LinkedList_Element));
+    element->ptr = obj;
+    element->destruct = obj->destruct;
+
+    return LinkedList_insert(list, element);
+}

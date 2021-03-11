@@ -76,7 +76,7 @@ E2API bool E2APIENTRY CORE_init(int argc, char **argv, CORE * core);
  * @param contx
  * @return
  */
-E2API bool E2APIENTRY CORE_setContex(Context * contx);
+E2API bool E2APIENTRY CORE_setContext(Context * contx);
 
 /**
  * @brief CORE_run

@@ -150,6 +150,7 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     glutPassiveMotionFunc(evt_mouseMove);
 
     //opengl config
+    glEnable(GL_COLOR_MATERIAL);
     glDepthFunc(GL_NEVER);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
@@ -168,7 +169,7 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     return true;
 }
 
-bool CORE_setContex(Context * contx) {
+bool CORE_setContext(Context * contx) {
     if(_core == NULL || contx == NULL) return false;
 
     _core->context = contx;
@@ -245,6 +246,8 @@ static void reshape(int w, int h) {
     glTranslatef(0, -h, 0);       /* Shift origin up to upper-left corner. */
 }
 
+#include <stdio.h>
+
 static void renderScene() {
     if(_core == NULL) return;
 
@@ -265,13 +268,14 @@ static void renderScene() {
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
-        if(el->data != NULL) {
-            obj = (E_Obj*) el->data;
-            if(obj->render) obj->render(obj, _core->context, &_render_event);
+        if(el->ptr != NULL) {
+            obj = (E_Obj*) el->ptr;
+            if(obj->render) obj->render(obj, &_render_event);
         }
         el = LinkedList_next(el);
     }
 
+    /*
     Point2D p[4] = {
         {0, 0, {1, 1, 1, 1}},
         {200 + f, 200 + f, {1, 1, 1, 1}},
@@ -285,6 +289,7 @@ static void renderScene() {
     Render_fillPolygon(p, 4);
     Render_setColorRGB(1.0, 0.4, 0.0, 1.0);
     Render_drawString(&p[1], "2D engine test");
+    */
 
     glutSwapBuffers();
 }
@@ -302,8 +307,8 @@ static void updateLoop() {
             E_Obj * obj;
             LinkedList_Element * el = _core->context->gameData->first;
             while(el != NULL) {
-                if(el->data != NULL) {
-                    obj = (E_Obj*) el->data;
+                if(el->ptr != NULL) {
+                    obj = (E_Obj*) el->ptr;
                     if(obj->update) obj->update(obj, _core->context,
                                                 &_update_event);
                 }
@@ -357,8 +362,8 @@ static void evt_pressKey(unsigned char key, int x, int y, bool ctrl, bool alt, b
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
-        if(el->data != NULL) {
-            obj = (E_Obj*) el->data;
+        if(el->ptr != NULL) {
+            obj = (E_Obj*) el->ptr;
             if(obj->pressKeyEvt) obj->pressKeyEvt(obj, _core->context,
                                                   &_key_event_press);
         }
@@ -380,8 +385,8 @@ static void evt_releaseKey(unsigned char key, int x, int y, bool ctrl, bool alt,
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
-        if(el->data != NULL) {
-            obj = (E_Obj*) el->data;
+        if(el->ptr != NULL) {
+            obj = (E_Obj*) el->ptr;
             if(obj->releaseKeyEvt) obj->releaseKeyEvt(obj, _core->context,
                                                       &_key_event_release);
         }
@@ -401,8 +406,8 @@ static void evt_mouseMove(int x, int y) {
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
-        if(el->data != NULL) {
-            obj = (E_Obj*) el->data;
+        if(el->ptr != NULL) {
+            obj = (E_Obj*) el->ptr;
             if(obj->mouseMoveEvt) obj->mouseMoveEvt(obj, _core->context,
                                                     &_mouse_event_move);
         }
@@ -424,8 +429,8 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
-        if(el->data != NULL) {
-            obj = (E_Obj*) el->data;
+        if(el->ptr != NULL) {
+            obj = (E_Obj*) el->ptr;
             if(obj->mouseButtonEvt) obj->mouseButtonEvt(obj, _core->context,
                                                         &_mouse_event_button);
         }

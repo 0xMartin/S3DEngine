@@ -36,8 +36,10 @@ bool Vector_clear(Vector * vector) {
         Vector_Element * e;
         for(unsigned int i = 0; i < vector->count && i < vector->size; ++i) {
             e = *(vector->elements + i);
-            e->destruct(e);
-            *(vector->elements + i) = NULL;
+            if(e != NULL) {
+                if(e->destruct) e->destruct(e->ptr);
+                *(vector->elements + i) = NULL;
+            }
         }
     }
     vector->count = 0;
@@ -52,8 +54,10 @@ bool Vector_destruct(Vector * vector) {
     Vector_Element * e;
     for(unsigned int i = 0; i < vector->count && i < vector->size; ++i) {
         e = *(vector->elements + i);
-        e->destruct(e);
-        *(vector->elements + i) = NULL;
+        if(e != NULL) {
+            if(e->destruct) e->destruct(e->ptr);
+            *(vector->elements + i) = NULL;
+        }
     }
 
     free(vector->elements);
@@ -75,6 +79,10 @@ bool Vector_remove(Vector * vector, unsigned int index) {
     if(vector->elements == NULL) return false;
 
     if(vector->count != 0) {
+        Vector_Element * e = vector->elements[index];
+        if(e != NULL) {
+            if(e->destruct) e->destruct(e->ptr);
+        }
         for(unsigned int i = index; i + 1 < vector->count && i + 1 < vector->size; ++i) {
             vector->elements[i] = vector->elements[i + 1];
         }

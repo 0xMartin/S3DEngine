@@ -17,8 +17,8 @@
 
 //element of vector
 typedef struct _Vector_Element {
-    void * data; /** pointer on data of element */
-    void (*destruct)(struct _Vector_Element * element); /** pointer on destructor of data */
+    void * ptr; /** pointer on data of element */
+    void (*destruct)(void * ptr); /** pointer on destructor of data */
 } Vector_Element;
 
 //vector struct

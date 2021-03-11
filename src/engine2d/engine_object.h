@@ -13,19 +13,14 @@
 #define GAME_OBJECT_H
 
 #include "core.h"
+#include "vector.h"
 #include "linkedlist.h"
 #include "event.h"
 
-
-typedef struct _E_Obj_Data {
-    void * value;   /** Pointer on data */
-    void (*destruct)(struct _E_Obj_Data * obj); /** Destruct data */
-} E_Obj_Data;
-
 typedef struct _E_Obj {
-    LinkedList * data;  /** object data, list consisting only from E_Obj_Data */
-    void (*destruct)(struct _E_Obj * obj, Context * cntx);  /** Destruct object */
-    void (*render)(struct _E_Obj * obj, Context * cntx, Event_Render * evt);    /** Render object */
+    void * data;  /** pointer on struct of specific object */
+    void (*destruct)(void * ptr);  /** Destruct object */
+    void (*render)(struct _E_Obj * obj, Event_Render * evt);    /** Render object */
     void (*update)(struct _E_Obj * obj, Context * cntx, Event_Update * evt);    /** Update object */
     void (*mouseMoveEvt)(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt); /** Mouse move event */
     void (*mouseButtonEvt)(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt); /** Mouse button event */
@@ -35,16 +30,25 @@ typedef struct _E_Obj {
 
 
 /**
- * @brief G_Obj_init
+ * @brief E_Obj_init
  * @param g_obj
+ * @return
  */
-void E_Obj_init(E_Obj * g_obj);
+bool E_Obj_init(E_Obj * g_obj);
 
 /**
  * @brief G_Obj_destruct
  * @param g_obj
  */
 void E_Obj_destruct(E_Obj * g_obj);
+
+/**
+ * @brief UTIL_insertEObj
+ * @param list
+ * @param obj
+ * @return
+ */
+bool E_Obj_insertToList(LinkedList * list, E_Obj * obj);
 
 
 #endif // ENGINE_OBJECT_H

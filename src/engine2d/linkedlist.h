@@ -18,8 +18,8 @@
 
 //element of linked list
 typedef struct _LinkedList_Element {
-    void * data; /** pointer on data of element */
-    void (*destruct)(struct _LinkedList_Element * element); /** pointer on destructor of data */
+    void * ptr; /** pointer on data of element */
+    void (*destruct)(void * ptr); /** pointer on destructor of data */
     struct _LinkedList_Element * next; /** next element in list */
 } LinkedList_Element;
 

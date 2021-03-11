@@ -160,6 +160,14 @@ void Render_drawQuad(Point2D * p1, Point2D * p2, Point2D * p3, Point2D * p4);
 void Render_drawPolygon(Point2D * p, size_t count);
 
 /**
+ * @brief Render_drawRectangle
+ * @param p
+ * @param width
+ * @param height
+ */
+void Render_drawRectangle(Point2D * p, size_t width, size_t height);
+
+/**
  * @brief Render_fillTriangle
  * @param p1
  * @param p2
@@ -192,12 +200,20 @@ void Render_fillPolygon(Point2D * p, size_t count);
 void Render_drawEllipse(Point2D * p, GLfloat rx, GLfloat ry);
 
 /**
- * @brief Render_FillEllipse
+ * @brief Render_fillEllipse
  * @param p
  * @param rx
  * @param ry
  */
-void Render_FillEllipse(Point2D * p, GLfloat rx, GLfloat ry);
+void Render_fillEllipse(Point2D * p, GLfloat rx, GLfloat ry);
+
+/**
+ * @brief Render_fillRectangle
+ * @param p
+ * @param width
+ * @param height
+ */
+void Render_fillRectangle(Point2D * p, size_t width, size_t height);
 
 /**
  * @brief Render_drawImage
@@ -219,6 +235,6 @@ void Render_setFont(void * font, GLint size);
  * @param p
  * @param str
  */
-void Render_drawString(Point2D * p, const char * const str);
+void Render_drawString(GLfloat x, GLfloat y,  const char * const str);
 
 #endif // RENDER_H

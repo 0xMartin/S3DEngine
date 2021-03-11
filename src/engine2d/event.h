@@ -13,7 +13,7 @@
 #define EVENT_H
 
 #include <time.h>
-
+#include <stdbool.h>
 
 //key event
 typedef struct {
@@ -44,5 +44,6 @@ typedef struct {
     __time_t s_time;    /** current sec system time*/
 } Event_Update;
 
+typedef void (*Event_action)(void * sender);
 
 #endif // EVENT_H
