@@ -28,32 +28,28 @@
 #endif
 
 #include "util.h"
+#include "linkedlist.h"
 
 
 //colors
-#define COLOR_BLACK     {0.0,   0.0,    0.0,    1.0}
-#define COLOR_BLUE      {0.0,   0.0,    1.0,    1.0}
-#define COLOR_CYAN      {0.0,   1.0,    1.0,    1.0}
-#define COLOR_DARKGRAY	{0.25,  0.25,   0.25,   1.0}
-#define COLOR_GRAY      {0.5,   0.5,    0.5,    1.0}
-#define COLOR_GREEN     {0.0,   1.0,    0.0,    1.0}
-#define COLOR_LIGHTGRAY	{0.75,  0.75,   0.75,   1.0}
-#define COLOR_MAGENTA	{1.0,   0.0,    1.0,    1.0}
-#define COLOR_ORANGE	{1.0,   0.78,   0.0,    1.0}
-#define COLOR_PINK      {1.0,   0.69,   0.69,   1.0}
-#define COLOR_RED       {1.0,   0.0,    0.0,    1.0}
-#define COLOR_WHITE     {1.0,   1.0,    1.0,    1.0}
-#define COLOR_YELLOW	{1.0,   1.0,    0.0,    1.0}
+#define COLOR_BLACK     (Color){0.0,   0.0,    0.0,    1.0}
+#define COLOR_BLUE      (Color){0.0,   0.0,    1.0,    1.0}
+#define COLOR_CYAN      (Color){0.0,   1.0,    1.0,    1.0}
+#define COLOR_DARKGRAY	(Color){0.25,  0.25,   0.25,   1.0}
+#define COLOR_GRAY      (Color){0.5,   0.5,    0.5,    1.0}
+#define COLOR_GREEN     (Color){0.0,   1.0,    0.0,    1.0}
+#define COLOR_LIGHTGRAY	(Color){0.75,  0.75,   0.75,   1.0}
+#define COLOR_MAGENTA	(Color){1.0,   0.0,    1.0,    1.0}
+#define COLOR_ORANGE	(Color){1.0,   0.78,   0.0,    1.0}
+#define COLOR_PINK      (Color){1.0,   0.69,   0.69,   1.0}
+#define COLOR_RED       (Color){1.0,   0.0,    0.0,    1.0}
+#define COLOR_WHITE     (Color){1.0,   1.0,    1.0,    1.0}
+#define COLOR_YELLOW	(Color){1.0,   1.0,    0.0,    1.0}
 
-#define COLOR_DARKER(n, c)	({\
-    n.red = c.red * 0.8;\
-    n.green = c.green * 0.8;\
-    n.blue = c.blue * 0.8;})
+#define COLOR_DARKER(c)	((Color){.red=c.red*0.6, .green=c.green*0.6, .blue=c.blue*0.6, .alpha=c.alpha})
 
-#define COLOR_LIGHTER(n, c) ({\
-    n.red = MIN(1.0, c.red * 1.2);\
-    n.green = MIN(1.0, c.green * 1.2);\
-    n.blue = MIN(1.0, c.blue * 1.2);})
+#define COLOR_LIGHTER(c) ((Color){.red=MIN(1.0, c.red * 1.3),\
+    .green=MIN(1.0, c.green * 1.3), .blue=MIN(1.0, c.blue * 1.3), , .alpha=c.alpha})
 
 //fonts
 #define E2D_STROKE_ROMAN            GLUT_STROKE_ROMAN
@@ -82,6 +78,33 @@ typedef struct {
     Color color; /** color of point*/
 } Point2D;
 
+//face
+typedef struct {
+    Point2D * vetices;
+    size_t count;
+    GLint textureID;
+} Face;
+
+
+/**
+ * @brief Render_getStringWidth
+ * @param alpha
+ * @return
+ */
+int Render_getStringWidth(const char * str);
+
+/**
+ * @brief Render_getStringHeight
+ * @param str
+ * @return
+ */
+int Render_getStringHeight(const char * str);
+
+/**
+ * @brief Render_getFontSize
+ * @return
+ */
+int Render_getFontSize();
 
 /**
  * @brief Render_setColorRGB
@@ -236,5 +259,11 @@ void Render_setFont(void * font, GLint size);
  * @param str
  */
 void Render_drawString(GLfloat x, GLfloat y,  const char * const str);
+
+/**
+ * @brief Render_mesh
+ * @param p
+ */
+void Render_mesh(Point2D * p, LinkedList * faces);
 
 #endif // RENDER_H

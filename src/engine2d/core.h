@@ -42,6 +42,13 @@
 #define EVT_C_TAB 0x9
 #define EVT_C_ESC 0x1b
 
+#define EVT_M_LEFT GLUT_LEFT_BUTTON
+#define EVT_M_RIGHT GLUT_RIGHT_BUTTON
+#define EVT_M_MIDDLE GLUT_MIDDLE_BUTTON
+
+#define EVT_M_DOWN GLUT_DOWN
+#define EVT_M_UP GLUT_UP
+
 
 typedef struct {
     LinkedList * gameData;  /** game data, list consisting only from <E_Obj> engine_object.h */
@@ -94,6 +101,13 @@ E2API void E2APIENTRY CORE_stop();
  * @brief CORE_destruct
  */
 E2API bool E2APIENTRY CORE_destruct();
+
+/**
+ * @brief CORE_loadTexture
+ * @param path
+ * @return
+ */
+E2API bool E2APIENTRY CORE_loadTexture(const char * path);
 
 /**
  * @brief Context_init

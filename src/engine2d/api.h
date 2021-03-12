@@ -1,5 +1,4 @@
 /*
- * Mesa 3-D graphics library
  *
  * Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
  * Copyright (C) 2009  VMware, Inc.  All Rights Reserved.

@@ -16,8 +16,8 @@
 
 static CORE * _core = NULL;
 
-static Event_Key    _key_event_press    = {.press = true};
-static Event_Key    _key_event_release  = {.press = false};
+static Event_Key    _key_event_press;
+static Event_Key    _key_event_release;
 static Event_Mouse  _mouse_event_move;
 static Event_Mouse  _mouse_event_button;
 static Event_Render _render_event;
@@ -202,7 +202,22 @@ bool CORE_destruct() {
     if(Context_destruct(_core->context)) {
         _core->context = NULL;
     }
-    free(_core->windonw_title);
+
+    return true;
+}
+
+bool CORE_loadTexture(const char * path) {
+    if(_core == NULL) return false;
+    if(_core->context == NULL) return false;
+    if(_core->context->textures == NULL) return false;
+
+    Texture * tex = UTIL_loadBMP(path);
+    if(tex == NULL) return false;
+    Vector_Element * el = malloc(sizeof (Vector_Element));
+    if(el == NULL) return false;
+    el->ptr = tex;
+    el->destruct = UTIL_simpleDestructor;
+    Vector_append(_core->context->textures, el);
 
     return true;
 }
@@ -214,6 +229,8 @@ bool Context_init(Context * contx) {
     contx->textures = malloc(sizeof(Vector));
     contx->files = malloc(sizeof(Vector));
     if(!LinkedList_init(contx->gameData)) return false;
+    if(!Vector_init(contx->textures, 20, 10)) return false;
+    if(!Vector_init(contx->files, 20, 10)) return false;
 
     return true;
 }
@@ -231,7 +248,6 @@ bool Context_destruct(Context * contx) {
         if(contx->files) {
             Vector_destruct(contx->files);
         }
-        free(contx);
     }
 
     return true;
@@ -274,22 +290,6 @@ static void renderScene() {
         }
         el = LinkedList_next(el);
     }
-
-    /*
-    Point2D p[4] = {
-        {0, 0, {1, 1, 1, 1}},
-        {200 + f, 200 + f, {1, 1, 1, 1}},
-        {400, 150, {1, 1, 1, 1}},
-        {500, 600, {1, 1, 1, 1}}
-    };
-    Texture texture;
-    if(UTIL_loadBMP(&texture, "data/img.bmp"))
-        Render_drawImage(&p[1], &texture, true);
-
-    Render_fillPolygon(p, 4);
-    Render_setColorRGB(1.0, 0.4, 0.0, 1.0);
-    Render_drawString(&p[1], "2D engine test");
-    */
 
     glutSwapBuffers();
 }
@@ -419,6 +419,7 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     _mouse_event_button.button = button;
     _mouse_event_button.state = state;
     _mouse_event_button.x = x;
+    _mouse_event_button.y = y;
     _mouse_event_button.y = y;
 
     if(_core == NULL) return;

@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool UTIL_loadBMP(Texture * texture, const char * path) {
-    if(texture == NULL || strlen(path) == 0) return false;
+Texture * UTIL_loadBMP(const char * path) {
+    if(strlen(path) == 0) return NULL;
 
     // Data read from the header of the BMP file
     unsigned char header[54];
@@ -27,16 +27,19 @@ bool UTIL_loadBMP(Texture * texture, const char * path) {
     FILE * file = fopen(path,"rb");
     if (!file){
         printf("Image could not be opened\n");
-        return false;
+        return NULL;
     }
     if (fread(header, 1, 54, file) != 54){
         printf("Not a correct BMP file\n");
-        return false;
+        return NULL;
     }
     if (header[0] != 'B' || header[1] != 'M'){
         printf("Not a correct BMP file\n");
-        return false;
+        return NULL;
     }
+
+    Texture * texture = malloc(sizeof(Texture));
+    if(texture == NULL) return NULL;
 
     // Read ints from the byte array
     texture->imageSize = *(int*)&(header[0x22]);
@@ -63,7 +66,7 @@ bool UTIL_loadBMP(Texture * texture, const char * path) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    return true;
+    return texture;
 }
 
 int UTIL_randInt(int n) {
@@ -94,4 +97,10 @@ struct timespec UTIL_getSystemTime() {
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
     return ts;
+}
+
+void UTIL_simpleDestructor(void * data) {
+    if(data != NULL) {
+        free(data);
+    }
 }

@@ -56,6 +56,7 @@ bool Vector_destruct(Vector * vector) {
         e = *(vector->elements + i);
         if(e != NULL) {
             if(e->destruct) e->destruct(e->ptr);
+            free(e);
             *(vector->elements + i) = NULL;
         }
     }
@@ -82,6 +83,7 @@ bool Vector_remove(Vector * vector, unsigned int index) {
         Vector_Element * e = vector->elements[index];
         if(e != NULL) {
             if(e->destruct) e->destruct(e->ptr);
+            free(e);
         }
         for(unsigned int i = index; i + 1 < vector->count && i + 1 < vector->size; ++i) {
             vector->elements[i] = vector->elements[i + 1];

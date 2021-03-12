@@ -21,7 +21,6 @@ typedef struct {
     bool ctrl;  /** true -> ctrl pressed */
     bool alt;   /** true -> alt pressed */
     bool shift; /** true -> shift pressed */
-    bool press;   /** true [key press], false [key release]*/
 } Event_Key;
 
 //mouse envent
@@ -44,6 +43,20 @@ typedef struct {
     __time_t s_time;    /** current sec system time*/
 } Event_Update;
 
-typedef void (*Event_action)(void * sender);
+typedef void (*Event_action)(void * sender, void * evt);
+
+#define UI_EVENTS_INIT (UI_Events){false, false, NULL, NULL, NULL, NULL, NULL, NULL}
+
+//UI events
+typedef struct {
+    bool focus;
+    bool hover;
+    Event_action mousePressAction;
+    Event_action mouseReleaseAction;
+    Event_action keyPressedAction;
+    Event_action keyReleaseAction;
+    Event_action mouseMovedAction;
+    Event_action contentChangedAction;
+} UI_Events;
 
 #endif // EVENT_H

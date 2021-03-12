@@ -27,6 +27,8 @@
 #define MIN(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
 #define IN_RANGE(v, min, max) (v >= min && v <= max)
 
+
+//texture
 typedef struct {
     GLuint width;
     GLuint height;
@@ -35,37 +37,42 @@ typedef struct {
 } Texture;
 
 /**
- * @brief UTIL_loadBMP
- * @param textuture
- * @param path
- * @return
+ * @brief Load bmp image and create opengl texture
+ * @param path Path to image
+ * @return Pointer on loaded texture
  */
-bool UTIL_loadBMP(Texture * texture, const char * path);
+Texture * UTIL_loadBMP(const char * path);
 
 /**
- * @brief randInt
- * @param n
- * @return
+ * @brief Generate random number in range from 0 to n
+ * @param n The highest possible number
+ * @return Random int
  */
 int UTIL_randInt(int n);
 
 /**
- * @brief UTIL_getSystemNanoTime
- * @return
+ * @brief Get current system time
+ * @return Nanoseconds
  */
 __syscall_slong_t UTIL_getSystemNanoTime();
 
 /**
- * @brief UTIL_getSystemSeconds
- * @return
+ * @brief Get current system time
+ * @return Seconds
  */
 __time_t UTIL_getSystemSeconds();
 
 /**
- * @brief UTIL_getSystemTime
- * @return
+ * @brief Get current system time
+ * @return timespec
  */
 struct timespec UTIL_getSystemTime();
+
+/**
+ * @brief Destruct simple data structure
+ * @param data  Pointer on data structure
+ */
+void UTIL_simpleDestructor(void * data);
 
 
 #endif // UTIL_H

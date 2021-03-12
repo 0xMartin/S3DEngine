@@ -16,18 +16,61 @@
 
 static Color COLOR = COLOR_WHITE;
 
+static GLfloat MAX_ALPHA = 1.0;
+
 static GLint FONT_SIZE = 15;
 
 static void * FONT = GLUT_BITMAP_TIMES_ROMAN_24;
 
 static bool ENABLE_PT_COLOR = false;
 
+
 static void applyPtColor(Point2D * p) {
     if(p != NULL) {
         if(ENABLE_PT_COLOR) {
-            glColor4f(p->color.red, p->color.green, p->color.blue, 1.0);
+            glColor4f(p->color.red, p->color.green, p->color.blue, MIN(p->color.alpha, MAX_ALPHA));
         }
     }
+}
+
+void Render_setMaxAlpha(GLfloat alpha) {
+    if(IN_RANGE(alpha, 0.0, 1.0)) {
+        MAX_ALPHA = alpha;
+    }
+}
+
+int Render_getStringWidth(const char * str) {
+    if(str == NULL) return 0;
+    if(FONT == NULL) return 0;
+
+    return glutBitmapLength(FONT, (const unsigned char *) str);
+}
+
+int Render_getStringHeight(const char * str) {
+    if(str == NULL) return 0;
+    if(FONT == NULL) return 0;
+
+    if(FONT == E2D_STROKE_ROMAN) {
+        return 10;
+    } else if(FONT == E2D_STROKE_MONO_ROMAN) {
+        return 10;
+    } else if(FONT == E2D_BITMAP_9_BY_15) {
+        return 15;
+    } else if(FONT == E2D_BITMAP_8_BY_13) {
+        return 13;
+    } else if(FONT == E2D_BITMAP_TIMES_ROMAN_10) {
+        return 10;
+    } else if(FONT == E2D_BITMAP_TIMES_ROMAN_24) {
+        return 24;
+    } else if(FONT == E2D_BITMAP_HELVETICA_10) {
+        return 10;
+    } else if(FONT == E2D_BITMAP_HELVETICA_12) {
+        return 12;
+    } else if(FONT == E2D_BITMAP_HELVETICA_18) {
+        return 18;
+    }
+
+    return 0;
 }
 
 void Render_setColorRGB(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
@@ -69,6 +112,7 @@ void Render_clear(Color * color) {
     if(color != NULL) {
         glClearColor(color->red, color->green, color->blue, 1.0);
     }
+    MAX_ALPHA = 1.0;
     COLOR.red = COLOR.green = COLOR.blue = 1.0;
     FONT = GLUT_BITMAP_TIMES_ROMAN_24;
     glClear(GL_COLOR_BUFFER_BIT);
@@ -77,7 +121,7 @@ void Render_clear(Color * color) {
 void Render_drawLine(Point2D * p1, Point2D * p2) {
     if(p1 != NULL && p2 != NULL) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_LINES);
         applyPtColor(p1);
@@ -94,7 +138,7 @@ void Render_drawLines(Point2D * p, size_t count) {
         p1 = p;
         p2 = NULL;
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         for(size_t i = 1; i < count; ++i) {
             p2 = p1 + 1;
@@ -112,7 +156,7 @@ void Render_drawLines(Point2D * p, size_t count) {
 void Render_drawTriangle(Point2D * p1, Point2D * p2, Point2D * p3) {
     if(p1 != NULL && p2 != NULL && p3 != NULL) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_LINE_LOOP);
         applyPtColor(p1);
@@ -128,7 +172,7 @@ void Render_drawTriangle(Point2D * p1, Point2D * p2, Point2D * p3) {
 void Render_drawQuad(Point2D * p1, Point2D * p2, Point2D * p3, Point2D * p4) {
     if(p1 != NULL && p2 != NULL && p3 != NULL) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_LINE_LOOP);
         applyPtColor(p1);
@@ -146,7 +190,7 @@ void Render_drawQuad(Point2D * p1, Point2D * p2, Point2D * p3, Point2D * p4) {
 void Render_drawPolygon(Point2D * p, size_t count) {
     if(p != NULL && count > 3) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_LINE_LOOP);
         for(size_t i = 0; i <= count; ++i) {
@@ -159,7 +203,7 @@ void Render_drawPolygon(Point2D * p, size_t count) {
 
 void Render_drawRectangle(Point2D * p, size_t width, size_t height) {
     if(p != NULL && width > 0 && height > 0) {
-        glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+        glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         glBegin(GL_LINE_LOOP);
         glVertex2f(p->x, p->y);
         glVertex2f(p->x + width, p->y);
@@ -172,7 +216,7 @@ void Render_drawRectangle(Point2D * p, size_t width, size_t height) {
 void Render_fillTriangle(Point2D * p1, Point2D * p2, Point2D * p3) {
     if(p1 != NULL && p2 != NULL && p3 != NULL) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_TRIANGLES);
         applyPtColor(p1);
@@ -188,7 +232,7 @@ void Render_fillTriangle(Point2D * p1, Point2D * p2, Point2D * p3) {
 void Render_fillQuad(Point2D * p1, Point2D * p2, Point2D * p3, Point2D * p4) {
     if(p1 != NULL && p2 != NULL && p3 != NULL) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_QUADS);
         applyPtColor(p1);
@@ -206,7 +250,7 @@ void Render_fillQuad(Point2D * p1, Point2D * p2, Point2D * p3, Point2D * p4) {
 void Render_fillPolygon(Point2D * p, size_t count) {
     if(p != NULL && count > 3) {
         if(!ENABLE_PT_COLOR) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
         glBegin(GL_QUADS);
         for(size_t i = 0; i < count; ++i) {
@@ -226,7 +270,7 @@ void Render_drawEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
         float t;
         float x = 1;
         float y = 0;
-        glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+        glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         glBegin(GL_LINE_LOOP);
         for(int i = 0; i < num_segments; i++)
         {
@@ -245,7 +289,7 @@ void Render_fillEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
 
 void Render_fillRectangle(Point2D * p, size_t width, size_t height) {
     if(p != NULL && width > 0 && height > 0) {
-        glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+        glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         glBegin(GL_QUADS);
         glVertex2f(p->x, p->y);
         glVertex2f(p->x + width, p->y);
@@ -307,7 +351,7 @@ void Render_setFont(void * font, GLint size) {
 void Render_drawString(GLfloat x, GLfloat y, const char * const str) {
     if(str != NULL) {
         if(strlen(str) > 0) {
-            glColor4f(COLOR.red, COLOR.green, COLOR.blue, COLOR.alpha);
+            glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
             glRasterPos2f(x, y);
             const char * c  = str;
             while(*c){
@@ -316,4 +360,8 @@ void Render_drawString(GLfloat x, GLfloat y, const char * const str) {
             }
         }
     }
+}
+
+void Render_mesh(Point2D * p, LinkedList * faces) {
+    if(p == NULL || faces == NULL) return;
 }
