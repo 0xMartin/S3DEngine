@@ -11,15 +11,18 @@
 
 #include "engine2d/core.h"
 #include "engine2d/ui/button.h"
+#include "engine2d/ui/label.h"
+#include "engine2d/ui/textfield.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-static void event(void * sender) {
+static void event(void * sender, void * evt) {
     Button * btn = (Button*) sender;
     btn->background.red = 0.6;
+    Render_scale(0.5, 1);
 }
 
-static void event2(void * sender) {
+static void event2(void * sender, void * evt) {
     Button * btn = (Button*) sender;
     btn->foreground.green = 0.6;
 }
@@ -34,6 +37,18 @@ int main(int argc, char **argv) {
     CORE_setContext(&contx);
 
     E_Obj * obj;
+
+    Label * lab;
+    lab = Label_create(100, 50, "Label");
+    obj = Label_createObject(lab);
+    E_Obj_insertToList(contx.gameData, obj);
+
+    TextField * tf;
+    tf = TextField_create(300, 50, 200, 40, 255);
+    sprintf(tf->text, "%s", "textfield");
+    obj = TextField_createObject(tf);
+    E_Obj_insertToList(contx.gameData, obj);
+
     Button * btn;
     char buffer[255];
     for(int i = 0; i < 7; ++i) {
@@ -44,6 +59,8 @@ int main(int argc, char **argv) {
         obj = Button_createObject(btn);
         E_Obj_insertToList(contx.gameData, obj);
     }
+
+    CORE_loadTexture("data/img.bmp");
 
     CORE_run();
     CORE_destruct();

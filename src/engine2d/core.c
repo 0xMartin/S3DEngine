@@ -61,24 +61,22 @@ static void specialUpFunc(int key, int x, int y);
 /**
  * @brief Key press event
  * @param key   Pressed key (char)
- * @param x     none
- * @param y     none
  * @param ctrl  CTRL is down?
  * @param alt   ALT is down?
  * @param shift SHIFT is down?
  */
-static void evt_pressKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift);
+static void evt_pressKey(unsigned char key,  bool ctrl,
+                         bool alt, bool shift, Arrow_key arrow);
 
 /**
  * @brief Key release event
  * @param key   Released key (char)
- * @param x     none
- * @param y     none
  * @param ctrl  CTRL is down?
  * @param alt   ALT is down?
  * @param shift SHIFT is down?
  */
-static void evt_releaseKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift);
+static void evt_releaseKey(unsigned char key,  bool ctrl,
+                           bool alt, bool shift, Arrow_key arrow);
 
 /**
  * @brief Mouse move event
@@ -103,7 +101,6 @@ static void evt_mouseButton(int button, int state, int x, int y);
  */
 static void reshape(int w, int h);
 
-float f = 0;
 /**
  * @brief Main update loop
  */
@@ -129,7 +126,7 @@ bool CORE_init(int argc, char **argv, CORE * core) {
 
     //init glut window
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glutInitWindowSize(core->window_width, core->window_height);
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - core->window_width) / 2,
                            (glutGet(GLUT_SCREEN_HEIGHT) - core->window_height) / 2
@@ -150,7 +147,6 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     glutPassiveMotionFunc(evt_mouseMove);
 
     //opengl config
-    glEnable(GL_COLOR_MATERIAL);
     glDepthFunc(GL_NEVER);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
@@ -291,6 +287,9 @@ static void renderScene() {
         el = LinkedList_next(el);
     }
 
+    Point2D p = {300, 200, {0, 0, 0, 0}};
+    Render_drawImage(&p, _core->context->textures->elements[0]->ptr, true);
+
     glutSwapBuffers();
 }
 
@@ -317,7 +316,6 @@ static void updateLoop() {
         }
     }
 
-    f += 0.5f;
     glutTimerFunc(1000.0/_core->ups, updateLoop, 0);
 }
 
@@ -330,29 +328,63 @@ static void renderLoop() {
 
 static void keyboardFunc(unsigned char key, int x, int y) {
     int mod = glutGetModifiers();
-    evt_pressKey(key, x, y, mod == GLUT_ACTIVE_CTRL,
-                 mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT);
+    evt_pressKey(key, mod == GLUT_ACTIVE_CTRL,
+                 mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT, NONE);
 }
 
 static void keyboardUpFunc(unsigned char key, int x, int y) {
     int mod = glutGetModifiers();
-    evt_releaseKey(key, x, y, mod == GLUT_ACTIVE_CTRL,
-                   mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT);
+    evt_releaseKey(key, mod == GLUT_ACTIVE_CTRL,
+                   mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT, NONE);
 }
 
 static void specialFunc(int key, int x, int y) {
-    evt_pressKey(0x0, x, y, key == 0x72, key == 0x74, key == 0x70);
+    Arrow_key arrow_key = NONE;
+    switch(key)
+    {
+    case GLUT_KEY_UP:
+        arrow_key = UP;
+        break;
+    case GLUT_KEY_DOWN:
+        arrow_key = DOWN;
+        break;
+    case GLUT_KEY_LEFT:
+        arrow_key = LEFT;
+        break;
+    case GLUT_KEY_RIGHT:
+        arrow_key = RIGHT;
+        break;
+    }
+    evt_pressKey(0x0, key == 0x72, key == 0x74, key == 0x70, arrow_key);
 }
 
 static void specialUpFunc(int key, int x, int y) {
-    evt_releaseKey(0x0, x, y, key == 0x72, key == 0x74, key == 0x70);
+    Arrow_key arrow_key = NONE;
+    switch(key)
+    {
+    case GLUT_KEY_UP:
+        arrow_key = UP;
+        break;
+    case GLUT_KEY_DOWN:
+        arrow_key = DOWN;
+        break;
+    case GLUT_KEY_LEFT:
+        arrow_key = LEFT;
+        break;
+    case GLUT_KEY_RIGHT:
+        arrow_key = RIGHT;
+        break;
+    }
+    evt_releaseKey(0x0, key == 0x72, key == 0x74, key == 0x70, arrow_key);
 }
 
-static void evt_pressKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift) {
+static void evt_pressKey(unsigned char key, bool ctrl,
+                         bool alt, bool shift, Arrow_key arrow) {
     _key_event_press.key = key;
     _key_event_press.ctrl = ctrl;
     _key_event_press.alt = alt;
     _key_event_press.shift = shift;
+    _key_event_press.arrow = arrow;
 
     if(_core == NULL) return;
     if(!_core->running) return;
@@ -371,11 +403,13 @@ static void evt_pressKey(unsigned char key, int x, int y, bool ctrl, bool alt, b
     }
 }
 
-static void evt_releaseKey(unsigned char key, int x, int y, bool ctrl, bool alt, bool shift) {    
+static void evt_releaseKey(unsigned char key, bool ctrl,
+                           bool alt, bool shift, Arrow_key arrow) {
     _key_event_release.key = key;
     _key_event_release.ctrl = ctrl;
     _key_event_release.alt = alt;
     _key_event_release.shift = shift;
+    _key_event_release.arrow = arrow;
 
     if(_core == NULL) return;
     if(!_core->running) return;

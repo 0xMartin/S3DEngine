@@ -12,7 +12,7 @@
 #include "button.h"
 
 #include "../util.h"
-#include "../object_virtual_functions.h"
+#include "../event_virtual_functions.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +28,7 @@ Button * Button_create(int x, int y, size_t width, size_t heigth,
 
     btn->background = UI_BUTTON_BG_COLOR;
     btn->foreground = UI_BUTTON_FG_COLOR;
-    btn->enabled = true;
+    btn->events.enabled = true;
     btn->position.x = x;
     btn->position.y = y;
     btn->width = width;
@@ -83,12 +83,13 @@ static void render(struct _E_Obj * obj, Event_Render * evt) {
     Render_drawRectangle(&btn->position, btn->width, btn->height);
     Render_drawString(
                 btn->position.x + (btn->width - Render_getStringWidth(btn->text))/2,
-                btn->position.y + (btn->height + Render_getStringHeight(btn->text))/2,
+                btn->position.y + (btn->height + Render_getStringHeight())/2,
                 btn->text);
 }
 
 static void mouseMoveEvt(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt) {
     Button * btn = (Button*) obj->data;
+    if(!btn->events.enabled) return;
 
     if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
         if(IN_RANGE(evt->y, btn->position.y, btn->position.y + btn->height)) {
@@ -102,9 +103,12 @@ static void mouseMoveEvt(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt)
 
 static void mouseButtonEvt(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt) {
     Button * btn = (Button*) obj->data;
+    if(!btn->events.enabled) return;
 
+    btn->events.focus = false;
     if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
         if(IN_RANGE(evt->y, btn->position.y, btn->position.y + btn->height)) {
+            btn->events.focus = true;
             if(evt->state == EVT_M_DOWN) {
                 if(btn->events.mousePressAction) btn->events.mousePressAction(btn, evt);
             } else if(evt->state == EVT_M_UP) {
@@ -116,6 +120,7 @@ static void mouseButtonEvt(struct _E_Obj * obj, Context * cntx, Event_Mouse * ev
 
 static void pressKeyEvt(struct _E_Obj * obj, Context * cntx, Event_Key * evt) {
     Button * btn = (Button*) obj->data;
+    if(!btn->events.enabled) return;
 
     if(btn->events.focus) {
         if(btn->events.keyPressedAction) btn->events.keyPressedAction(btn, evt);
@@ -124,6 +129,7 @@ static void pressKeyEvt(struct _E_Obj * obj, Context * cntx, Event_Key * evt) {
 
 static void releaseKeyEvt(struct _E_Obj * obj, Context * cntx, Event_Key * evt) {
     Button * btn = (Button*) obj->data;
+    if(!btn->events.enabled) return;
 
     if(btn->events.focus) {
         if(btn->events.keyPressedAction) btn->events.keyPressedAction(btn, evt);

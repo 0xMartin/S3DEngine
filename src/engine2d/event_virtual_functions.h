@@ -9,8 +9,8 @@
  * <------------------------------------------------------------------>
  */
 
-#ifndef OBJECT_VIRTUAL_FUNCTIONS_H
-#define OBJECT_VIRTUAL_FUNCTIONS_H
+#ifndef EVENT_VIRTUAL_FUNCTIONS_H
+#define EVENT_VIRTUAL_FUNCTIONS_H
 
 #include "core.h"
 #include "engine_object.h"

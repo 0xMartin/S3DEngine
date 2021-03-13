@@ -85,6 +85,18 @@ typedef struct {
     GLint textureID;
 } Face;
 
+/**
+ * @brief Render_scale
+ * @param x
+ * @param y
+ */
+void Render_scale(GLfloat x, GLfloat y);
+
+/**
+ * @brief Render_setMaxAlpha
+ * @param alpha
+ */
+void Render_setMaxAlpha(GLfloat alpha);
 
 /**
  * @brief Render_getStringWidth
@@ -94,11 +106,18 @@ typedef struct {
 int Render_getStringWidth(const char * str);
 
 /**
- * @brief Render_getStringHeight
+ * @brief Render_getStringWidthIndex
  * @param str
+ * @param lastCharIndex
  * @return
  */
-int Render_getStringHeight(const char * str);
+int Render_getStringWidthIndex(const char * str, int lastCharIndex);
+
+/**
+ * @brief Render_getStringHeight
+ * @return
+ */
+int Render_getStringHeight();
 
 /**
  * @brief Render_getFontSize
@@ -242,9 +261,9 @@ void Render_fillRectangle(Point2D * p, size_t width, size_t height);
  * @brief Render_drawImage
  * @param p
  * @param texture
- * @param position
+ * @param defaultShape
  */
-void Render_drawImage(Point2D * p, Texture * texture, bool position);
+void Render_drawImage(Point2D * p, Texture * texture, bool defaultShape);
 
 /**
  * @brief Render_setFont

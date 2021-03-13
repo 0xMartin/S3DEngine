@@ -15,12 +15,42 @@
 #include <time.h>
 #include <stdbool.h>
 
+#if __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+
+#define EVT_C_SPACE 0x20
+#define EVT_C_BACKSPACE 0x8
+#define EVT_C_DEL 0x7f
+#define EVT_C_ENTER 0xd
+#define EVT_C_TAB 0x9
+#define EVT_C_ESC 0x1b
+
+#define EVT_M_LEFT GLUT_LEFT_BUTTON
+#define EVT_M_RIGHT GLUT_RIGHT_BUTTON
+#define EVT_M_MIDDLE GLUT_MIDDLE_BUTTON
+
+#define EVT_M_DOWN GLUT_DOWN
+#define EVT_M_UP GLUT_UP
+
+typedef enum {
+    NONE,
+    LEFT,
+    RIGHT,
+    DOWN,
+    UP
+} Arrow_key;
+
 //key event
 typedef struct {
     unsigned char key;  /** pressed/released key*/
     bool ctrl;  /** true -> ctrl pressed */
     bool alt;   /** true -> alt pressed */
     bool shift; /** true -> shift pressed */
+    Arrow_key arrow; /** pressed arrow id */
 } Event_Key;
 
 //mouse envent
@@ -45,12 +75,13 @@ typedef struct {
 
 typedef void (*Event_action)(void * sender, void * evt);
 
-#define UI_EVENTS_INIT (UI_Events){false, false, NULL, NULL, NULL, NULL, NULL, NULL}
+#define UI_EVENTS_INIT (UI_Events){false, false, true, NULL, NULL, NULL, NULL, NULL, NULL}
 
 //UI events
 typedef struct {
     bool focus;
     bool hover;
+    bool enabled;
     Event_action mousePressAction;
     Event_action mouseReleaseAction;
     Event_action keyPressedAction;

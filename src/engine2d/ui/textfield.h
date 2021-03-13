@@ -9,8 +9,8 @@
  * <------------------------------------------------------------------>
  */
 
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef TEXTFIELD_H
+#define TEXTFIELD_H
 
 #include "../event.h"
 #include "../render.h"
@@ -24,34 +24,37 @@ typedef struct {
     size_t height;
     Color background;
     Color foreground;
+    Color caret;
+    int caret_position;
+    int caret_time;
     UI_Events events;
+    int textLength;
     char * text;
-} Button;
+} TextField;
 
 
 /**
- * @brief Button_create
+ * @brief TextField_create
  * @param x
  * @param y
  * @param width
  * @param heigth
- * @param txt
+ * @param str_len
  * @return
  */
-Button * Button_create(int x, int y, size_t width, size_t heigth,
-                       const char * const txt);
+TextField * TextField_create(int x, int y, size_t width, size_t heigth, size_t str_len);
 
 /**
  * @brief Button_destruct
  * @param btn
  */
-void Button_destruct(Button * btn);
+void TextField_destruct(TextField * btn);
 
 /**
  * @brief Button_createObject
  * @param btn
  * @return
  */
-E_Obj * Button_createObject(Button * btn);
+E_Obj * TextField_createObject(TextField * btn);
 
 #endif // BUTTON_H

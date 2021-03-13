@@ -18,7 +18,8 @@ static Color COLOR = COLOR_WHITE;
 
 static GLfloat MAX_ALPHA = 1.0;
 
-static GLint FONT_SIZE = 15;
+static GLfloat SCALE_X = 1.0;
+static GLfloat SCALE_Y = 1.0;
 
 static void * FONT = GLUT_BITMAP_TIMES_ROMAN_24;
 
@@ -30,6 +31,17 @@ static void applyPtColor(Point2D * p) {
         if(ENABLE_PT_COLOR) {
             glColor4f(p->color.red, p->color.green, p->color.blue, MIN(p->color.alpha, MAX_ALPHA));
         }
+    }
+}
+
+void Render_scale(GLfloat x, GLfloat y) {
+    if(x > 0.0 && y > 0.0) {
+        if(SCALE_X != 1.0 || SCALE_Y != 1.0) {
+            glScalef(1.0 / SCALE_X, 1.0 / SCALE_Y, 1.0);
+        }
+        SCALE_X = x;
+        SCALE_Y = y;
+        glScalef(x, y, 1.0);
     }
 }
 
@@ -46,8 +58,21 @@ int Render_getStringWidth(const char * str) {
     return glutBitmapLength(FONT, (const unsigned char *) str);
 }
 
-int Render_getStringHeight(const char * str) {
+int Render_getStringWidthIndex(const char * str, int lastCharIndex) {
     if(str == NULL) return 0;
+    if(FONT == NULL) return 0;
+    if(lastCharIndex < 0) return 0;
+
+    int length = 0;
+    int len = strlen(str);
+    for(int index = 0; index < lastCharIndex && index < len; ++index) {
+        length += glutBitmapWidth(FONT, *(str + index));
+    }
+
+    return length;
+}
+
+int Render_getStringHeight() {
     if(FONT == NULL) return 0;
 
     if(FONT == E2D_STROKE_ROMAN) {
@@ -116,6 +141,11 @@ void Render_clear(Color * color) {
     COLOR.red = COLOR.green = COLOR.blue = 1.0;
     FONT = GLUT_BITMAP_TIMES_ROMAN_24;
     glClear(GL_COLOR_BUFFER_BIT);
+    if(SCALE_X != 1.0 || SCALE_Y != 1.0) {
+        glScalef(1.0 / SCALE_X, 1.0 / SCALE_Y, 1.0);
+        SCALE_X = 1.0;
+        SCALE_Y = 1.0;
+    }
 }
 
 void Render_drawLine(Point2D * p1, Point2D * p2) {
@@ -299,14 +329,14 @@ void Render_fillRectangle(Point2D * p, size_t width, size_t height) {
     }
 }
 
-void Render_drawImage(Point2D * p, Texture * texture, bool position) {
+void Render_drawImage(Point2D * p, Texture * texture, bool defaultShape) {
     if(p != NULL) {
         glColor4f(1.0, 1.0, 1.0, COLOR.alpha);
         glBindTexture(GL_TEXTURE_2D, texture->textureID);
         glEnable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
 
-        if(position) {
+        if(defaultShape) {
             glTexCoord2i(0, 0);
             glVertex2f(p->x, p->y + texture->height);
 
@@ -343,7 +373,6 @@ void Render_setFont(void * font, GLint size) {
                 font == E2D_BITMAP_HELVETICA_12 ||
                 font == E2D_BITMAP_HELVETICA_18) {
             FONT = font;
-            FONT_SIZE = size;
         }
     }
 }

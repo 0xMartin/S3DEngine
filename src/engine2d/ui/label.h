@@ -4,13 +4,13 @@
  * @author  Martin Krcma
  * @date    11. 3. 2021
  * <------------------------------------------------------------------>
- * @file    button.h
+ * @file    label.h
  * @brief
  * <------------------------------------------------------------------>
  */
 
-#ifndef BUTTON_H
-#define BUTTON_H
+#ifndef LABEL_H
+#define LABEL_H
 
 #include "../event.h"
 #include "../render.h"
@@ -20,13 +20,10 @@
 
 typedef struct {
     Point2D position;
-    size_t width;
-    size_t height;
-    Color background;
     Color foreground;
     UI_Events events;
     char * text;
-} Button;
+} Label;
 
 
 /**
@@ -38,20 +35,19 @@ typedef struct {
  * @param txt
  * @return
  */
-Button * Button_create(int x, int y, size_t width, size_t heigth,
-                       const char * const txt);
+Label * Label_create(int x, int y, const char * const txt);
 
 /**
  * @brief Button_destruct
  * @param btn
  */
-void Button_destruct(Button * btn);
+void Label_destruct(Label * lab);
 
 /**
  * @brief Button_createObject
  * @param btn
  * @return
  */
-E_Obj * Button_createObject(Button * btn);
+E_Obj * Label_createObject(Label * lab);
 
 #endif // BUTTON_H

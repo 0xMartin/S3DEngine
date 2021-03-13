@@ -34,22 +34,6 @@
     NULL\
     }
 
-//SPECIAL CHARS
-#define EVT_C_SPACE 0x20
-#define EVT_C_BACKSPACE 0x8
-#define EVT_C_DEL 0x7f
-#define EVT_C_ENTER 0xd
-#define EVT_C_TAB 0x9
-#define EVT_C_ESC 0x1b
-
-#define EVT_M_LEFT GLUT_LEFT_BUTTON
-#define EVT_M_RIGHT GLUT_RIGHT_BUTTON
-#define EVT_M_MIDDLE GLUT_MIDDLE_BUTTON
-
-#define EVT_M_DOWN GLUT_DOWN
-#define EVT_M_UP GLUT_UP
-
-
 typedef struct {
     LinkedList * gameData;  /** game data, list consisting only from <E_Obj> engine_object.h */
     Vector * textures;    /** vector of all textures, consisting only from <Texture> util.h */
