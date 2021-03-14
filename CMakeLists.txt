@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(TicTacToe C)
 
-file(GLOB sources "src/*.c" "src/engine2d/*.c" "src/engine2d/ui/*.c" "src/objects/*.c")
-file(GLOB headers "src/*.h" "src/engine2d/*.h" "src/engine2d/ui/*.h" "src/objects/*.h")
+file(GLOB sources "src/*.c" "src/s3d/*.c" "src/s3d/ui/*.c")
+file(GLOB headers "src/*.h" "src/s3d/*.h" "src/s3d/ui/*.h")
 list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/
