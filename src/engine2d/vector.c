@@ -106,6 +106,7 @@ bool Vector_append(Vector * vector, Vector_Element * element) {
         vector->size = nSize;
     }
     vector->elements[vector->count] = element;
+    vector->count += 1;
 
     return true;
 }
