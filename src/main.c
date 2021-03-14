@@ -9,10 +9,10 @@
  * <------------------------------------------------------------------>
  */
 
-#include "engine2d/core.h"
-#include "engine2d/ui/button.h"
-#include "engine2d/ui/label.h"
-#include "engine2d/ui/textfield.h"
+#include "s3d/core.h"
+#include "s3d/ui/button.h"
+#include "s3d/ui/label.h"
+#include "s3d/ui/textfield.h"
 #include <stdlib.h>
 #include <stdio.h>
 
