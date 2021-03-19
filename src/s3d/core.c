@@ -147,6 +147,7 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     glutPassiveMotionFunc(evt_mouseMove);
 
     //opengl config
+    glEnable(GL_SCISSOR_TEST);
     glDepthFunc(GL_NEVER);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
@@ -250,12 +251,16 @@ bool Context_destruct(Context * contx) {
 }
 
 static void reshape(int w, int h) {
-    glViewport(0, 0, w, h);       /* Establish viewing area to cover entire window. */
-    glMatrixMode(GL_PROJECTION);  /* Start modifying the projection matrix. */
-    glLoadIdentity();             /* Reset project matrix. */
-    glOrtho(0, w, 0, h, -1, 1);   /* Map abstract coords directly to window coords. */
-    glScalef(1, -1, 1);           /* Invert Y axis so increasing Y goes down. */
-    glTranslatef(0, -h, 0);       /* Shift origin up to upper-left corner. */
+    if(_core != NULL) {
+        _core->window_width = w;
+        _core->window_height = h;
+        glViewport(0, 0, w, h);       /* Establish viewing area to cover entire window. */
+        glMatrixMode(GL_PROJECTION);  /* Start modifying the projection matrix. */
+        glLoadIdentity();             /* Reset project matrix. */
+        glOrtho(0, w, 0, h, -1, 1);   /* Map abstract coords directly to window coords. */
+        glScalef(1, -1, 1);           /* Invert Y axis so increasing Y goes down. */
+        glTranslatef(0, -h, 0);       /* Shift origin up to upper-left corner. */
+    }
 }
 
 #include <stdio.h>

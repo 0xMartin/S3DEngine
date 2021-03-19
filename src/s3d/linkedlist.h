@@ -18,8 +18,8 @@
 
 //element of linked list
 typedef struct _LinkedList_Element {
-    void * ptr; /** pointer on data of element */
-    void (*destruct)(void * ptr); /** pointer on destructor of data */
+    void * ptr; /** pointer at data of element */
+    void (*destruct)(void * ptr); /** pointer at destructor of data (ptr = pointer at data)*/
     struct _LinkedList_Element * next; /** next element in list */
 } LinkedList_Element;
 
@@ -34,22 +34,22 @@ typedef struct {
 
 /**
  * @brief Init LinkedList structure
- * @param list  Pointer on LinkedList structure
+ * @param list  Pointer at LinkedList structure
  * @return True -> success
  */
 bool LinkedList_init(LinkedList * list);
 
 /**
  * @brief Insert new element to list
- * @param list      Pointer on LinkedList structure
- * @param element   Pointer on new element (create copy of element)
+ * @param list      Pointer at LinkedList structure
+ * @param element   Pointer at new element (create copy of element)
  * @return True -> success
  */
 bool LinkedList_insert(LinkedList * list, LinkedList_Element * element);
 
 /**
  * @brief Return element with specified index
- * @param list  Pointer on LinkedList structure
+ * @param list  Pointer at LinkedList structure
  * @param index Index of element
  * @return Element on index
  */
@@ -57,15 +57,15 @@ LinkedList_Element * LinkedList_valueAt(LinkedList * list, unsigned int index);
 
 /**
  * @brief Return following element after current element
- * @param element   Pointer on current element
+ * @param element   Pointer at current element
  * @return Next element in list
  */
 LinkedList_Element * LinkedList_next(LinkedList_Element * element);
 
 /**
  * @brief Remove element from list
- * @param list  Pointer on LinkedList structure
- * @param item  Pointer on item
+ * @param list  Pointer at LinkedList structure
+ * @param item  Pointer at item
  * @param destruct  True -> destruct data of removed element
  * @return
  */
@@ -73,7 +73,7 @@ bool LinkedList_removeElement(LinkedList * list, LinkedList_Element * element, b
 
 /**
  * @brief Remove element from list
- * @param list      Pointer on LinkedList structure
+ * @param list      Pointer at LinkedList structure
  * @param index     Index of element that will be removed
  * @param destruct  True -> destruct data of removed element
  * @return True -> success
@@ -82,21 +82,21 @@ bool LinkedList_removeIndex(LinkedList * list, unsigned int index, bool destruct
 
 /**
  * @brief Check if list contains element
- * @param list      Pointer on LinkedList structure
- * @param element   Pointer on element
+ * @param list      Pointer at LinkedList structure
+ * @param element   Pointer at element
  * @return
  */
 bool LinkedList_contains(LinkedList * list, LinkedList_Element * element);
 
 /**
  * @brief Clear linked list
- * @param list  Pointer on LinkedList structure
+ * @param list  Pointer at LinkedList structure
  */
 void LinkedList_clear(LinkedList * list);
 
 /**
  * @brief Destruct all elements in list
- * @param list  Pointer on LinkedList structure
+ * @param list  Pointer at LinkedList structure
  */
 void LinkedList_dectruct(LinkedList * list);
 

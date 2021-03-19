@@ -87,9 +87,11 @@ static void render(struct _E_Obj * obj, Event_Render * evt) {
     Render_drawRectangle(&tf->position, tf->width, tf->height);
     float center = (tf->height + Render_getStringHeight(tf->text))/2;
 
+    //glScissor(tf->position.x + 5, evt->window_height - tf->position.y + center, tf->width, tf->height);
     Render_drawString(tf->position.x + 5,
                       tf->position.y + center,
                       tf->text);
+    //glScissor(0, 0, evt->window_width, evt->window_height);
 
     if(tf->events.focus) {
         if(tf->caret_time % 2 == 0) {
@@ -164,7 +166,6 @@ static void pressKeyEvt(struct _E_Obj * obj, Context * cntx, Event_Key * evt) {
                 tf->caret_position++;
             }
         } else {
-            printf("%d\n", evt->key);
             switch(evt->key) {
             case EVT_C_BACKSPACE:
                 if(tf->caret_position > 0) {

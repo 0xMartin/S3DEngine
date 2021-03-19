@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 static void event(void * sender, void * evt) {
     Button * btn = (Button*) sender;
     btn->background.red = 0.6;
@@ -30,7 +31,7 @@ static void event2(void * sender, void * evt) {
 int main(int argc, char **argv) {
 
     CORE core = CORE_DEFAULT_CONIFG;
-    core.windonw_title = "Engine";
+    sprintf(core.windonw_title, "%s", "Engine");
     CORE_init(argc, argv, &core);
     Context contx;
     Context_init(&contx);

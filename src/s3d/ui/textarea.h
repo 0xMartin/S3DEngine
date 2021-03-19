@@ -2,15 +2,15 @@
  * <------------------------------------------------------------------>
  * @name    2D Engine
  * @author  Martin Krcma
- * @date    11. 3. 2021
+ * @date    19. 3. 2021
  * <------------------------------------------------------------------>
- * @file    textfield.h
+ * @file    textarea.h
  * @brief
  * <------------------------------------------------------------------>
  */
 
-#ifndef TEXTFIELD_H
-#define TEXTFIELD_H
+#ifndef TEXTAREA_H
+#define TEXTAREA_H
 
 #include "../event.h"
 #include "../render.h"
@@ -30,11 +30,11 @@ typedef struct {
     UI_Events events;
     int textLength;
     char * text;
-} TextField;
+} TextArea;
 
 
 /**
- * @brief TextField_create
+ * @brief TextArea_create
  * @param x
  * @param y
  * @param width
@@ -42,19 +42,19 @@ typedef struct {
  * @param str_len
  * @return
  */
-TextField * TextField_create(int x, int y, size_t width, size_t heigth, size_t str_len);
+TextArea * TextArea_create(int x, int y, size_t width, size_t heigth, size_t str_len);
 
 /**
- * @brief TextField_destruct
+ * @brief TextArea_destruct
  * @param btn
  */
-void TextField_destruct(TextField * btn);
+void TextArea_destruct(TextArea * btn);
 
 /**
- * @brief Button_createObject
+ * @brief TextArea_createObject
  * @param btn
  * @return
  */
-E_Obj * TextField_createObject(TextField * btn);
+E_Obj * TextArea_createObject(TextArea * btn);
 
 #endif // BUTTON_H

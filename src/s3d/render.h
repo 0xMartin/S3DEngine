@@ -78,12 +78,26 @@ typedef struct {
     Color color; /** color of point*/
 } Point2D;
 
-//face
+//vertex
 typedef struct {
-    Point2D * vetices;
+    GLfloat x; /** X position*/
+    GLfloat y; /** Y position*/
+    GLfloat z; /** Z position*/
+} Vertex;
+
+//face 2D
+typedef struct {
+    Point2D * points;
     size_t count;
     GLint textureID;
-} Face;
+} Face2D;
+
+//face 3D
+typedef struct {
+    Vertex * vetices;
+    size_t count;
+    GLint textureID;
+} Face3D;
 
 /**
  * @brief Render_scale

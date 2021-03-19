@@ -31,6 +31,7 @@
     50,\
     50,\
     true,\
+    false,\
     NULL\
     }
 
@@ -43,12 +44,13 @@ typedef struct {
 typedef struct {
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
-    char * windonw_title;   /** Window title */
+    char windonw_title[255];   /** Window title */
     bool window_fullScreen; /** True -> fullscreen mode */
     bool running;   /** True -> core is running */
     unsigned int fps;   /** Frames per second */
     unsigned int ups;   /** Updates per second */
     bool visibleCursor; /** Is cursor visible? */
+    bool mouseCamControl; /** Control camera by mouse motion */
     Context * context;  /** Core context */
 } CORE;
 
