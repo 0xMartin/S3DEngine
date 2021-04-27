@@ -12,13 +12,55 @@
 #include "textarea.h"
 
 #include "../util.h"
-#include "../event_virtual_functions.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 
+
+/* Object event functions -------------------------------------------------------- */
+
+static void destruct(void * obj) {
+    TextArea * ta = (TextArea*) obj;
+    TextArea_destruct(ta);
+}
+
+static void render(void * obj, const Event_Render * evt) {
+
+}
+
+static void update(void * obj, Context * cntx, const Event_Update * evt) {
+
+}
+
+static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+
+}
+
+static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+
+}
+
+static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+
+}
+
+static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+
+}
+
+static const E_Obj_Evts e_obj_evts = {
+    .destruct = destruct,
+    .render = render,
+    .update = update,
+    .mouseMoveEvt = mouseMoveEvt,
+    .mouseButtonEvt = mouseButtonEvt,
+    .pressKeyEvt = pressKeyEvt,
+    .releaseKeyEvt = releaseKeyEvt
+};
+
+/* Object functions -------------------------------------------------------- */
 
 TextArea * TextArea_create(int x, int y, size_t width, size_t heigth,
                              size_t str_len) {
@@ -27,6 +69,7 @@ TextArea * TextArea_create(int x, int y, size_t width, size_t heigth,
     TextArea * ta = malloc(sizeof(TextArea));
     if(ta == NULL) return NULL;
 
+    ta->objEvts = &e_obj_evts;
 
     return ta;
 }
@@ -37,51 +80,4 @@ void TextArea_destruct(TextArea * tf) {
         tf->text = NULL;
         tf->events = UI_EVENTS_INIT;
     }
-}
-
-E_Obj * TextArea_createObject(TextArea * tf) {
-    if(tf == NULL) return NULL;
-
-    E_Obj * obj = malloc(sizeof(E_Obj));
-    if(obj == NULL) return NULL;
-    E_Obj_init(obj);
-    obj->data = tf;
-    obj->destruct = destruct;
-    obj->render = render;
-    obj->mouseMoveEvt = mouseMoveEvt;
-    obj->mouseButtonEvt = mouseButtonEvt;
-    obj->pressKeyEvt = pressKeyEvt;
-    obj->releaseKeyEvt = releaseKeyEvt;
-    obj->update = update;
-
-    return obj;
-}
-
-static void destruct(void * ptr) {
-    TextArea * ta = (TextArea*) ptr;
-    TextField_destruct(ta);
-}
-
-static void render(struct _E_Obj * obj, Event_Render * evt) {
-
-}
-
-static void mouseMoveEvt(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt) {
-
-}
-
-static void mouseButtonEvt(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt) {
-
-}
-
-static void pressKeyEvt(struct _E_Obj * obj, Context * cntx, Event_Key * evt) {
-
-}
-
-static void releaseKeyEvt(struct _E_Obj * obj, Context * cntx, Event_Key * evt) {
-
-}
-
-static void update(struct _E_Obj * obj, Context * cntx, Event_Update * evt) {
-
 }

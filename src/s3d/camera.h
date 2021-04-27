@@ -35,29 +35,16 @@ typedef struct {
 } FRange;
 
 /**
-  * Enigne camera structure
+  * Camera
   */
 typedef struct {
-    // angle of rotation for the camera direction
-    float angleXZ, angleY;
-
-    // actual vector representing the camera's direction
-    Vertex dir;
-
-    // XYZ position of the camera
-    Vertex pos;
-
-    //control angle
-    float deltaAngleXZ, deltaAngleY;
-
-    //control position
-    Vertex deltaPos;
-
-    //camera angle limit
-    FRange limitAngleY;
-
-    //cos(angleY) for camera direcion
-    float cosAY;
+    float angleXZ, angleY;  /** angle of rotation for the camera direction*/
+    Vertex dir; /** actual vector representing the camera's direction*/
+    Vertex pos; /** XYZ position of the camera*/
+    float deltaAngleXZ, deltaAngleY;    /** control angle*/
+    Vertex deltaPos;    /** control position*/
+    FRange limitAngleY; /** camera angle limit*/
+    float cosAY;    /** cos(angleY) for camera direcion*/
 } Camera;
 
 
@@ -67,9 +54,7 @@ typedef struct {
  * @param cam   Camera
  * @return TRUE (no error) / FALSE (something go wrong)
  */
-bool Camera_computePosition(
-        Camera * cam
-        );
+bool Camera_computePosition(Camera * cam);
 
 /**
  * @brief CAMERA_computeDirection   Update new value of vector representing
@@ -77,17 +62,13 @@ bool Camera_computePosition(
  * @param cam   Camera
  * @return TRUE (no error) / FALSE (something go wrong)
  */
-bool Camera_computeDirection(
-        Camera * cam
-        );
+bool Camera_computeDirection(Camera * cam);
 
 /**
  * @brief CAMERA_viewTransformation Apply camera view transformation
  * @param cam   Camera
  * @return TRUE (no error) / FALSE (something go wrong)
  */
-bool Camera_viewTransformation(
-        Camera * cam
-        );
+bool Camera_viewTransformation(Camera * cam);
 
 #endif // CAMERA_H

@@ -22,9 +22,7 @@
 #include <math.h>
 
 
-bool Camera_computePosition(
-        Camera * cam
-        ) {
+bool Camera_computePosition(Camera * cam) {
     if(cam == NULL) return false;
 
     // moving in z axis
@@ -47,9 +45,7 @@ bool Camera_computePosition(
     return true;
 }
 
-bool Camera_computeDirection(
-        Camera * cam
-        ) {
+bool Camera_computeDirection(Camera * cam) {
     if(cam == NULL) return false;
 
     if (cam->deltaAngleXZ && cam->deltaAngleY) {
@@ -73,9 +69,7 @@ bool Camera_computeDirection(
     return true;
 }
 
-bool Camera_viewTransformation(
-        Camera * cam
-        ) {
+bool Camera_viewTransformation(Camera * cam) {
     if(cam == NULL) return false;
 
     gluLookAt(

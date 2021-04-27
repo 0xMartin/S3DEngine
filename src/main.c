@@ -10,6 +10,7 @@
  */
 
 #include "s3d/core.h"
+#include "s3d/engine_object.h"
 #include "s3d/ui/button.h"
 #include "s3d/ui/label.h"
 #include "s3d/ui/textfield.h"
@@ -37,18 +38,14 @@ int main(int argc, char **argv) {
     Context_init(&contx);
     CORE_setContext(&contx);
 
-    E_Obj * obj;
-
     Label * lab;
     lab = Label_create(100, 50, "Label");
-    obj = Label_createObject(lab);
-    E_Obj_insertToList(contx.gameData, obj);
+    E_Obj_insertToList(contx.gameData, (E_Obj*) lab);
 
     TextField * tf;
     tf = TextField_create(300, 50, 200, 40, 255);
     sprintf(tf->text, "%s", "textfield");
-    obj = TextField_createObject(tf);
-    E_Obj_insertToList(contx.gameData, obj);
+    E_Obj_insertToList(contx.gameData, (E_Obj*) tf);
 
     Button * btn;
     char buffer[255];
@@ -57,8 +54,7 @@ int main(int argc, char **argv) {
         btn = Button_create(100, 100 + i * 50, 100, 40, buffer);
         btn->events.mousePressAction = event;
         btn->events.mouseMovedAction = event2;
-        obj = Button_createObject(btn);
-        E_Obj_insertToList(contx.gameData, obj);
+        E_Obj_insertToList(contx.gameData, (E_Obj*) btn);
     }
 
     CORE_loadTexture("data/img.bmp");

@@ -44,6 +44,14 @@ typedef struct {
 Texture * UTIL_loadBMP(const char * path);
 
 /**
+ * @brief UTIL_loadJPEG
+ * @param path
+ * @param fast
+ * @return
+ */
+Texture * UTIL_loadJPEG(const char * path);
+
+/**
  * @brief Generate random number in range from 0 to n
  * @param n The highest possible number
  * @return Random int

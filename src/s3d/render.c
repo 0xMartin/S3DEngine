@@ -65,7 +65,21 @@ int Render_getStringWidthIndex(const char * str, int lastCharIndex) {
 
     int length = 0;
     int len = strlen(str);
-    for(int index = 0; index < lastCharIndex && index < len; ++index) {
+    for(int index = 0; index < lastCharIndex && index < len && index >= 0; ++index) {
+        length += glutBitmapWidth(FONT, *(str + index));
+    }
+
+    return length;
+}
+
+int Render_getStringWidthRange(const char * str, int start, int end) {
+    if(str == NULL) return 0;
+    if(FONT == NULL) return 0;
+    if(start > end) return 0;
+
+    int length = 0;
+    int len = strlen(str);
+    for(int index = start; index < end && index < len && index >= 0; ++index) {
         length += glutBitmapWidth(FONT, *(str + index));
     }
 
@@ -133,14 +147,34 @@ void Render_disablePtColor() {
     ENABLE_PT_COLOR = false;
 }
 
-void Render_clear(Color * color) {
+void Render_setScissor(GLfloat x, GLfloat y, GLfloat width,
+                       GLfloat heigh, const Event_Render * evt) {
+    if(width > 0 && heigh > 0 && evt->window_height > 0) {
+        glScissor(x, evt->window_height - y, width, heigh);
+    }
+}
+
+void Render_resetScissor(const Event_Render * evt) {
+    if(evt->window_width > 0 && evt->window_height > 0) {
+        glScissor(0, 0, evt->window_width, evt->window_height);
+    }
+}
+
+void Render_clear(Event_Render * evt, Color * color) {
+    glClear(GL_COLOR_BUFFER_BIT);
+
     if(color != NULL) {
         glClearColor(color->red, color->green, color->blue, 1.0);
     }
+
+    if(evt != NULL) {
+        Render_resetScissor(evt);
+    }
+
     MAX_ALPHA = 1.0;
     COLOR.red = COLOR.green = COLOR.blue = 1.0;
     FONT = GLUT_BITMAP_TIMES_ROMAN_24;
-    glClear(GL_COLOR_BUFFER_BIT);
+
     if(SCALE_X != 1.0 || SCALE_Y != 1.0) {
         glScalef(1.0 / SCALE_X, 1.0 / SCALE_Y, 1.0);
         SCALE_X = 1.0;

@@ -19,6 +19,15 @@
 
 
 typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
+
+    //UI object events
+    UI_Events events;
+
+    //UI obj data
     Point2D position;
     size_t width;
     size_t height;
@@ -26,8 +35,8 @@ typedef struct {
     Color foreground;
     Color caret;
     int caret_position;
+    int caret_offset;
     int caret_time;
-    UI_Events events;
     int textLength;
     char * text;
 } TextField;
@@ -49,12 +58,5 @@ TextField * TextField_create(int x, int y, size_t width, size_t heigth, size_t s
  * @param btn
  */
 void TextField_destruct(TextField * btn);
-
-/**
- * @brief Button_createObject
- * @param btn
- * @return
- */
-E_Obj * TextField_createObject(TextField * btn);
 
 #endif // BUTTON_H

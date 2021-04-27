@@ -19,9 +19,17 @@
 
 
 typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
+
+    //UI object events
+    UI_Events events;
+
+    //UI obj data
     Point2D position;
     Color foreground;
-    UI_Events events;
     char * text;
 } Label;
 
@@ -42,12 +50,5 @@ Label * Label_create(int x, int y, const char * const txt);
  * @param btn
  */
 void Label_destruct(Label * lab);
-
-/**
- * @brief Button_createObject
- * @param btn
- * @return
- */
-E_Obj * Label_createObject(Label * lab);
 
 #endif // BUTTON_H

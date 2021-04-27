@@ -268,7 +268,10 @@ static void reshape(int w, int h) {
 static void renderScene() {
     if(_core == NULL) return;
 
-    Render_clear(NULL);
+    _render_event.window_width = _core->window_width;
+    _render_event.window_height = _core->window_height;
+
+    Render_clear(&_render_event, NULL);
 
     if(_core->context == NULL) {
         glutSwapBuffers();
@@ -279,15 +282,14 @@ static void renderScene() {
         return;
     }
 
-    _render_event.window_width = _core->window_width;
-    _render_event.window_height = _core->window_height;
-
     E_Obj * obj;
     LinkedList_Element * el = _core->context->gameData->first;
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
-            if(obj->render) obj->render(obj, &_render_event);
+            if(obj->events) {
+                if(obj->events->render) obj->events->render(obj, &_render_event);
+            }
         }
         el = LinkedList_next(el);
     }
@@ -313,8 +315,10 @@ static void updateLoop() {
             while(el != NULL) {
                 if(el->ptr != NULL) {
                     obj = (E_Obj*) el->ptr;
-                    if(obj->update) obj->update(obj, _core->context,
-                                                &_update_event);
+                    if(obj->events) {
+                        if(obj->events->update) obj->events->update(obj, _core->context,
+                                                                    &_update_event);
+                    }
                 }
                 el = LinkedList_next(el);
             }
@@ -401,8 +405,10 @@ static void evt_pressKey(unsigned char key, bool ctrl,
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
-            if(obj->pressKeyEvt) obj->pressKeyEvt(obj, _core->context,
-                                                  &_key_event_press);
+            if(obj->events) {
+                if(obj->events->pressKeyEvt) obj->events->pressKeyEvt(obj, _core->context,
+                                                                      &_key_event_press);
+            }
         }
         el = LinkedList_next(el);
     }
@@ -426,8 +432,10 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
-            if(obj->releaseKeyEvt) obj->releaseKeyEvt(obj, _core->context,
-                                                      &_key_event_release);
+            if(obj->events) {
+                if(obj->events->releaseKeyEvt) obj->events->releaseKeyEvt(obj, _core->context,
+                                                                          &_key_event_release);
+            }
         }
         el = LinkedList_next(el);
     }
@@ -447,8 +455,10 @@ static void evt_mouseMove(int x, int y) {
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
-            if(obj->mouseMoveEvt) obj->mouseMoveEvt(obj, _core->context,
-                                                    &_mouse_event_move);
+            if(obj->events) {
+                if(obj->events->mouseMoveEvt) obj->events->mouseMoveEvt(obj, _core->context,
+                                                                        &_mouse_event_move);
+            }
         }
         el = LinkedList_next(el);
     }
@@ -471,8 +481,10 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
-            if(obj->mouseButtonEvt) obj->mouseButtonEvt(obj, _core->context,
-                                                        &_mouse_event_button);
+            if(obj->events) {
+                if(obj->events->mouseButtonEvt) obj->events->mouseButtonEvt(obj, _core->context,
+                                                                            &_mouse_event_button);
+            }
         }
         el = LinkedList_next(el);
     }

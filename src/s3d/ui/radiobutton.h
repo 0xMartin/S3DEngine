@@ -19,12 +19,20 @@
 
 
 typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
+
+    //UI object events
+    UI_Events events;
+
+    //UI obj data
     Point2D position;
     size_t width;
     size_t height;
     Color background;
     Color foreground;
-    UI_Events events;
 } RadioButton;
 
 
@@ -44,12 +52,5 @@ RadioButton * RadioButton_create(int x, int y, size_t width, size_t heigth, size
  * @param btn
  */
 void RadioButton_destruct(RadioButton * btn);
-
-/**
- * @brief Button_createObject
- * @param btn
- * @return
- */
-E_Obj * RadioButton_createObject(RadioButton * btn);
 
 #endif // BUTTON_H

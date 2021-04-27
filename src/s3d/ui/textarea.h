@@ -19,6 +19,15 @@
 
 
 typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
+
+    //UI object events
+    UI_Events events;
+
+    //UI obj data
     Point2D position;
     size_t width;
     size_t height;
@@ -27,7 +36,6 @@ typedef struct {
     Color caret;
     int caret_position;
     int caret_time;
-    UI_Events events;
     int textLength;
     char * text;
 } TextArea;
@@ -49,12 +57,5 @@ TextArea * TextArea_create(int x, int y, size_t width, size_t heigth, size_t str
  * @param btn
  */
 void TextArea_destruct(TextArea * btn);
-
-/**
- * @brief TextArea_createObject
- * @param btn
- * @return
- */
-E_Obj * TextArea_createObject(TextArea * btn);
 
 #endif // BUTTON_H

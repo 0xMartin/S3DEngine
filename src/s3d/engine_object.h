@@ -17,15 +17,35 @@
 #include "linkedlist.h"
 #include "event.h"
 
-typedef struct _E_Obj {
-    void * data;  /** pointer on struct of specific object */
-    void (*destruct)(void * ptr);  /** Destruct object */
-    void (*render)(struct _E_Obj * obj, Event_Render * evt);    /** Render object */
-    void (*update)(struct _E_Obj * obj, Context * cntx, Event_Update * evt);    /** Update object */
-    void (*mouseMoveEvt)(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt); /** Mouse move event */
-    void (*mouseButtonEvt)(struct _E_Obj * obj, Context * cntx, Event_Mouse * evt); /** Mouse button event */
-    void (*pressKeyEvt)(struct _E_Obj * obj, Context * cntx, Event_Key * evt); /** Key pressed event */
-    void (*releaseKeyEvt)(struct _E_Obj * obj, Context * cntx, Event_Key * evt);    /** Key released event */
+
+/**
+static const E_Obj_Evts e_obj_evts = {
+    .destruct = NULL,
+    .render = NULL,
+    .update = NULL,
+    .mouseMoveEvt = NULL,
+    .mouseButtonEvt = NULL,
+    .pressKeyEvt = NULL,
+    .releaseKeyEvt = NULL
+};
+*/
+
+/** structure qith virtual functions */
+typedef struct {
+    void (*destruct)(void * obj);  /** Destruct object */
+    void (*render)(void * obj, const Event_Render * evt);    /** Render object */
+    void (*update)(void * obj, Context * cntx, const Event_Update * evt);    /** Update object */
+    void (*mouseMoveEvt)(void * obj, Context * cntx, const Event_Mouse * evt); /** Mouse move event */
+    void (*mouseButtonEvt)(void * obj, Context * cntx, const Event_Mouse * evt); /** Mouse button event */
+    void (*pressKeyEvt)(void * obj, Context * cntx, const Event_Key * evt); /** Key pressed event */
+    void (*releaseKeyEvt)(void * obj, Context * cntx, const Event_Key * evt);    /** Key released event */
+} E_Obj_Evts;
+
+
+/** abstract object type */
+typedef struct {
+    const E_Obj_Evts * events;
+    void * data;  /** data of object */
 } E_Obj;
 
 

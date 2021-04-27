@@ -12,7 +12,6 @@
 #include "checkbox.h"
 
 #include "../util.h"
-#include "../event_virtual_functions.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -20,12 +19,37 @@
 #include <ctype.h>
 
 
+/* Object event functions -------------------------------------------------------- */
+
+static void destruct(void * obj) {
+    CheckBox * cb = (CheckBox*) obj;
+    CheckBox_destruct(cb);
+}
+
+static void render(void * obj, const Event_Render * evt) {
+
+}
+
+static const E_Obj_Evts e_obj_evts = {
+    .destruct = destruct,
+    .render = render,
+    .update = NULL,
+    .mouseMoveEvt = NULL,
+    .mouseButtonEvt = NULL,
+    .pressKeyEvt = NULL,
+    .releaseKeyEvt = NULL
+};
+
+/* Object functions -------------------------------------------------------- */
+
 CheckBox * CheckBox_create(int x, int y, size_t width, size_t heigth,
                              size_t str_len) {
     if(width <= 0 || heigth <= 0 || str_len <= 0) return NULL;
 
     CheckBox * cb = malloc(sizeof(CheckBox));
     if(cb == NULL) return NULL;
+
+    cb->objEvts = &e_obj_evts;
 
     return cb;
 }
@@ -35,27 +59,5 @@ void CheckBox_destruct(CheckBox * cb) {
 
         cb->events = UI_EVENTS_INIT;
     }
-}
-
-E_Obj * CheckBox_createObject(CheckBox * cb) {
-    if(cb == NULL) return NULL;
-
-    E_Obj * obj = malloc(sizeof(E_Obj));
-    if(obj == NULL) return NULL;
-    E_Obj_init(obj);
-    obj->data = cb;
-    obj->destruct = destruct;
-    obj->render = render;
-
-    return obj;
-}
-
-static void destruct(void * ptr) {
-    CheckBox * cb = (CheckBox*) ptr;
-    CheckBox_destruct(cb);
-}
-
-static void render(struct _E_Obj * obj, Event_Render * evt) {
-
 }
 

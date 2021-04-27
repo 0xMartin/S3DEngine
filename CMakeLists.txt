@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 
 project(S3DEngine C)
 
@@ -23,8 +23,6 @@ endif (UNIX)
 #OpenGL + GLUT
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
-#theads
-find_package (Threads REQUIRED)
 
 include_directories(${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})

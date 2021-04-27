@@ -69,6 +69,10 @@ Texture * UTIL_loadBMP(const char * path) {
     return texture;
 }
 
+Texture * UTIL_loadJPEG(const char * path) {
+
+}
+
 int UTIL_randInt(int n) {
     if ((n - 1) == RAND_MAX) {
         return rand();

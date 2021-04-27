@@ -73,7 +73,7 @@ typedef struct {
     __time_t s_time;    /** current sec system time*/
 } Event_Update;
 
-typedef void (*Event_action)(void * sender, void * evt);
+typedef void (*Event_action)(void * sender, const void * evt);
 
 #define UI_EVENTS_INIT (UI_Events){false, false, true, NULL, NULL, NULL, NULL, NULL, NULL}
 

@@ -12,18 +12,48 @@
 #include "label.h"
 
 #include "../util.h"
-#include "../event_virtual_functions.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
 
+/* Object event functions -------------------------------------------------------- */
+
+static void destruct(void * obj) {
+    Label * btn = (Label*) obj;
+    Label_destruct(btn);
+}
+
+static void render(void * obj, const Event_Render * evt) {
+    Label * lab = (Label*) obj;
+
+    Render_setColor(&lab->foreground);
+    Render_drawString(
+                lab->position.x,
+                lab->position.y,
+                lab->text);
+}
+
+static const E_Obj_Evts e_obj_evts = {
+    .destruct = destruct,
+    .render = render,
+    .update = NULL,
+    .mouseMoveEvt = NULL,
+    .mouseButtonEvt = NULL,
+    .pressKeyEvt = NULL,
+    .releaseKeyEvt = NULL
+};
+
+/* Object functions -------------------------------------------------------- */
+
 Label * Label_create(int x, int y, const char * const txt) {
     if(txt == NULL) return NULL;
 
     Label * lab = malloc(sizeof(Label));
     if(lab == NULL) return NULL;
+
+    lab->objEvts = &e_obj_evts;
 
     lab->foreground = UI_LABEL_FG_COLOR;
     lab->events.enabled = true;
@@ -42,33 +72,5 @@ void Label_destruct(Label * lab) {
         lab->text = NULL;
         lab->events = UI_EVENTS_INIT;
     }
-}
-
-E_Obj * Label_createObject(Label * lab) {
-    if(lab == NULL) return NULL;
-
-    E_Obj * obj = malloc(sizeof(E_Obj));
-    if(obj == NULL) return NULL;
-    E_Obj_init(obj);
-    obj->data = lab;
-    obj->destruct = destruct;
-    obj->render = render;
-
-    return obj;
-}
-
-static void destruct(void * ptr) {
-    Label * btn = (Label*) ptr;
-    Label_destruct(btn);
-}
-
-static void render(struct _E_Obj * obj, Event_Render * evt) {
-    Label * lab = (Label*) obj->data;
-
-    Render_setColor(&lab->foreground);
-    Render_drawString(
-                lab->position.x,
-                lab->position.y,
-                lab->text);
 }
 

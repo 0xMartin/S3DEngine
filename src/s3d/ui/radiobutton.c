@@ -12,7 +12,6 @@
 #include "radiobutton.h"
 
 #include "../util.h"
-#include "../event_virtual_functions.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -20,12 +19,37 @@
 #include <ctype.h>
 
 
+/* Object event functions -------------------------------------------------------- */
+
+static void destruct(void * obj) {
+    RadioButton * rb = (RadioButton*) obj;
+    RadioButton_destruct(rb);
+}
+
+static void render(void * obj, const Event_Render * evt) {
+
+}
+
+static const E_Obj_Evts e_obj_evts = {
+    .destruct = destruct,
+    .render = render,
+    .update = NULL,
+    .mouseMoveEvt = NULL,
+    .mouseButtonEvt = NULL,
+    .pressKeyEvt = NULL,
+    .releaseKeyEvt = NULL
+};
+
+/* Object functions -------------------------------------------------------- */
+
 RadioButton * RadioButton_create(int x, int y, size_t width, size_t heigth,
                              size_t str_len) {
     if(width <= 0 || heigth <= 0 || str_len <= 0) return NULL;
 
     RadioButton * rb = malloc(sizeof(RadioButton));
     if(rb == NULL) return NULL;
+
+    rb->objEvts = &e_obj_evts;
 
     return rb;
 }
@@ -35,27 +59,5 @@ void RadioButton_destruct(RadioButton * rb) {
 
         rb->events = UI_EVENTS_INIT;
     }
-}
-
-E_Obj * RadioButton_createObject(RadioButton * rb) {
-    if(rb == NULL) return NULL;
-
-    E_Obj * obj = malloc(sizeof(E_Obj));
-    if(obj == NULL) return NULL;
-    E_Obj_init(obj);
-    obj->data = rb;
-    obj->destruct = destruct;
-    obj->render = render;
-
-    return obj;
-}
-
-static void destruct(void * ptr) {
-    RadioButton * rb = (RadioButton*) ptr;
-    RadioButton_destruct(rb);
-}
-
-static void render(struct _E_Obj * obj, Event_Render * evt) {
-
 }
 

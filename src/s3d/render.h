@@ -29,6 +29,7 @@
 
 #include "util.h"
 #include "linkedlist.h"
+#include "event.h"
 
 
 //colors
@@ -128,6 +129,15 @@ int Render_getStringWidth(const char * str);
 int Render_getStringWidthIndex(const char * str, int lastCharIndex);
 
 /**
+ * @brief Render_getStringWidthRange
+ * @param str
+ * @param start
+ * @param end
+ * @return
+ */
+int Render_getStringWidthRange(const char * str, int start, int end);
+
+/**
  * @brief Render_getStringHeight
  * @return
  */
@@ -172,10 +182,28 @@ void Render_enablePtColor();
 void Render_disablePtColor();
 
 /**
+ * @brief Render_setScissor
+ * @param x
+ * @param y
+ * @param width
+ * @param heigh
+ * @param evt
+ */
+void Render_setScissor(GLfloat x, GLfloat y, GLfloat width,
+                       GLfloat heigh, const Event_Render * evt);
+
+/**
+ * @brief Render_resetScissor
+ * @param evt
+ */
+void Render_resetScissor(const Event_Render * evt);
+
+/**
  * @brief Render_clear
+ * @param evt
  * @param color
  */
-void Render_clear(Color * color);
+void Render_clear(Event_Render * evt, Color * color);
 
 /**
  * @brief Render_drawLine

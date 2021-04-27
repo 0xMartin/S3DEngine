@@ -19,12 +19,20 @@
 
 
 typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
+
+    //UI object events
+    UI_Events events;
+
+    //UI obj data
     Point2D position;
     size_t width;
     size_t height;
     Color background;
     Color foreground;
-    UI_Events events;
 } CheckBox;
 
 
@@ -44,12 +52,5 @@ CheckBox * CheckBox_create(int x, int y, size_t width, size_t heigth, size_t str
  * @param btn
  */
 void CheckBox_destruct(CheckBox * btn);
-
-/**
- * @brief Button_createObject
- * @param btn
- * @return
- */
-E_Obj * CheckBox_createObject(CheckBox * btn);
 
 #endif // BUTTON_H

@@ -19,12 +19,20 @@
 
 
 typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
+
+    //UI object events
+    UI_Events events;
+
+    //UI obj data
     Point2D position;
     size_t width;
     size_t height;
     Color background;
     Color foreground;
-    UI_Events events;
     char * text;
 } Button;
 
@@ -46,12 +54,5 @@ Button * Button_create(int x, int y, size_t width, size_t heigth,
  * @param btn
  */
 void Button_destruct(Button * btn);
-
-/**
- * @brief Button_createObject
- * @param btn
- * @return
- */
-E_Obj * Button_createObject(Button * btn);
 
 #endif // BUTTON_H
