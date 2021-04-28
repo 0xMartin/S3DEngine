@@ -9,7 +9,7 @@
  * <------------------------------------------------------------------>
  */
 
-#include "checkbox.h"
+#include "radiobutton.h"
 
 #include "../util.h"
 #include "colors.h"
@@ -22,8 +22,8 @@
 /* Object event functions -------------------------------------------------------- */
 
 static void destruct(void * obj) {
-    CheckBox * cb = (CheckBox*) obj;
-    CheckBox_destruct(cb);
+    RadioButton * rb = (RadioButton*) obj;
+    RadioButton_destruct(rb);
 }
 
 static void render(void * obj, const Event_Render * evt) {
@@ -42,22 +42,20 @@ static const E_Obj_Evts e_obj_evts = {
 
 /* Object functions -------------------------------------------------------- */
 
-CheckBox * CheckBox_create(int x, int y, size_t width, size_t heigth,
+RadioButton * RadioButton_create(int x, int y, size_t width, size_t heigth,
                              size_t str_len) {
-    if(width <= 0 || heigth <= 0 || str_len <= 0) return NULL;
+    RadioButton * rb = malloc(sizeof(RadioButton));
+    if(rb == NULL) return NULL;
 
-    CheckBox * cb = malloc(sizeof(CheckBox));
-    if(cb == NULL) return NULL;
+    rb->objEvts = &e_obj_evts;
 
-    cb->objEvts = &e_obj_evts;
-
-    return cb;
+    return rb;
 }
 
-void CheckBox_destruct(CheckBox * cb) {
-    if(cb != NULL) {
+void RadioButton_destruct(RadioButton * rb) {
+    if(rb != NULL) {
 
-        cb->events = UI_EVENTS_INIT;
+        rb->events = UI_EVENTS_INIT;
     }
 }
 

@@ -30,6 +30,7 @@ void E_Obj_destruct(E_Obj * obj) {
     if(obj->events == NULL) return;
 
     if(obj->events->destruct) obj->events->destruct(obj);
+    free(obj);
 }
 
 bool E_Obj_insertToList(LinkedList * list, E_Obj * obj) {

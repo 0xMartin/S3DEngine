@@ -99,7 +99,7 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
             int min = INT16_MAX;
             int v;
             int index = 0;
-            for(int i = 0; i <= tf->textLength; ++i) {
+            for(int i = 0; i <= tf->maxTextLength; ++i) {
                 v = tf->position.x + 5 + Render_getStringWidthIndex(tf->text, i) + 2;
                 v = abs(v - evt->x);
                 if(v < min) {
@@ -120,7 +120,7 @@ static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
         if(tf->events.keyPressedAction) tf->events.keyPressedAction(tf, evt);
 
         if(isprint(evt->key)) {
-            if(strlen(tf->text) + 1 <= (unsigned long)tf->textLength) {
+            if(strlen(tf->text) + 1 <= (unsigned long)tf->maxTextLength) {
                 for(int i = strlen(tf->text); i > tf->caret_position; --i) {
                     tf->text[i] = tf->text[i - 1];
                 }
@@ -185,9 +185,7 @@ static const E_Obj_Evts e_obj_evts = {
 /* Object functions -------------------------------------------------------- */
 
 TextField * TextField_create(int x, int y, size_t width, size_t heigth,
-                             size_t str_len) {
-    if(width <= 0 || heigth <= 0 || str_len <= 0) return NULL;
-
+                             size_t max_str_len) {
     TextField * tf = malloc(sizeof(TextField));
     if(tf == NULL) return NULL;
 
@@ -204,8 +202,8 @@ TextField * TextField_create(int x, int y, size_t width, size_t heigth,
     tf->caret_position = 0;
     tf->caret_offset = 0;
     tf->events = UI_EVENTS_INIT;
-    tf->textLength = str_len;
-    tf->text = calloc(str_len + 1, sizeof (char));
+    tf->maxTextLength = max_str_len;
+    tf->text = calloc(max_str_len + 1, sizeof (char));
 
     return tf;
 }

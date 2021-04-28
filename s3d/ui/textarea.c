@@ -63,9 +63,7 @@ static const E_Obj_Evts e_obj_evts = {
 /* Object functions -------------------------------------------------------- */
 
 TextArea * TextArea_create(int x, int y, size_t width, size_t heigth,
-                             size_t str_len) {
-    if(width <= 0 || heigth <= 0 || str_len <= 0) return NULL;
-
+                             size_t maxTextLength) {
     TextArea * ta = malloc(sizeof(TextArea));
     if(ta == NULL) return NULL;
 

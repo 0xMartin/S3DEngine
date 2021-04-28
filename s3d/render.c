@@ -384,7 +384,7 @@ void Render_drawImage(Point2D * p, Texture * texture, bool defaultShape) {
             glVertex2f(p->x + texture->width, p->y + texture->height);
         } else {
             for(unsigned int i = 0; i < 4; ++i) {
-                glTexCoord2i(i > 1, i % 2);
+                glTexCoord2i(i > 1, i > 0 && i < 3);
                 glVertex2f((p + i)->x, (p + i)->y);
             }
         }

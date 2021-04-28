@@ -4,13 +4,13 @@
  * @author  Martin Krcma
  * @date    11. 3. 2021
  * <------------------------------------------------------------------>
- * @file    label.h
+ * @file    textfield.h
  * @brief
  * <------------------------------------------------------------------>
  */
 
-#ifndef LABEL_H
-#define LABEL_H
+#ifndef TEXTFIELD_H
+#define TEXTFIELD_H
 
 #include "../event.h"
 #include "../render.h"
@@ -29,26 +29,34 @@ typedef struct {
 
     //UI obj data
     Point2D position;
+    size_t width;
+    size_t height;
+    Color background;
     Color foreground;
+    Color caret;
+    int caret_position;
+    int caret_offset;
+    int caret_time;
+    int maxTextLength;
     char * text;
-} Label;
+} TextField;
 
 
 /**
- * @brief Button_create
+ * @brief TextField_create
  * @param x
  * @param y
  * @param width
  * @param heigth
- * @param txt
+ * @param max_str_len
  * @return
  */
-Label * Label_create(int x, int y, const char * const txt);
+TextField * TextField_create(int x, int y, size_t width, size_t heigth, size_t max_str_len);
 
 /**
- * @brief Button_destruct
+ * @brief TextField_destruct
  * @param btn
  */
-void Label_destruct(Label * lab);
+void TextField_destruct(TextField * btn);
 
 #endif // BUTTON_H

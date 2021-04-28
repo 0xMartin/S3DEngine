@@ -74,3 +74,11 @@ void Label_destruct(Label * lab) {
     }
 }
 
+void Label_changeText(Label * lab, const char * const txt) {
+    if(lab == NULL) return;
+
+    if(lab->text) free(lab->text);
+    lab->text = malloc(sizeof (char) * (strlen(txt) + 1));
+    sprintf(lab->text, "%s", txt);
+}
+

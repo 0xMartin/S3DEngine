@@ -4,18 +4,24 @@
  * @author  Martin Krcma
  * @date    19. 3. 2021
  * <------------------------------------------------------------------>
- * @file    textarea.h
+ * @file    checkbox.h
  * @brief
  * <------------------------------------------------------------------>
  */
 
-#ifndef TEXTAREA_H
-#define TEXTAREA_H
+#ifndef CHECKBOX_H
+#define CHECKBOX_H
 
 #include "../event.h"
 #include "../render.h"
 #include "../engine_object.h"
 #include <stdbool.h>
+
+
+/**
+  * if you assigned this value to the width or height of the image then this dimension assign to the second dimension
+  */
+#define IMAGE_SIZE_AUTO 0
 
 
 typedef struct {
@@ -31,31 +37,25 @@ typedef struct {
     Point2D position;
     size_t width;
     size_t height;
-    Color background;
-    Color foreground;
-    Color caret;
-    int caret_position;
-    int caret_time;
-    int textLength;
-    char * text;
-} TextArea;
+    Texture * texture;
+} Image;
 
 
 /**
- * @brief TextArea_create
+ * @brief Image_create
  * @param x
  * @param y
  * @param width
  * @param heigth
- * @param str_len
+ * @param texture
  * @return
  */
-TextArea * TextArea_create(int x, int y, size_t width, size_t heigth, size_t str_len);
+Image * Image_create(int x, int y, size_t width, size_t heigth, Texture * texture);
 
 /**
- * @brief TextArea_destruct
+ * @brief Image_destruct
  * @param btn
  */
-void TextArea_destruct(TextArea * btn);
+void Image_destruct(Image * btn);
 
 #endif // BUTTON_H

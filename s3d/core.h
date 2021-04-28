@@ -91,9 +91,10 @@ E2API bool E2APIENTRY CORE_destruct();
 /**
  * @brief CORE_loadTexture
  * @param path
+ * @param texture
  * @return
  */
-E2API bool E2APIENTRY CORE_loadTexture(const char * path);
+E2API bool E2APIENTRY CORE_loadTexture(const char * path, Texture ** texture);
 
 /**
  * @brief Context_init

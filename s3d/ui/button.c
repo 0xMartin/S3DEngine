@@ -105,7 +105,7 @@ static const E_Obj_Evts e_obj_evts = {
 
 Button * Button_create(int x, int y, size_t width, size_t heigth,
                        const char * const txt) {
-    if(txt == NULL || width <= 0 || heigth <= 0) return NULL;
+    if(txt == NULL) return NULL;
 
     Button * btn = malloc(sizeof(Button));
     if(btn == NULL) return NULL;

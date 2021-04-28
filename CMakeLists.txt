@@ -1,29 +1,22 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(S3DEngine C)
-
-file(GLOB sources "src/*.c" "src/s3d/*.c" "src/s3d/ui/*.c")
-file(GLOB headers "src/*.h" "src/s3d/*.h" "src/s3d/ui/*.h")
-list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c)
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin/data/)
-
-add_compile_options(-Wall -Wextra -std=c11)
+project(S3DEngine LANGUAGES C)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(${PROJECT_NAME} ${sources} ${headers} src/main.c)
-if (UNIX)
-    target_link_libraries(${PROJECT_NAME} m)
-endif (UNIX)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin/data/)
 
-#OpenGL + GLUT
-find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
 
-include_directories(${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+file(GLOB sources "*.c")
+file(GLOB headers "*.h")
+
+add_compile_options(-Wall -Wextra -std=c11)
+
+add_executable(${PROJECT_NAME} test.c)
+
+add_subdirectory(s3d)
+target_link_libraries(${PROJECT_NAME} PRIVATE s3d)
 

@@ -203,7 +203,7 @@ bool CORE_destruct() {
     return true;
 }
 
-bool CORE_loadTexture(const char * path) {
+bool CORE_loadTexture(const char * path, Texture ** texture) {
     if(_core == NULL) return false;
     if(_core->context == NULL) return false;
     if(_core->context->textures == NULL) return false;
@@ -215,6 +215,9 @@ bool CORE_loadTexture(const char * path) {
     el->ptr = tex;
     el->destruct = UTIL_simpleDestructor;
     Vector_append(_core->context->textures, el);
+    if(texture != NULL) {
+        *texture = tex;
+    }
 
     return true;
 }
@@ -293,9 +296,6 @@ static void renderScene() {
         }
         el = LinkedList_next(el);
     }
-
-    Point2D p = {300, 200, {0, 0, 0, 0}};
-    Render_drawImage(&p, _core->context->textures->elements[0]->ptr, true);
 
     glutSwapBuffers();
 }
