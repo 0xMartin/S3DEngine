@@ -2,10 +2,10 @@
  * <------------------------------------------------------------------>
  * @name    2D Engine
  * @author  Martin Krcma
- * @date    28. 2. 2021
+ * @date    11. 3. 2021
  * <------------------------------------------------------------------>
- * @file    ai.c
- * @brief   Implementation of ai.h
+ * @file    texfield.c
+ * @brief   Implementation of texfield.h
  * <------------------------------------------------------------------>
  */
 
@@ -28,23 +28,28 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     TextField * tf = (TextField*) obj;
-    if(tf->events.hover) {
-        Color c = COLOR_DARKER(tf->background);
-        Render_setColor(&c);
+
+    if(tf->events.focus) {
+        Color darker_bg = COLOR_DARKER(tf->background, 0.4);
+        Render_setColor(&darker_bg);
     } else {
         Render_setColor(&tf->background);
     }
     Render_fillRectangle(&tf->position, tf->width, tf->height);
-    Render_setColor(&tf->foreground);
+    Color border = COLOR_LIGHTER(tf->background, 0.2);
+    Render_setColor(&border);
     Render_drawRectangle(&tf->position, tf->width, tf->height);
-    float center = (tf->height + Render_getStringHeight(tf->text))/2;
 
-    Render_setScissor(tf->position.x + 5, tf->position.y + center,
+
+    Render_setColor(&tf->foreground);
+
+    float line_start = (tf->height + Render_getStringHeight())/2;
+    Render_setScissor(tf->position.x + 5, tf->position.y + tf->height,
                       tf->width - 10, tf->height, evt);
 
     Render_drawString(tf->position.x + 5 - Render_getStringWidthRange(
                           tf->text, tf->caret_position - abs(tf->caret_offset), tf->caret_position),
-                      tf->position.y + center,
+                      tf->position.y + line_start,
                       tf->text);
 
     if(tf->events.focus) {
@@ -52,8 +57,8 @@ static void render(void * obj, const Event_Render * evt) {
             Point2D p1, p2;
             p1.x = tf->position.x + 5 + Render_getStringWidthIndex(tf->text, tf->caret_position + tf->caret_offset) + 2;
             p2.x = p1.x;
-            p1.y = tf->position.y + center;
-            p2.y = tf->position.y + center - Render_getStringHeight();
+            p1.y = tf->position.y + line_start;
+            p2.y = tf->position.y + line_start - Render_getStringHeight();
             Render_setColor(&tf->caret);
             Render_drawLine(&p1, &p2);
         }
@@ -72,11 +77,13 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     TextField * tf = (TextField*) obj;
     if(!tf->events.enabled) return;
 
-    if(IN_RANGE(evt->x, tf->position.x, tf->position.x + tf->width)) {
-        if(IN_RANGE(evt->y, tf->position.y, tf->position.y + tf->height)) {
-            tf->events.hover = true;
-            if(tf->events.mouseMovedAction) tf->events.mouseMovedAction(tf, evt);
-            return;
+    if(evt->x >= 0 && evt->y >= 0) {
+        if(IN_RANGE(evt->x, tf->position.x, tf->position.x + tf->width)) {
+            if(IN_RANGE(evt->y, tf->position.y, tf->position.y + tf->height)) {
+                tf->events.hover = true;
+                if(tf->events.mouseMovedAction) tf->events.mouseMovedAction(tf, evt);
+                return;
+            }
         }
     }
     tf->events.hover = false;
@@ -87,27 +94,29 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
     if(!tf->events.enabled) return;
 
     tf->events.focus = false;
-    if(IN_RANGE(evt->x, tf->position.x, tf->position.x + tf->width)) {
-        if(IN_RANGE(evt->y, tf->position.y, tf->position.y + tf->height)) {
-            tf->events.focus = true;
-            if(evt->state == EVT_M_DOWN) {
-                if(tf->events.mousePressAction) tf->events.mousePressAction(tf, evt);
-            } else if(evt->state == EVT_M_UP) {
-                if(tf->events.mouseReleaseAction) tf->events.mouseReleaseAction(tf, evt);
-            }
-
-            int min = INT16_MAX;
-            int v;
-            int index = 0;
-            for(int i = 0; i <= tf->maxTextLength; ++i) {
-                v = tf->position.x + 5 + Render_getStringWidthIndex(tf->text, i) + 2;
-                v = abs(v - evt->x);
-                if(v < min) {
-                    min = v;
-                    index = i;
+    if(evt->x >= 0 && evt->y >= 0) {
+        if(IN_RANGE(evt->x, tf->position.x, tf->position.x + tf->width)) {
+            if(IN_RANGE(evt->y, tf->position.y, tf->position.y + tf->height)) {
+                tf->events.focus = true;
+                if(evt->state == EVT_M_DOWN) {
+                    if(tf->events.mousePressAction) tf->events.mousePressAction(tf, evt);
+                } else if(evt->state == EVT_M_UP) {
+                    if(tf->events.mouseReleaseAction) tf->events.mouseReleaseAction(tf, evt);
                 }
+
+                int min = INT16_MAX;
+                int v;
+                int index = 0;
+                for(int i = 0; i <= tf->maxTextLength; ++i) {
+                    v = tf->position.x + 5 + Render_getStringWidthIndex(tf->text, i) + 2;
+                    v = abs(v - evt->x);
+                    if(v < min) {
+                        min = v;
+                        index = i;
+                    }
+                }
+                tf->caret_position = index;
             }
-            tf->caret_position = index;
         }
     }
 }
@@ -128,7 +137,7 @@ static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
                 tf->caret_position++;
 
                 if((unsigned long)Render_getStringWidthIndex(
-                          tf->text, tf->caret_position + tf->caret_offset) > tf->width - 10) {
+                            tf->text, tf->caret_position + tf->caret_offset) > tf->width - 10) {
                     tf->caret_offset--;
                 }
             }
@@ -194,7 +203,6 @@ TextField * TextField_create(int x, int y, size_t width, size_t heigth,
     tf->background = UI_TEXTFIELD_BG_COLOR;
     tf->foreground = UI_TEXTFIELD_FG_COLOR;
     tf->caret = UI_TEXTFIELD_CARET_COLOR;
-    tf->events.enabled = true;
     tf->position.x = x;
     tf->position.y = y;
     tf->width = width;

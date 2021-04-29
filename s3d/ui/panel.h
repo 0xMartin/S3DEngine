@@ -2,26 +2,21 @@
  * <------------------------------------------------------------------>
  * @name    2D Engine
  * @author  Martin Krcma
- * @date    27. 4. 2021
+ * @date    28. 4. 2021
  * <------------------------------------------------------------------>
- * @file    checkbox.h
+ * @file    label.h
  * @brief
  * <------------------------------------------------------------------>
  */
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef PANEL_H
+#define PANEL_H
 
 #include "../event.h"
 #include "../render.h"
 #include "../engine_object.h"
+#include "../linkedlist.h"
 #include <stdbool.h>
-
-
-/**
-  * if you assigned this value to the width or height of the image then this dimension assign to the second dimension
-  */
-#define IMAGE_SIZE_AUTO 0
 
 
 typedef struct {
@@ -35,27 +30,35 @@ typedef struct {
 
     //UI obj data
     Point2D position;
+    Color background;
     size_t width;
     size_t height;
-    Texture * texture;
-} Image;
-
+    LinkedList childs;
+} Panel;
 
 /**
- * @brief Image_create
+ * @brief Panel_create
  * @param x
  * @param y
  * @param width
- * @param heigth
- * @param texture
+ * @param height
  * @return
  */
-Image * Image_create(int x, int y, size_t width, size_t heigth, Texture * texture);
+Panel * Panel_create(int x, int y, size_t width, size_t height);
 
 /**
- * @brief Image_destruct
- * @param btn
+ * @brief Panel_destruct
+ * @param pan
  */
-void Image_destruct(Image * btn);
+void Panel_destruct(Panel * pan);
 
-#endif // BUTTON_H
+
+/**
+ * @brief Panel_insertChild
+ * @param pan
+ * @param obj
+ * @return
+ */
+bool Panel_insertChild(Panel * pan, E_Obj * obj);
+
+#endif // PANEL_H

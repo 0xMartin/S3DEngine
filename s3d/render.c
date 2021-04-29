@@ -21,7 +21,7 @@ static GLfloat MAX_ALPHA = 1.0;
 static GLfloat SCALE_X = 1.0;
 static GLfloat SCALE_Y = 1.0;
 
-static void * FONT = GLUT_BITMAP_TIMES_ROMAN_24;
+static void * FONT = E2D_BITMAP_HELVETICA_18;
 
 static bool ENABLE_PT_COLOR = false;
 
@@ -42,6 +42,12 @@ void Render_scale(GLfloat x, GLfloat y) {
         SCALE_X = x;
         SCALE_Y = y;
         glScalef(x, y, 1.0);
+    }
+}
+
+void Render_lineWidth(GLfloat width) {
+    if(width > 0.0) {
+        glLineWidth(width);
     }
 }
 
@@ -149,7 +155,7 @@ void Render_disablePtColor() {
 
 void Render_setScissor(GLfloat x, GLfloat y, GLfloat width,
                        GLfloat heigh, const Event_Render * evt) {
-    if(width > 0 && heigh > 0 && evt->window_height > 0) {
+    if(width > 0 && heigh > 0 && evt->window_width > 0 && evt->window_height > 0) {
         glScissor(x, evt->window_height - y, width, heigh);
     }
 }
@@ -173,7 +179,8 @@ void Render_clear(Event_Render * evt, Color * color) {
 
     MAX_ALPHA = 1.0;
     COLOR.red = COLOR.green = COLOR.blue = 1.0;
-    FONT = GLUT_BITMAP_TIMES_ROMAN_24;
+    FONT = E2D_BITMAP_HELVETICA_18;
+    glLineWidth(1.0);
 
     if(SCALE_X != 1.0 || SCALE_Y != 1.0) {
         glScalef(1.0 / SCALE_X, 1.0 / SCALE_Y, 1.0);
@@ -316,7 +323,7 @@ void Render_fillPolygon(Point2D * p, size_t count) {
         if(!ENABLE_PT_COLOR) {
             glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
         }
-        glBegin(GL_QUADS);
+        glBegin(GL_POLYGON);
         for(size_t i = 0; i < count; ++i) {
             applyPtColor(p + i);
             glVertex2f((p + i)->x, (p + i)->y);
@@ -327,7 +334,7 @@ void Render_fillPolygon(Point2D * p, size_t count) {
 
 void Render_drawEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
     if(p != NULL) {
-        int num_segments = 5 + MAX(rx, ry) / 5;
+        int num_segments = 12 + MAX(rx, ry) / 5;
         float theta = 2 * 3.1415926 / num_segments;
         float c = cosf(theta);
         float s = sinf(theta);
@@ -348,7 +355,25 @@ void Render_drawEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
 }
 
 void Render_fillEllipse(Point2D * p, GLfloat rx, GLfloat ry) {
-
+    if(p != NULL) {
+        int num_segments = 12 + MAX(rx, ry) / 5;
+        float theta = 2 * 3.1415926 / num_segments;
+        float c = cosf(theta);
+        float s = sinf(theta);
+        float t;
+        float x = 1;
+        float y = 0;
+        glColor4f(COLOR.red, COLOR.green, COLOR.blue, MIN(COLOR.alpha, MAX_ALPHA));
+        glBegin(GL_POLYGON);
+        for(int i = 0; i < num_segments; i++)
+        {
+            glVertex2f(x * rx + p->x, y * ry + p->y);
+            t = x;
+            x = c * x - s * y;
+            y = s * t + c * y;
+        }
+        glEnd();
+    }
 }
 
 void Render_fillRectangle(Point2D * p, size_t width, size_t height) {

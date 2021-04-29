@@ -36,6 +36,7 @@
 #define EVT_M_DOWN GLUT_DOWN
 #define EVT_M_UP GLUT_UP
 
+
 typedef enum {
     NONE,
     LEFT,
@@ -43,6 +44,7 @@ typedef enum {
     DOWN,
     UP
 } Arrow_key;
+
 
 //key event
 typedef struct {
@@ -53,6 +55,7 @@ typedef struct {
     Arrow_key arrow; /** pressed arrow id */
 } Event_Key;
 
+
 //mouse envent
 typedef struct {
     int button; /** pressed button*/
@@ -61,11 +64,13 @@ typedef struct {
     int y;  /** y position of cursore*/
 } Event_Mouse;
 
+
 //render event
 typedef struct {
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
 } Event_Render;
+
 
 //update event
 typedef struct {
@@ -73,9 +78,11 @@ typedef struct {
     __time_t s_time;    /** current sec system time*/
 } Event_Update;
 
+
 typedef void (*Event_action)(void * sender, const void * evt);
 
 #define UI_EVENTS_INIT (UI_Events){false, false, true, NULL, NULL, NULL, NULL, NULL, NULL}
+
 
 //UI events
 typedef struct {
@@ -89,5 +96,6 @@ typedef struct {
     Event_action mouseMovedAction;
     Event_action contentChangedAction;
 } UI_Events;
+
 
 #endif // EVENT_H

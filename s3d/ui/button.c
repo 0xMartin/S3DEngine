@@ -2,10 +2,10 @@
  * <------------------------------------------------------------------>
  * @name    2D Engine
  * @author  Martin Krcma
- * @date    28. 2. 2021
+ * @date    11. 3. 2021
  * <------------------------------------------------------------------>
- * @file    ai.c
- * @brief   Implementation of ai.h
+ * @file    button.c
+ * @brief   Implementation of button.h
  * <------------------------------------------------------------------>
  */
 
@@ -27,15 +27,18 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     Button * btn = (Button*) obj;
-    if(btn->events.hover) {
-        Color c = COLOR_DARKER(btn->background);
-        Render_setColor(&c);
-    } else {
-        Render_setColor(&btn->background);
-    }
-    Render_fillRectangle(&btn->position, btn->width, btn->height);
-    Render_setColor(&btn->foreground);
+
+    Render_setColor(&btn->background);
     Render_drawRectangle(&btn->position, btn->width, btn->height);
+
+    if(btn->events.hover) {
+        Render_fillRectangle(&btn->position, btn->width, btn->height);
+        Color foreground_hover = COLOR_LIGHTER(btn->foreground, 0.6);
+        Render_setColor(&foreground_hover);
+    } else {
+        Render_setColor(&btn->foreground);
+    }
+
     Render_drawString(
                 btn->position.x + (btn->width - Render_getStringWidth(btn->text))/2,
                 btn->position.y + (btn->height + Render_getStringHeight())/2,
@@ -46,11 +49,13 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     Button * btn = (Button*) obj;
     if(!btn->events.enabled) return;
 
-    if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
-        if(IN_RANGE(evt->y, btn->position.y, btn->position.y + btn->height)) {
-            btn->events.hover = true;
-            if(btn->events.mouseMovedAction) btn->events.mouseMovedAction(btn, evt);
-            return;
+    if(evt->x >= 0 && evt->y >= 0) {
+        if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
+            if(IN_RANGE(evt->y, btn->position.y, btn->position.y + btn->height)) {
+                btn->events.hover = true;
+                if(btn->events.mouseMovedAction) btn->events.mouseMovedAction(btn, evt);
+                return;
+            }
         }
     }
     btn->events.hover = false;
@@ -61,13 +66,15 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
     if(!btn->events.enabled) return;
 
     btn->events.focus = false;
-    if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
-        if(IN_RANGE(evt->y, btn->position.y, btn->position.y + btn->height)) {
-            btn->events.focus = true;
-            if(evt->state == EVT_M_DOWN) {
-                if(btn->events.mousePressAction) btn->events.mousePressAction(btn, evt);
-            } else if(evt->state == EVT_M_UP) {
-                if(btn->events.mouseReleaseAction) btn->events.mouseReleaseAction(btn, evt);
+    if(evt->x >= 0 && evt->y >= 0) {
+        if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
+            if(IN_RANGE(evt->y, btn->position.y, btn->position.y + btn->height)) {
+                btn->events.focus = true;
+                if(evt->state == EVT_M_DOWN) {
+                    if(btn->events.mousePressAction) btn->events.mousePressAction(btn, evt);
+                } else if(evt->state == EVT_M_UP) {
+                    if(btn->events.mouseReleaseAction) btn->events.mouseReleaseAction(btn, evt);
+                }
             }
         }
     }

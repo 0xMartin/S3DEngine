@@ -47,10 +47,11 @@
 #define COLOR_WHITE     (Color){1.0,   1.0,    1.0,    1.0}
 #define COLOR_YELLOW	(Color){1.0,   1.0,    0.0,    1.0}
 
-#define COLOR_DARKER(c)	((Color){.red=c.red*0.6, .green=c.green*0.6, .blue=c.blue*0.6, .alpha=c.alpha})
+#define COLOR_DARKER(c, factor)	((Color){.red=c.red*(1.0-factor),\
+    .green=c.green*(1.0-factor), .blue=c.blue*(1.0-factor), .alpha=c.alpha})
 
-#define COLOR_LIGHTER(c) ((Color){.red=MIN(1.0, c.red * 1.3),\
-    .green=MIN(1.0, c.green * 1.3), .blue=MIN(1.0, c.blue * 1.3), , .alpha=c.alpha})
+#define COLOR_LIGHTER(c, factor) ((Color){.red=MIN(1.0, c.red * 1.0 + factor),\
+    .green=MIN(1.0, c.green * 1.0 + factor), .blue=MIN(1.0, c.blue * 1.0 + factor), .alpha=c.alpha})
 
 //fonts
 #define E2D_STROKE_ROMAN            GLUT_STROKE_ROMAN
@@ -63,6 +64,7 @@
 #define E2D_BITMAP_HELVETICA_12     GLUT_BITMAP_HELVETICA_12
 #define E2D_BITMAP_HELVETICA_18     GLUT_BITMAP_HELVETICA_18
 
+#define RENDER_DEFAULT_LINE_WIDTH 1
 
 //RGB color
 typedef struct {
@@ -108,6 +110,12 @@ typedef struct {
 void Render_scale(GLfloat x, GLfloat y);
 
 /**
+ * @brief Render_lineWidth
+ * @param width
+ */
+void Render_lineWidth(GLfloat width);
+
+/**
  * @brief Render_setMaxAlpha
  * @param alpha
  */
@@ -142,12 +150,6 @@ int Render_getStringWidthRange(const char * str, int start, int end);
  * @return
  */
 int Render_getStringHeight();
-
-/**
- * @brief Render_getFontSize
- * @return
- */
-int Render_getFontSize();
 
 /**
  * @brief Render_setColorRGB

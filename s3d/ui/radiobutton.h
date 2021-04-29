@@ -15,6 +15,7 @@
 #include "../event.h"
 #include "../render.h"
 #include "../engine_object.h"
+#include "label.h"
 #include <stdbool.h>
 
 
@@ -28,24 +29,26 @@ typedef struct {
     UI_Events events;
 
     //UI obj data
+    bool value;
     Point2D position;
-    size_t width;
-    size_t height;
+    size_t size;
     Color background;
+    Color borderColor;
     Color foreground;
+    Label * label;
 } RadioButton;
 
 
 /**
- * @brief TextField_create
+ * @brief RadioButton_create
  * @param x
  * @param y
- * @param width
- * @param heigth
- * @param str_len
+ * @param size
+ * @param value
+ * @param txt
  * @return
  */
-RadioButton * RadioButton_create(int x, int y, size_t width, size_t heigth, size_t str_len);
+RadioButton * RadioButton_create(int x, int y, size_t size, bool value, const char * const txt);
 
 /**
  * @brief TextField_destruct

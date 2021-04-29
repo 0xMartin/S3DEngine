@@ -2,10 +2,10 @@
  * <------------------------------------------------------------------>
  * @name    2D Engine
  * @author  Martin Krcma
- * @date    28. 2. 2021
+ * @date    27. 4. 2021
  * <------------------------------------------------------------------>
- * @file    ai.c
- * @brief   Implementation of ai.h
+ * @file    image.c
+ * @brief   Implementation of image.h
  * <------------------------------------------------------------------>
  */
 
@@ -14,9 +14,6 @@
 #include "../util.h"
 #include "colors.h"
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
 
 
 /* Object event functions -------------------------------------------------------- */

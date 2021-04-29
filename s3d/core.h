@@ -32,6 +32,7 @@
     50,\
     true,\
     false,\
+    (Color){0.0, 0.0, 0.0, 1.0},\
     NULL\
     }
 
@@ -51,6 +52,7 @@ typedef struct {
     unsigned int ups;   /** Updates per second */
     bool visibleCursor; /** Is cursor visible? */
     bool mouseCamControl; /** Control camera by mouse motion */
+    Color clearColor; /** Background color of window */
     Context * context;  /** Core context */
 } CORE;
 

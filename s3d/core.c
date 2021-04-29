@@ -274,7 +274,7 @@ static void renderScene() {
     _render_event.window_width = _core->window_width;
     _render_event.window_height = _core->window_height;
 
-    Render_clear(&_render_event, NULL);
+    Render_clear(&_render_event, &_core->clearColor);
 
     if(_core->context == NULL) {
         glutSwapBuffers();
