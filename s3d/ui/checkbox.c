@@ -70,7 +70,7 @@ static void resize(void * obj, const Event_Resize * evt) {
     }
 }
 
-static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     CheckBox * cb = (CheckBox*) obj;
     if(!cb->events.enabled) return;
 

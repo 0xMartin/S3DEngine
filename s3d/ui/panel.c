@@ -33,6 +33,7 @@ static void render(void * obj, const Event_Render * evt) {
     Event_Render panel_evt;
     panel_evt.window_width = pan->width;
     panel_evt.window_height = pan->height;
+    panel_evt.sender = pan;
 
     //draw panel
     Render_setColor(&pan->background);
@@ -42,7 +43,8 @@ static void render(void * obj, const Event_Render * evt) {
     Render_drawRectangle(&pan->position, pan->width, pan->height);
 
     //shift origin
-    glTranslatef(pan->position.x, pan->position.y, 0);
+    //glTranslatef(pan->position.x, pan->position.y, 0);
+    Render_applyOffset(pan->position.x, pan->position.y, 0.0);
 
     //render childs
     Render_setScissor(pan->position.x,pan->position.y + pan->height,
@@ -63,7 +65,8 @@ static void render(void * obj, const Event_Render * evt) {
     Render_resetScissor(evt);
 
     //shift back origin
-    glTranslatef(-pan->position.x, -pan->position.y, 0);
+    //glTranslatef(-pan->position.x, -pan->position.y, 0);
+    Render_clearOffset();
 }
 
 static void resize(void * obj, const Event_Resize * evt) {
@@ -79,6 +82,7 @@ static void resize(void * obj, const Event_Resize * evt) {
         Event_Resize panel_evt = *evt;
         panel_evt.current_window_width = pan->width;
         panel_evt.current_window_height = pan->height;
+        panel_evt.sender = pan;
 
         E_Obj * child;
         LinkedList_Element * el = pan->childs.first;
@@ -94,8 +98,11 @@ static void resize(void * obj, const Event_Resize * evt) {
     }
 }
 
-static void update(void * obj, Context * cntx, const Event_Update * evt) {
+static void update(void * obj, SceneData * scene, const Event_Update * evt) {
     Panel * pan = (Panel*) obj;
+
+    Event_Update panel_evt = *evt;
+    panel_evt.sender = pan;
 
     E_Obj * child;
     LinkedList_Element * el = pan->childs.first;
@@ -103,14 +110,14 @@ static void update(void * obj, Context * cntx, const Event_Update * evt) {
         if(el->ptr != NULL) {
             child = (E_Obj*) el->ptr;
             if(child->events) {
-                if(child->events->update) child->events->update(child, cntx, evt);
+                if(child->events->update) child->events->update(child, scene, &panel_evt);
             }
         }
         el = LinkedList_next(el);
     }
 }
 
-static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Panel * pan = (Panel*) obj;
 
     if(IN_RANGE(evt->x, pan->position.x - MOUSE_POS_THRESHOLD,
@@ -121,6 +128,7 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
             Event_Mouse panel_evt = *evt;
             panel_evt.x -= pan->position.x;
             panel_evt.y -= pan->position.y;
+            panel_evt.sender = pan;
 
             E_Obj * child;
             LinkedList_Element * el = pan->childs.first;
@@ -128,7 +136,7 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
                 if(el->ptr != NULL) {
                     child = (E_Obj*) el->ptr;
                     if(child->events) {
-                        if(child->events->mouseMoveEvt) child->events->mouseMoveEvt(child, cntx, &panel_evt);
+                        if(child->events->mouseMoveEvt) child->events->mouseMoveEvt(child, scene, &panel_evt);
                     }
                 }
                 el = LinkedList_next(el);
@@ -138,7 +146,7 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     }
 }
 
-static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Panel * pan = (Panel*) obj;
 
     pan->events.focus = false;
@@ -151,6 +159,7 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
             Event_Mouse panel_evt = *evt;
             panel_evt.x -= pan->position.x;
             panel_evt.y -= pan->position.y;
+            panel_evt.sender = pan;
 
             E_Obj * child;
             LinkedList_Element * el = pan->childs.first;
@@ -158,7 +167,7 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
                 if(el->ptr != NULL) {
                     child = (E_Obj*) el->ptr;
                     if(child->events) {
-                        if(child->events->mouseButtonEvt) child->events->mouseButtonEvt(child, cntx, &panel_evt);
+                        if(child->events->mouseButtonEvt) child->events->mouseButtonEvt(child, scene, &panel_evt);
                     }
                 }
                 el = LinkedList_next(el);
@@ -168,35 +177,45 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
     }
 }
 
-static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+static void pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     Panel * pan = (Panel*) obj;
 
-    E_Obj * child;
-    LinkedList_Element * el = pan->childs.first;
-    while(el != NULL) {
-        if(el->ptr != NULL) {
-            child = (E_Obj*) el->ptr;
-            if(child->events) {
-                if(child->events->pressKeyEvt) child->events->pressKeyEvt(child, cntx, evt);
+    if(pan->events.focus) {
+        Event_Key panel_evt = *evt;
+        panel_evt.sender = pan;
+
+        E_Obj * child;
+        LinkedList_Element * el = pan->childs.first;
+        while(el != NULL) {
+            if(el->ptr != NULL) {
+                child = (E_Obj*) el->ptr;
+                if(child->events) {
+                    if(child->events->pressKeyEvt) child->events->pressKeyEvt(child, scene, &panel_evt);
+                }
             }
+            el = LinkedList_next(el);
         }
-        el = LinkedList_next(el);
     }
 }
 
-static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+static void releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     Panel * pan = (Panel*) obj;
 
-    E_Obj * child;
-    LinkedList_Element * el = pan->childs.first;
-    while(el != NULL) {
-        if(el->ptr != NULL) {
-            child = (E_Obj*) el->ptr;
-            if(child->events) {
-                if(child->events->releaseKeyEvt) child->events->releaseKeyEvt(child, cntx, evt);
+    if(pan->events.focus) {
+        Event_Key panel_evt = *evt;
+        panel_evt.sender = pan;
+
+        E_Obj * child;
+        LinkedList_Element * el = pan->childs.first;
+        while(el != NULL) {
+            if(el->ptr != NULL) {
+                child = (E_Obj*) el->ptr;
+                if(child->events) {
+                    if(child->events->releaseKeyEvt) child->events->releaseKeyEvt(child, scene, &panel_evt);
+                }
             }
+            el = LinkedList_next(el);
         }
-        el = LinkedList_next(el);
     }
 }
 

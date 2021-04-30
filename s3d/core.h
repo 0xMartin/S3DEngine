@@ -22,7 +22,7 @@
 #include <stdbool.h>
 
 
-#define CORE_DEFAULT_CONIFG {\
+#define CORE_DEFAULT_CONFIG {\
     800,\
     600,\
     "Window",\
@@ -40,7 +40,7 @@ typedef struct {
     LinkedList * gameData;  /** game data, list consisting only from <E_Obj> engine_object.h */
     Vector * textures;    /** vector of all textures, consisting only from <Texture> util.h */
     Vector * files; /** vector of all opened files */
-} Context;
+} SceneData;
 
 typedef struct {
     unsigned int window_width;  /** Window width */
@@ -53,42 +53,42 @@ typedef struct {
     bool visibleCursor; /** Is cursor visible? */
     bool mouseCamControl; /** Control camera by mouse motion */
     Color clearColor; /** Background color of window */
-    Context * context;  /** Core context */
+    SceneData * scene;  /** Core context */
 } CORE;
 
 
 /**
- * @brief CORE_init
+ * @brief CORE_engineInit
  * @param argc
  * @param argv
  * @param core
  * @return
  */
-E2API bool E2APIENTRY CORE_init(int argc, char **argv, CORE * core);
+E2API bool CORE_init(int argc, char **argv, CORE * core);
 
 /**
- * @brief CORE_setCData
+ * @brief CORE_setSceneData
  * @param contx
  * @return
  */
-E2API bool E2APIENTRY CORE_setContext(Context * contx);
+E2API bool CORE_setSceneData(SceneData * scene);
 
 /**
  * @brief CORE_run
  * @param core
  * @return
  */
-E2API bool E2APIENTRY CORE_run();
+E2API bool CORE_run();
 
 /**
  * @brief CORE_stop
  */
-E2API void E2APIENTRY CORE_stop();
+E2API void CORE_stop();
 
 /**
  * @brief CORE_destruct
  */
-E2API bool E2APIENTRY CORE_destruct();
+E2API bool CORE_destruct();
 
 /**
  * @brief CORE_loadTexture
@@ -96,21 +96,20 @@ E2API bool E2APIENTRY CORE_destruct();
  * @param texture
  * @return
  */
-E2API bool E2APIENTRY CORE_loadTexture(const char * path, Texture ** texture);
+E2API bool CORE_loadTexture(const char * path, Texture ** texture);
 
 /**
- * @brief Context_init
- * @param data
+ * @brief SceneData_create
  * @return
  */
-E2API bool E2APIENTRY Context_init(Context * contx);
+E2API SceneData * SceneData_create();
 
 /**
- * @brief Context_destruct
+ * @brief SceneData_destruct
  * @param contx
  * @return
  */
-E2API bool E2APIENTRY Context_destruct(Context * contx);
+E2API bool SceneData_destruct(SceneData * scene);
 
 
 #endif // CORE_H

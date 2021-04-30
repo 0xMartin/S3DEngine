@@ -53,6 +53,7 @@ typedef struct {
     bool alt;   /** true -> alt pressed */
     bool shift; /** true -> shift pressed */
     Arrow_key arrow; /** pressed arrow id */
+    void * sender; /** object that triggered the event */
 } Event_Key;
 
 
@@ -62,6 +63,7 @@ typedef struct {
     int state;  /** button state*/
     int x;  /** x position of cursore*/
     int y;  /** y position of cursore*/
+    void * sender; /** object that triggered the event */
 } Event_Mouse;
 
 
@@ -69,6 +71,7 @@ typedef struct {
 typedef struct {
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
+    void * sender; /** object that triggered the event */
 } Event_Render;
 
 //resize event
@@ -77,6 +80,7 @@ typedef struct {
     double resize_ratio_horizontal; /** Resize ratio horizontal */
     unsigned int current_window_width;  /** Window width */
     unsigned int current_window_height; /** Window height */
+    void * sender; /** object that triggered the event */
 } Event_Resize;
 
 
@@ -84,12 +88,13 @@ typedef struct {
 typedef struct {
     __syscall_slong_t ns_time;  /** current ns system time*/
     __time_t s_time;    /** current sec system time*/
+    void * sender; /** object that triggered the event */
 } Event_Update;
 
 
 typedef void (*Event_action)(void * sender, const void * evt);
 
-#define UI_EVENTS_INIT (UI_Events){false, false, true, true, NULL, NULL, NULL, NULL, NULL, NULL}
+#define UI_EVENTS_INIT (UI_Events){false, false, true, false, NULL, NULL, NULL, NULL, NULL, NULL}
 
 
 //UI events

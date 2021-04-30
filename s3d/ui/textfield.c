@@ -68,13 +68,13 @@ static void render(void * obj, const Event_Render * evt) {
     Render_resetScissor(evt);
 }
 
-static void update(void * obj, Context * cntx, const Event_Update * evt) {
+static void update(void * obj, SceneData * scene, const Event_Update * evt) {
     TextField * tf = (TextField*) obj;
 
     tf->caret_time = evt->ns_time/4e8;
 }
 
-static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     TextField * tf = (TextField*) obj;
     if(!tf->events.enabled) return;
 
@@ -90,7 +90,7 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     tf->events.hover = false;
 }
 
-static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     TextField * tf = (TextField*) obj;
     if(!tf->events.enabled) return;
 
@@ -122,7 +122,7 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
     }
 }
 
-static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+static void pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     TextField * tf = (TextField*) obj;
     if(!tf->events.enabled) return;
 
@@ -172,7 +172,7 @@ static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
     }
 }
 
-static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+static void releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     TextField * tf = (TextField*) obj;
     if(!tf->events.enabled) return;
 

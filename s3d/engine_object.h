@@ -35,11 +35,11 @@ typedef struct {
     void (*destruct)(void * obj);  /** Destruct object */
     void (*render)(void * obj, const Event_Render * evt);    /** Render object */
     void (*resize)(void * obj, const Event_Resize * evt);    /** Render object */
-    void (*update)(void * obj, Context * cntx, const Event_Update * evt);    /** Update object */
-    void (*mouseMoveEvt)(void * obj, Context * cntx, const Event_Mouse * evt); /** Mouse move event */
-    void (*mouseButtonEvt)(void * obj, Context * cntx, const Event_Mouse * evt); /** Mouse button event */
-    void (*pressKeyEvt)(void * obj, Context * cntx, const Event_Key * evt); /** Key pressed event */
-    void (*releaseKeyEvt)(void * obj, Context * cntx, const Event_Key * evt);    /** Key released event */
+    void (*update)(void * obj, SceneData * scene, const Event_Update * evt);    /** Update object */
+    void (*mouseMoveEvt)(void * obj, SceneData * scene, const Event_Mouse * evt); /** Mouse move event */
+    void (*mouseButtonEvt)(void * obj, SceneData * scene, const Event_Mouse * evt); /** Mouse button event */
+    void (*pressKeyEvt)(void * obj, SceneData * scene, const Event_Key * evt); /** Key pressed event */
+    void (*releaseKeyEvt)(void * obj, SceneData * scene, const Event_Key * evt);    /** Key released event */
 } E_Obj_Evts;
 
 

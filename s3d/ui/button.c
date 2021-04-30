@@ -46,7 +46,7 @@ static void render(void * obj, const Event_Render * evt) {
                 btn->text);
 }
 
-static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Button * btn = (Button*) obj;
     if(!btn->events.enabled) return;
 
@@ -62,7 +62,7 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     btn->events.hover = false;
 }
 
-static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Button * btn = (Button*) obj;
     if(!btn->events.enabled) return;
 

@@ -39,7 +39,7 @@ void UI_OBJ_resize(void * obj, const Event_Resize * evt);
  * @param cntx
  * @param evt
  */
-void UI_OBJ_mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt);
+void UI_OBJ_mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt);
 
 /**
  * @brief mouseButtonEvt
@@ -47,7 +47,7 @@ void UI_OBJ_mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt);
  * @param cntx
  * @param evt
  */
-void UI_OBJ_mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt);
+void UI_OBJ_mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt);
 
 /**
  * @brief UI_OBJ_pressKeyEvt
@@ -55,7 +55,7 @@ void UI_OBJ_mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt);
  * @param cntx
  * @param evt
  */
-void UI_OBJ_pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt);
+void UI_OBJ_pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt);
 
 /**
  * @brief UI_OBJ_releaseKeyEvt
@@ -63,6 +63,6 @@ void UI_OBJ_pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt);
  * @param cntx
  * @param evt
  */
-void UI_OBJ_releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt);
+void UI_OBJ_releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt);
 
 #endif // UI_OBJ_H

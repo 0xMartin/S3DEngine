@@ -128,7 +128,7 @@ bool CORE_init(int argc, char **argv, CORE * core) {
 
     //init core struct
     _core = core;
-    _core->context = NULL;
+    _core->scene = NULL;
 
     //init glut window
     glutInit(&argc, argv);
@@ -172,10 +172,12 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     return true;
 }
 
-bool CORE_setContext(Context * contx) {
-    if(_core == NULL || contx == NULL) return false;
+bool CORE_setSceneData(SceneData * scene) {
+    if(_core == NULL || scene == NULL) return false;
 
-    _core->context = contx;
+    if(_core->scene == NULL) {
+        _core->scene = scene;
+    }
 
     return true;
 }
@@ -202,8 +204,8 @@ void CORE_stop() {
 bool CORE_destruct() {
     if(_core == NULL) return false;
 
-    if(Context_destruct(_core->context)) {
-        _core->context = NULL;
+    if(SceneData_destruct(_core->scene)) {
+        _core->scene = NULL;
     }
 
     return true;
@@ -211,8 +213,8 @@ bool CORE_destruct() {
 
 bool CORE_loadTexture(const char * path, Texture ** texture) {
     if(_core == NULL) return false;
-    if(_core->context == NULL) return false;
-    if(_core->context->textures == NULL) return false;
+    if(_core->scene == NULL) return false;
+    if(_core->scene->textures == NULL) return false;
 
     Texture * tex = UTIL_loadBMP(path);
     if(tex == NULL) return false;
@@ -220,7 +222,7 @@ bool CORE_loadTexture(const char * path, Texture ** texture) {
     if(el == NULL) return false;
     el->ptr = tex;
     el->destruct = UTIL_simpleDestructor;
-    Vector_append(_core->context->textures, el);
+    Vector_append(_core->scene->textures, el);
     if(texture != NULL) {
         *texture = tex;
     }
@@ -228,38 +230,52 @@ bool CORE_loadTexture(const char * path, Texture ** texture) {
     return true;
 }
 
-bool Context_init(Context * contx) {
-    if(contx == NULL) return NULL;
+SceneData * SceneData_create() {
+    SceneData * scene = malloc(sizeof(SceneData));
+    if(scene == NULL) return NULL;
 
-    contx->gameData = malloc(sizeof(LinkedList));
-    contx->textures = malloc(sizeof(Vector));
-    contx->files = malloc(sizeof(Vector));
-    if(!LinkedList_init(contx->gameData)) return false;
-    if(!Vector_init(contx->textures, 20, 10)) return false;
-    if(!Vector_init(contx->files, 20, 10)) return false;
+    scene->gameData = malloc(sizeof(LinkedList));
+    if(!LinkedList_init(scene->gameData)) {
+        free(scene);
+        return NULL;
+    }
 
-    return true;
+    scene->textures = malloc(sizeof(Vector));
+    if(!Vector_init(scene->textures, 20, 10)) {
+        free(scene->gameData);
+        free(scene);
+        return NULL;
+    }
+
+    scene->files = malloc(sizeof(Vector));
+    if(!Vector_init(scene->files, 20, 10)) {
+        free(scene->gameData);
+        free(scene->textures);
+        free(scene);
+        return NULL;
+    }
+
+    return scene;
 }
 
-bool Context_destruct(Context * contx) {
-    if(contx == NULL) return NULL;
+bool SceneData_destruct(SceneData * scene) {
+    if(scene == NULL) return NULL;
 
-    if(contx) {
-        if(contx->gameData) {
-            LinkedList_dectruct(contx->gameData);
+    if(scene) {
+        if(scene->gameData) {
+            LinkedList_dectruct(scene->gameData);
         }
-        if(contx->textures) {
-            Vector_destruct(contx->textures);
+        if(scene->textures) {
+            Vector_destruct(scene->textures);
         }
-        if(contx->files) {
-            Vector_destruct(contx->files);
+        if(scene->files) {
+            Vector_destruct(scene->files);
         }
+        free(scene);
     }
 
     return true;
 }
-
-#include <stdio.h>
 
 static void reshape(int w, int h) {
     if(_core != NULL) {
@@ -278,10 +294,10 @@ static void reshape(int w, int h) {
         glScalef(1, -1, 1);           /* Invert Y axis so increasing Y goes down. */
         glTranslatef(0, -h, 0);       /* Shift origin up to upper-left corner. */
 
-        if(_core->context != NULL) {
-            if(_core->context->gameData != NULL) {
+        if(_core->scene != NULL) {
+            if(_core->scene->gameData != NULL) {
                 E_Obj * obj;
-                LinkedList_Element * el = _core->context->gameData->first;
+                LinkedList_Element * el = _core->scene->gameData->first;
                 while(el != NULL) {
                     if(el->ptr != NULL) {
                         obj = (E_Obj*) el->ptr;
@@ -301,20 +317,21 @@ static void renderScene() {
 
     _render_event.window_width = _core->window_width;
     _render_event.window_height = _core->window_height;
+    _render_event.sender = _core;
 
     Render_clear(&_render_event, &_core->clearColor);
 
-    if(_core->context == NULL) {
+    if(_core->scene == NULL) {
         glutSwapBuffers();
         return;
     }
-    if(_core->context->gameData == NULL) {
+    if(_core->scene->gameData == NULL) {
         glutSwapBuffers();
         return;
     }
 
     E_Obj * obj;
-    LinkedList_Element * el = _core->context->gameData->first;
+    LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
@@ -332,19 +349,20 @@ static void updateLoop() {
     if(_core == NULL) return;
     if(!_core->running) return;
 
-    if(_core->context != NULL) {
-        if(_core->context->gameData != NULL) {
+    if(_core->scene != NULL) {
+        if(_core->scene->gameData != NULL) {
             struct timespec time = UTIL_getSystemTime();
             _update_event.ns_time = time.tv_nsec;
             _update_event.s_time = time.tv_sec;
+            _update_event.sender = &_core;
 
             E_Obj * obj;
-            LinkedList_Element * el = _core->context->gameData->first;
+            LinkedList_Element * el = _core->scene->gameData->first;
             while(el != NULL) {
                 if(el->ptr != NULL) {
                     obj = (E_Obj*) el->ptr;
                     if(obj->events) {
-                        if(obj->events->update) obj->events->update(obj, _core->context,
+                        if(obj->events->update) obj->events->update(obj, _core->scene,
                                                                     &_update_event);
                     }
                 }
@@ -422,19 +440,20 @@ static void evt_pressKey(unsigned char key, bool ctrl,
     _key_event_press.alt = alt;
     _key_event_press.shift = shift;
     _key_event_press.arrow = arrow;
+    _key_event_press.sender = &_core;
 
     if(_core == NULL) return;
     if(!_core->running) return;
-    if(_core->context == NULL) return;
-    if(_core->context->gameData == NULL) return;
+    if(_core->scene == NULL) return;
+    if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
-    LinkedList_Element * el = _core->context->gameData->first;
+    LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
-                if(obj->events->pressKeyEvt) obj->events->pressKeyEvt(obj, _core->context,
+                if(obj->events->pressKeyEvt) obj->events->pressKeyEvt(obj, _core->scene,
                                                                       &_key_event_press);
             }
         }
@@ -449,19 +468,20 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
     _key_event_release.alt = alt;
     _key_event_release.shift = shift;
     _key_event_release.arrow = arrow;
+    _key_event_release.sender = &_core;
 
     if(_core == NULL) return;
     if(!_core->running) return;
-    if(_core->context == NULL) return;
-    if(_core->context->gameData == NULL) return;
+    if(_core->scene == NULL) return;
+    if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
-    LinkedList_Element * el = _core->context->gameData->first;
+    LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
-                if(obj->events->releaseKeyEvt) obj->events->releaseKeyEvt(obj, _core->context,
+                if(obj->events->releaseKeyEvt) obj->events->releaseKeyEvt(obj, _core->scene,
                                                                           &_key_event_release);
             }
         }
@@ -472,19 +492,20 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
 static void evt_mouseMove(int x, int y) {
     _mouse_event_move.x = x;
     _mouse_event_move.y = y;
+    _mouse_event_button.sender = &_core;
 
     if(_core == NULL) return;
     if(!_core->running) return;
-    if(_core->context == NULL) return;
-    if(_core->context->gameData == NULL) return;
+    if(_core->scene == NULL) return;
+    if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
-    LinkedList_Element * el = _core->context->gameData->first;
+    LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
-                if(obj->events->mouseMoveEvt) obj->events->mouseMoveEvt(obj, _core->context,
+                if(obj->events->mouseMoveEvt) obj->events->mouseMoveEvt(obj, _core->scene,
                                                                         &_mouse_event_move);
             }
         }
@@ -498,19 +519,20 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     _mouse_event_button.x = x;
     _mouse_event_button.y = y;
     _mouse_event_button.y = y;
+    _mouse_event_button.sender = &_core;
 
     if(_core == NULL) return;
     if(!_core->running) return;
-    if(_core->context == NULL) return;
-    if(_core->context->gameData == NULL) return;
+    if(_core->scene == NULL) return;
+    if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
-    LinkedList_Element * el = _core->context->gameData->first;
+    LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
-                if(obj->events->mouseButtonEvt) obj->events->mouseButtonEvt(obj, _core->context,
+                if(obj->events->mouseButtonEvt) obj->events->mouseButtonEvt(obj, _core->scene,
                                                                             &_mouse_event_button);
             }
         }

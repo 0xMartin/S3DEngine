@@ -14,12 +14,17 @@
 #include <math.h>
 #include <string.h>
 
+
 static Color COLOR = COLOR_WHITE;
 
 static GLfloat MAX_ALPHA = 1.0;
 
 static GLfloat SCALE_X = 1.0;
 static GLfloat SCALE_Y = 1.0;
+
+static GLfloat OFFSET_X = 0.0;
+static GLfloat OFFSET_Y = 0.0;
+static GLfloat OFFSET_Z = 0.0;
 
 static void * FONT = E2D_BITMAP_HELVETICA_18;
 
@@ -153,6 +158,24 @@ void Render_disablePtColor() {
     ENABLE_PT_COLOR = false;
 }
 
+void Render_applyOffset(GLfloat x, GLfloat y, GLfloat z) {
+    if(x != 0.0 || y != 0.0 || z != 0.0) {
+        OFFSET_X += x;
+        OFFSET_Y += y;
+        OFFSET_Z += z;
+        glTranslatef(x, y, z);
+    }
+}
+
+void Render_clearOffset() {
+    if(OFFSET_X != 0.0 || OFFSET_Y != 0.0 || OFFSET_Z != 0.0) {
+        glTranslatef(-OFFSET_X, -OFFSET_Y, -OFFSET_Z);
+        OFFSET_X = 0.0;
+        OFFSET_Y = 0.0;
+        OFFSET_Z = 0.0;
+    }
+}
+
 void Render_setScissor(GLfloat x, GLfloat y, GLfloat width,
                        GLfloat heigh, const Event_Render * evt) {
     if(width > 0 && heigh > 0 && evt->window_width > 0 && evt->window_height > 0) {
@@ -181,6 +204,8 @@ void Render_clear(Event_Render * evt, Color * color) {
     COLOR.red = COLOR.green = COLOR.blue = 1.0;
     FONT = E2D_BITMAP_HELVETICA_18;
     glLineWidth(1.0);
+
+    Render_clearOffset();
 
     if(SCALE_X != 1.0 || SCALE_Y != 1.0) {
         glScalef(1.0 / SCALE_X, 1.0 / SCALE_Y, 1.0);

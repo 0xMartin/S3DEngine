@@ -191,6 +191,19 @@ void Render_enablePtColor();
 void Render_disablePtColor();
 
 /**
+ * @brief Render_applyOffset
+ * @param x
+ * @param y
+ * @param z
+ */
+void Render_applyOffset(GLfloat x, GLfloat y, GLfloat z);
+
+/**
+ * @brief Render_clearOffset
+ */
+void Render_clearOffset();
+
+/**
  * @brief Render_setScissor
  * @param x
  * @param y

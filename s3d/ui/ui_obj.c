@@ -10,9 +10,8 @@ void UI_OBJ_resize(void * obj, const Event_Resize * evt) {
     }
 }
 
-void UI_OBJ_mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+void UI_OBJ_mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     UI_Obj * uiobj = (UI_Obj*) obj;
-    (void)cntx;
     if(!uiobj->events.enabled) return;
 
     if(evt->x >= 0 && evt->y >= 0) {
@@ -27,9 +26,8 @@ void UI_OBJ_mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     uiobj->events.hover = false;
 }
 
-void UI_OBJ_mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
+void UI_OBJ_mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     UI_Obj * uiobj = (UI_Obj*) obj;
-    (void)cntx;
     if(!uiobj->events.enabled) return;
 
     uiobj->events.focus = false;
@@ -47,9 +45,8 @@ void UI_OBJ_mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
     }
 }
 
-void UI_OBJ_pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+void UI_OBJ_pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     UI_Obj * uiobj = (UI_Obj*) obj;
-    (void)cntx;
     if(!uiobj->events.enabled) return;
 
     if(uiobj->events.focus) {
@@ -57,9 +54,8 @@ void UI_OBJ_pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
     }
 }
 
-void UI_OBJ_releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
+void UI_OBJ_releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     UI_Obj * uiobj = (UI_Obj*) obj;
-    (void)cntx;
     if(!uiobj->events.enabled) return;
 
     if(uiobj->events.focus) {
