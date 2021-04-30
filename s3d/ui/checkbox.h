@@ -28,10 +28,13 @@ typedef struct {
     //UI object events
     UI_Events events;
 
-    //UI obj data
-    bool value;
+    //position and size of UI object
     Point2D position;
-    size_t size;
+    GLfloat width;
+    GLfloat height;
+
+    //data
+    bool value;
     Color background;
     Color borderColor;
     Color foreground;

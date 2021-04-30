@@ -12,6 +12,7 @@
 #include "button.h"
 
 #include "../util.h"
+#include "ui_obj.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -80,32 +81,15 @@ static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) 
     }
 }
 
-static void pressKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
-    Button * btn = (Button*) obj;
-    if(!btn->events.enabled) return;
-
-    if(btn->events.focus) {
-        if(btn->events.keyPressedAction) btn->events.keyPressedAction(btn, evt);
-    }
-}
-
-static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
-    Button * btn = (Button*) obj;
-    if(!btn->events.enabled) return;
-
-    if(btn->events.focus) {
-        if(btn->events.keyPressedAction) btn->events.keyPressedAction(btn, evt);
-    }
-}
-
 static const E_Obj_Evts e_obj_evts = {
     .destruct = destruct,
     .render = render,
+    .resize = UI_OBJ_resize,
     .update = NULL,
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
-    .pressKeyEvt = pressKeyEvt,
-    .releaseKeyEvt = releaseKeyEvt
+    .pressKeyEvt = UI_OBJ_pressKeyEvt,
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
 };
 
 /* Object functions -------------------------------------------------------- */
@@ -118,6 +102,7 @@ Button * Button_create(int x, int y, size_t width, size_t heigth,
     if(btn == NULL) return NULL;
 
     btn->objEvts = &e_obj_evts;
+    btn->events = UI_EVENTS_INIT;
 
     btn->background = UI_BUTTON_BG_COLOR;
     btn->foreground = UI_BUTTON_FG_COLOR;
@@ -126,7 +111,6 @@ Button * Button_create(int x, int y, size_t width, size_t heigth,
     btn->position.y = y;
     btn->width = width;
     btn->height = heigth;
-    btn->events = UI_EVENTS_INIT;
     btn->text = malloc(sizeof (char) * (strlen(txt) + 1));
     sprintf(btn->text, "%s", txt);
 
@@ -136,7 +120,6 @@ Button * Button_create(int x, int y, size_t width, size_t heigth,
 void Button_destruct(Button * btn) {
     if(btn != NULL) {
         if(btn->text) free(btn->text);
-        btn->text = NULL;
-        btn->events = UI_EVENTS_INIT;
+        free(btn);
     }
 }

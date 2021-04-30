@@ -21,6 +21,7 @@ static Event_Key    _key_event_release;
 static Event_Mouse  _mouse_event_move;
 static Event_Mouse  _mouse_event_button;
 static Event_Render _render_event;
+static Event_Resize _resize_event;
 static Event_Update _update_event;
 
 
@@ -93,6 +94,11 @@ static void evt_mouseMove(int x, int y);
  * @param y         none
  */
 static void evt_mouseButton(int button, int state, int x, int y);
+
+/**
+ * @brief GLUT window close function
+ */
+static void closeFunc();
 
 /**
  * @brief GLUT reshape function
@@ -253,8 +259,16 @@ bool Context_destruct(Context * contx) {
     return true;
 }
 
+#include <stdio.h>
+
 static void reshape(int w, int h) {
     if(_core != NULL) {
+
+        _resize_event.resize_ratio_horizontal = (double) w / (double) _core->window_width;
+        _resize_event.resize_ratio_vertical = (double) h / (double) _core->window_height;
+        _resize_event.current_window_width = w;
+        _resize_event.current_window_height = h;
+
         _core->window_width = w;
         _core->window_height = h;
         glViewport(0, 0, w, h);       /* Establish viewing area to cover entire window. */
@@ -263,10 +277,24 @@ static void reshape(int w, int h) {
         glOrtho(0, w, 0, h, -1, 1);   /* Map abstract coords directly to window coords. */
         glScalef(1, -1, 1);           /* Invert Y axis so increasing Y goes down. */
         glTranslatef(0, -h, 0);       /* Shift origin up to upper-left corner. */
+
+        if(_core->context != NULL) {
+            if(_core->context->gameData != NULL) {
+                E_Obj * obj;
+                LinkedList_Element * el = _core->context->gameData->first;
+                while(el != NULL) {
+                    if(el->ptr != NULL) {
+                        obj = (E_Obj*) el->ptr;
+                        if(obj->events) {
+                            if(obj->events->resize) obj->events->resize(obj, &_resize_event);
+                        }
+                    }
+                    el = LinkedList_next(el);
+                }
+            }
+        }
     }
 }
-
-#include <stdio.h>
 
 static void renderScene() {
     if(_core == NULL) return;
@@ -487,5 +515,11 @@ static void evt_mouseButton(int button, int state, int x, int y) {
             }
         }
         el = LinkedList_next(el);
+    }
+}
+
+static void closeFunc() {
+    if(_core != NULL) {
+        CORE_destruct();
     }
 }

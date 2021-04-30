@@ -24,18 +24,31 @@ typedef struct {
     const E_Obj_Evts * objEvts;
 
     //[data]
+    LinkedList radiobuttons;
+} RadioButtonGroup;
+
+
+typedef struct {
+    //[engine object event]
+    const E_Obj_Evts * objEvts;
+
+    //[data]
 
     //UI object events
     UI_Events events;
 
-    //UI obj data
-    bool value;
+    //position and size of UI object
     Point2D position;
-    size_t size;
+    GLfloat width;
+    GLfloat height;
+
+    //data
+    bool value;
     Color background;
     Color borderColor;
     Color foreground;
     Label * label;
+    RadioButtonGroup * group;
 } RadioButton;
 
 
@@ -55,5 +68,26 @@ RadioButton * RadioButton_create(int x, int y, size_t size, bool value, const ch
  * @param btn
  */
 void RadioButton_destruct(RadioButton * btn);
+
+
+/**
+ * @brief RadioButtonGroup_create
+ * @return
+ */
+RadioButtonGroup * RadioButtonGroup_create();
+
+/**
+ * @brief RadioButtonGroup_add
+ * @param group
+ * @param btn
+ * @return
+ */
+bool RadioButtonGroup_add(RadioButtonGroup * group, RadioButton * btn);
+
+/**
+ * @brief RadioButtonGroup_destruct
+ * @param group
+ */
+void RadioButtonGroup_destruct(RadioButtonGroup * group);
 
 #endif // BUTTON_H

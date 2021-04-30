@@ -34,6 +34,7 @@ static const E_Obj_Evts e_obj_evts = {
 typedef struct {
     void (*destruct)(void * obj);  /** Destruct object */
     void (*render)(void * obj, const Event_Render * evt);    /** Render object */
+    void (*resize)(void * obj, const Event_Resize * evt);    /** Render object */
     void (*update)(void * obj, Context * cntx, const Event_Update * evt);    /** Update object */
     void (*mouseMoveEvt)(void * obj, Context * cntx, const Event_Mouse * evt); /** Mouse move event */
     void (*mouseButtonEvt)(void * obj, Context * cntx, const Event_Mouse * evt); /** Mouse button event */

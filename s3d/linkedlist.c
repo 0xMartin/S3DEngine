@@ -177,5 +177,5 @@ void LinkedList_dectruct(LinkedList * list) {
     if(list == NULL) return;
 
     LinkedList_clear(list);
-    free(list);
+    //free(list);
 }

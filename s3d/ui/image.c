@@ -12,6 +12,7 @@
 #include "image.h"
 
 #include "../util.h"
+#include "ui_obj.h"
 #include "colors.h"
 #include <stdlib.h>
 
@@ -59,14 +60,16 @@ static void render(void * obj, const Event_Render * evt) {
     }
 }
 
+
 static const E_Obj_Evts e_obj_evts = {
     .destruct = destruct,
     .render = render,
+    .resize = UI_OBJ_resize,
     .update = NULL,
-    .mouseMoveEvt = NULL,
-    .mouseButtonEvt = NULL,
-    .pressKeyEvt = NULL,
-    .releaseKeyEvt = NULL
+    .mouseMoveEvt = UI_OBJ_mouseMoveEvt,
+    .mouseButtonEvt = UI_OBJ_mouseButtonEvt,
+    .pressKeyEvt = UI_OBJ_pressKeyEvt,
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
 };
 
 /* Object functions -------------------------------------------------------- */
@@ -76,6 +79,7 @@ Image * Image_create(int x, int y, size_t width, size_t heigth, Texture * textur
     if(img == NULL) return NULL;
 
     img->objEvts = &e_obj_evts;
+    img->events = UI_EVENTS_INIT;
 
     img->position.x = x;
     img->position.y = y;
@@ -88,7 +92,7 @@ Image * Image_create(int x, int y, size_t width, size_t heigth, Texture * textur
 
 void Image_destruct(Image * img) {
     if(img != NULL) {
-        img->events = UI_EVENTS_INIT;
+        free(img);
     }
 }
 

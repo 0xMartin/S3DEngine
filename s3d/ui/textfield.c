@@ -12,6 +12,7 @@
 #include "textfield.h"
 
 #include "../util.h"
+#include "ui_obj.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -184,6 +185,7 @@ static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
 static const E_Obj_Evts e_obj_evts = {
     .destruct = destruct,
     .render = render,
+    .resize = UI_OBJ_resize,
     .update = update,
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
@@ -199,17 +201,17 @@ TextField * TextField_create(int x, int y, size_t width, size_t heigth,
     if(tf == NULL) return NULL;
 
     tf->objEvts = &e_obj_evts;
+    tf->events = UI_EVENTS_INIT;
 
-    tf->background = UI_TEXTFIELD_BG_COLOR;
-    tf->foreground = UI_TEXTFIELD_FG_COLOR;
-    tf->caret = UI_TEXTFIELD_CARET_COLOR;
     tf->position.x = x;
     tf->position.y = y;
     tf->width = width;
     tf->height = heigth;
     tf->caret_position = 0;
     tf->caret_offset = 0;
-    tf->events = UI_EVENTS_INIT;
+    tf->background = UI_TEXTFIELD_BG_COLOR;
+    tf->foreground = UI_TEXTFIELD_FG_COLOR;
+    tf->caret = UI_TEXTFIELD_CARET_COLOR;
     tf->maxTextLength = max_str_len;
     tf->text = calloc(max_str_len + 1, sizeof (char));
 
@@ -219,7 +221,6 @@ TextField * TextField_create(int x, int y, size_t width, size_t heigth,
 void TextField_destruct(TextField * tf) {
     if(tf != NULL) {
         if(tf->text) free(tf->text);
-        tf->text = NULL;
-        tf->events = UI_EVENTS_INIT;
+        free(tf);
     }
 }

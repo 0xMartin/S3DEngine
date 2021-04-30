@@ -40,24 +40,9 @@ int main(int argc, char **argv) {
     Context_init(&contx);
     CORE_setContext(&contx);
 
-    Label * lab;
-    lab = Label_create(100, 50, "Label");
-    E_Obj_insertToList(contx.gameData, (E_Obj*) lab);
-
-    TextField * tf;
-    tf = TextField_create(300, 50, 200, 40, 255);
-    sprintf(tf->text, "%s", "textfield{}[]");
-    E_Obj_insertToList(contx.gameData, (E_Obj*) tf);
-
-    Image * img;
-    Texture * texture1;
-    if(CORE_loadTexture("data/img.bmp", &texture1)) {
-        img = Image_create(500, 300, IMAGE_SIZE_AUTO, IMAGE_SIZE_AUTO, texture1);
-        E_Obj_insertToList(contx.gameData, (E_Obj*) img);
-    }
 
     Panel * pan;
-    pan = Panel_create(220, 120, 250, 400);
+    pan = Panel_create(10, 10, 300, 400);
     E_Obj_insertToList(contx.gameData, (E_Obj*) pan);
 
     Button * btn;
@@ -75,16 +60,18 @@ int main(int argc, char **argv) {
     //E_Obj_insertToList(contx.gameData, (E_Obj*) cb);
     Panel_insertChild(pan, (E_Obj*) cb);
 
+
+    RadioButtonGroup * group = RadioButtonGroup_create();
     RadioButton * rb;
     for(int i = 0; i < 3; ++i) {
-        sprintf(buffer, "Radio button %d", i);
+        sprintf(buffer, "RadioBtn %d", i);
         rb = RadioButton_create(110, 50 + i * 30, 20, false, buffer);
         //E_Obj_insertToList(contx.gameData, (E_Obj*) cb);
+        RadioButtonGroup_add(group, rb);
         Panel_insertChild(pan, (E_Obj*) rb);
     }
 
     CORE_run();
-    CORE_destruct();
 
     return 0;
 }

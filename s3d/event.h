@@ -71,6 +71,14 @@ typedef struct {
     unsigned int window_height; /** Window height */
 } Event_Render;
 
+//resize event
+typedef struct {
+    double resize_ratio_vertical; /** Resize ratio vertical */
+    double resize_ratio_horizontal; /** Resize ratio horizontal */
+    unsigned int current_window_width;  /** Window width */
+    unsigned int current_window_height; /** Window height */
+} Event_Resize;
+
 
 //update event
 typedef struct {
@@ -81,14 +89,16 @@ typedef struct {
 
 typedef void (*Event_action)(void * sender, const void * evt);
 
-#define UI_EVENTS_INIT (UI_Events){false, false, true, NULL, NULL, NULL, NULL, NULL, NULL}
+#define UI_EVENTS_INIT (UI_Events){false, false, true, true, NULL, NULL, NULL, NULL, NULL, NULL}
 
 
 //UI events
 typedef struct {
+    //events
     bool focus;
     bool hover;
     bool enabled;
+    bool resizable;
     Event_action mousePressAction;
     Event_action mouseReleaseAction;
     Event_action keyPressedAction;

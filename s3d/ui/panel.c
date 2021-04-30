@@ -12,6 +12,7 @@
 #include "panel.h"
 
 #include "../util.h"
+#include "ui_obj.h"
 #include "colors.h"
 #include <stdlib.h>
 
@@ -44,7 +45,7 @@ static void render(void * obj, const Event_Render * evt) {
     glTranslatef(pan->position.x, pan->position.y, 0);
 
     //render childs
-    Render_setScissor(pan->position.x, pan->position.y + pan->height,
+    Render_setScissor(pan->position.x,pan->position.y + pan->height,
                       pan->width, pan->height, evt);
 
     E_Obj * child;
@@ -63,6 +64,34 @@ static void render(void * obj, const Event_Render * evt) {
 
     //shift back origin
     glTranslatef(-pan->position.x, -pan->position.y, 0);
+}
+
+static void resize(void * obj, const Event_Resize * evt) {
+    Panel * pan = (Panel*) obj;
+    if(pan->events.resizable) {
+
+        pan->position.x *= evt->resize_ratio_horizontal;
+        pan->position.y *= evt->resize_ratio_vertical;
+        pan->width *= evt->resize_ratio_horizontal;
+        pan->height *= evt->resize_ratio_vertical;
+
+
+        Event_Resize panel_evt = *evt;
+        panel_evt.current_window_width = pan->width;
+        panel_evt.current_window_height = pan->height;
+
+        E_Obj * child;
+        LinkedList_Element * el = pan->childs.first;
+        while(el != NULL) {
+            if(el->ptr != NULL) {
+                child = (E_Obj*) el->ptr;
+                if(child->events) {
+                    if(child->events->resize) child->events->resize(child, &panel_evt);
+                }
+            }
+            el = LinkedList_next(el);
+        }
+    }
 }
 
 static void update(void * obj, Context * cntx, const Event_Update * evt) {
@@ -112,10 +141,12 @@ static void mouseMoveEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
 static void mouseButtonEvt(void * obj, Context * cntx, const Event_Mouse * evt) {
     Panel * pan = (Panel*) obj;
 
+    pan->events.focus = false;
     if(IN_RANGE(evt->x, pan->position.x - MOUSE_POS_THRESHOLD,
                 pan->position.x + pan->width + MOUSE_POS_THRESHOLD)) {
         if(IN_RANGE(evt->y, pan->position.y - MOUSE_POS_THRESHOLD,
                     pan->position.y + pan->height + MOUSE_POS_THRESHOLD)) {
+            pan->events.focus = true;
 
             Event_Mouse panel_evt = *evt;
             panel_evt.x -= pan->position.x;
@@ -173,6 +204,7 @@ static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
 static const E_Obj_Evts e_obj_evts = {
     .destruct = destruct,
     .render = render,
+    .resize = resize,
     .update = update,
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
@@ -187,13 +219,13 @@ Panel * Panel_create(int x, int y, size_t width, size_t height) {
     if(pan == NULL) return NULL;
 
     pan->objEvts = &e_obj_evts;
+    pan->events = UI_EVENTS_INIT;
 
     pan->background = UI_PANEL_BG_COLOR;
     pan->position.x = x;
     pan->position.y = y;
     pan->width = width;
     pan->height = height;
-    pan->events = UI_EVENTS_INIT;
 
     LinkedList_init(&pan->childs);
 
@@ -202,9 +234,8 @@ Panel * Panel_create(int x, int y, size_t width, size_t height) {
 
 void Panel_destruct(Panel * pan) {
     if(pan != NULL) {
-        pan->events = UI_EVENTS_INIT;
-
         LinkedList_dectruct(&pan->childs);
+        free(pan);
     }
 }
 

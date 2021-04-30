@@ -12,6 +12,7 @@
 #include "textarea.h"
 
 #include "../util.h"
+#include "ui_obj.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +54,7 @@ static void releaseKeyEvt(void * obj, Context * cntx, const Event_Key * evt) {
 static const E_Obj_Evts e_obj_evts = {
     .destruct = destruct,
     .render = render,
+    .resize = UI_OBJ_resize,
     .update = update,
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
@@ -75,7 +77,6 @@ TextArea * TextArea_create(int x, int y, size_t width, size_t heigth,
 void TextArea_destruct(TextArea * tf) {
     if(tf != NULL) {
         if(tf->text) free(tf->text);
-        tf->text = NULL;
-        tf->events = UI_EVENTS_INIT;
+        free(tf);
     }
 }

@@ -81,6 +81,13 @@ typedef struct {
     Color color; /** color of point*/
 } Point2D;
 
+//bounds
+typedef struct {
+    Point2D position; /** Position */
+    size_t width; /** Width */
+    size_t height; /** Height */
+} Bounds;
+
 //vertex
 typedef struct {
     GLfloat x; /** X position*/

@@ -12,6 +12,7 @@
 #include "label.h"
 
 #include "../util.h"
+#include "ui_obj.h"
 #include "colors.h"
 #include <stdlib.h>
 #include <string.h>
@@ -35,14 +36,16 @@ static void render(void * obj, const Event_Render * evt) {
                 lab->text);
 }
 
+
 static const E_Obj_Evts e_obj_evts = {
     .destruct = destruct,
     .render = render,
+    .resize = UI_OBJ_resize,
     .update = NULL,
-    .mouseMoveEvt = NULL,
-    .mouseButtonEvt = NULL,
-    .pressKeyEvt = NULL,
-    .releaseKeyEvt = NULL
+    .mouseMoveEvt = UI_OBJ_mouseMoveEvt,
+    .mouseButtonEvt = UI_OBJ_mouseButtonEvt,
+    .pressKeyEvt = UI_OBJ_pressKeyEvt,
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
 };
 
 /* Object functions -------------------------------------------------------- */
@@ -54,12 +57,11 @@ Label * Label_create(int x, int y, const char * const txt) {
     if(lab == NULL) return NULL;
 
     lab->objEvts = &e_obj_evts;
+    lab->events = UI_EVENTS_INIT;
 
     lab->foreground = UI_LABEL_FG_COLOR;
-    lab->events.enabled = true;
     lab->position.x = x;
     lab->position.y = y;
-    lab->events = UI_EVENTS_INIT;
     lab->text = malloc(sizeof (char) * (strlen(txt) + 1));
     sprintf(lab->text, "%s", txt);
 
@@ -69,8 +71,7 @@ Label * Label_create(int x, int y, const char * const txt) {
 void Label_destruct(Label * lab) {
     if(lab != NULL) {
         if(lab->text) free(lab->text);
-        lab->text = NULL;
-        lab->events = UI_EVENTS_INIT;
+        free(lab);
     }
 }
 

@@ -27,8 +27,12 @@ typedef struct {
     //UI object events
     UI_Events events;
 
-    //UI obj data
+    //position and size of UI object
     Point2D position;
+    GLfloat width;
+    GLfloat height;
+
+    //data
     Color foreground;
     char * text;
 } Label;
