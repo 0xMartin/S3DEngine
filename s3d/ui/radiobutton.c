@@ -174,7 +174,7 @@ bool RadioButtonGroup_add(RadioButtonGroup * group, RadioButton * btn) {
 
 void RadioButtonGroup_destruct(RadioButtonGroup * group) {
     if(group != NULL) {
-        LinkedList_dectruct(&group->radiobuttons);
+        LinkedList_destruct(&group->radiobuttons);
         free(group);
     }
 }
