@@ -29,6 +29,7 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     TextField * tf = (TextField*) obj;
+    if(!tf->events.visible) return;
 
     if(tf->events.focus) {
         Color darker_bg = COLOR_DARKER(tf->background, 0.4);
@@ -45,9 +46,9 @@ static void render(void * obj, const Event_Render * evt) {
     Render_setColor(&tf->foreground);
 
     float line_start = (tf->height + Render_getStringHeight())/2;
+
     Render_setScissor(tf->position.x + 5, tf->position.y + tf->height,
                       tf->width - 10, tf->height, evt);
-
     Render_drawString(tf->position.x + 5 - Render_getStringWidthRange(
                           tf->text, tf->caret_position - abs(tf->caret_offset), tf->caret_position),
                       tf->position.y + line_start,
@@ -76,7 +77,7 @@ static void update(void * obj, SceneData * scene, const Event_Update * evt) {
 
 static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     TextField * tf = (TextField*) obj;
-    if(!tf->events.enabled) return;
+    if(!tf->events.enabled || !tf->events.visible) return;
 
     if(evt->x >= 0 && evt->y >= 0) {
         if(IN_RANGE(evt->x, tf->position.x, tf->position.x + tf->width)) {
@@ -92,7 +93,7 @@ static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt)
 
 static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     TextField * tf = (TextField*) obj;
-    if(!tf->events.enabled) return;
+    if(!tf->events.enabled || !tf->events.visible) return;
 
     tf->events.focus = false;
     if(evt->x >= 0 && evt->y >= 0) {
@@ -124,7 +125,7 @@ static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * ev
 
 static void pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     TextField * tf = (TextField*) obj;
-    if(!tf->events.enabled) return;
+    if(!tf->events.enabled || !tf->events.visible) return;
 
     if(tf->events.focus) {
         if(tf->events.keyPressedAction) tf->events.keyPressedAction(tf, evt);
@@ -174,7 +175,7 @@ static void pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
 
 static void releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     TextField * tf = (TextField*) obj;
-    if(!tf->events.enabled) return;
+    if(!tf->events.enabled || !tf->events.visible) return;
 
     if(tf->events.focus) {
         if(tf->events.keyPressedAction) tf->events.keyPressedAction(tf, evt);
@@ -190,7 +191,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
     .pressKeyEvt = pressKeyEvt,
-    .releaseKeyEvt = releaseKeyEvt
+    .releaseKeyEvt = releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */

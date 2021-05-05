@@ -27,6 +27,7 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     CheckBox * cb = (CheckBox*) obj;
+    if(!cb->events.visible) return;
 
     Render_setColor(&cb->background);
     Render_fillRectangle(&cb->position, cb->width, cb->height);
@@ -72,7 +73,7 @@ static void resize(void * obj, const Event_Resize * evt) {
 
 static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     CheckBox * cb = (CheckBox*) obj;
-    if(!cb->events.enabled) return;
+    if(!cb->events.enabled || !cb->events.visible) return;
 
     cb->events.focus = false;
     if(evt->x >= 0 && evt->y >= 0) {
@@ -100,7 +101,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = UI_OBJ_mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
     .pressKeyEvt = UI_OBJ_pressKeyEvt,
-    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */

@@ -28,6 +28,7 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     Button * btn = (Button*) obj;
+    if(!btn->events.visible) return;
 
     Render_setColor(&btn->background);
     Render_drawRectangle(&btn->position, btn->width, btn->height);
@@ -48,7 +49,7 @@ static void render(void * obj, const Event_Render * evt) {
 
 static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Button * btn = (Button*) obj;
-    if(!btn->events.enabled) return;
+    if(!btn->events.enabled || !btn->events.visible) return;
 
     if(evt->x >= 0 && evt->y >= 0) {
         if(IN_RANGE(evt->x, btn->position.x, btn->position.x + btn->width)) {
@@ -64,7 +65,7 @@ static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt)
 
 static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Button * btn = (Button*) obj;
-    if(!btn->events.enabled) return;
+    if(!btn->events.enabled || !btn->events.visible) return;
 
     btn->events.focus = false;
     if(evt->x >= 0 && evt->y >= 0) {
@@ -89,7 +90,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
     .pressKeyEvt = UI_OBJ_pressKeyEvt,
-    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */

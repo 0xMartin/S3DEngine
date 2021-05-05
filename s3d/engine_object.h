@@ -26,7 +26,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = NULL,
     .mouseButtonEvt = NULL,
     .pressKeyEvt = NULL,
-    .releaseKeyEvt = NULL
+    .releaseKeyEvt = NULL,
+    .onLoad = NULL
 };
 */
 
@@ -40,6 +41,7 @@ typedef struct {
     void (*mouseButtonEvt)(void * obj, SceneData * scene, const Event_Mouse * evt); /** Mouse button event */
     void (*pressKeyEvt)(void * obj, SceneData * scene, const Event_Key * evt); /** Key pressed event */
     void (*releaseKeyEvt)(void * obj, SceneData * scene, const Event_Key * evt);    /** Key released event */
+    void (*onLoad)(void * obj, SceneData * scene); /** on scene load */
 } E_Obj_Evts;
 
 
@@ -64,12 +66,19 @@ bool E_Obj_init(E_Obj * g_obj);
 void E_Obj_destruct(E_Obj * g_obj);
 
 /**
- * @brief UTIL_insertEObj
+ * @brief E_Obj_insertToList
  * @param list
  * @param obj
  * @return
  */
 bool E_Obj_insertToList(LinkedList * list, E_Obj * obj);
 
+/**
+ * @brief E_Obj_insertToVector
+ * @param vector
+ * @param obj
+ * @return
+ */
+bool E_Obj_insertToVector(Vector * vector, E_Obj * obj);
 
 #endif // ENGINE_OBJECT_H

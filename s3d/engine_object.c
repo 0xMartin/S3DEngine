@@ -11,26 +11,17 @@
 
 #include "engine_object.h"
 
-
-
-static void destruct(void * ptr);
-
-
 bool E_Obj_init(E_Obj * obj) {
     if(obj == NULL) return false;
-
     obj->data = NULL;
     obj->events = NULL;
-
     return true;
 }
 
 void E_Obj_destruct(E_Obj * obj) {
     if(obj == NULL) return;
     if(obj->events == NULL) return;
-
     if(obj->events->destruct) obj->events->destruct(obj);
-    free(obj);
 }
 
 bool E_Obj_insertToList(LinkedList * list, E_Obj * obj) {
@@ -38,12 +29,16 @@ bool E_Obj_insertToList(LinkedList * list, E_Obj * obj) {
 
     LinkedList_Element * element = malloc(sizeof(LinkedList_Element));
     element->ptr = obj;
-    element->destruct = destruct;
-
+    element->destruct = obj->events->destruct;
     return LinkedList_insert(list, element);
 }
 
-static void destruct(void * data) {
-    if(data == NULL) return;
-    E_Obj_destruct((E_Obj*) data);
+bool E_Obj_insertToVector(Vector * vector, E_Obj * obj) {
+    if(obj == NULL || vector == NULL) return false;
+
+    Vector_Element * element = malloc(sizeof(Vector_Element));
+    element->ptr = obj;
+    element->destruct = obj->events->destruct;
+    return Vector_append(vector, element);
 }
+

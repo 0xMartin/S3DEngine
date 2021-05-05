@@ -24,7 +24,6 @@ bool LinkedList_init(LinkedList * list) {
     return true;
 }
 
-
 bool LinkedList_insert(LinkedList * list, LinkedList_Element * element) {
     if(list == NULL || element == NULL) return false;
 
@@ -155,7 +154,7 @@ bool LinkedList_contains(LinkedList * list, LinkedList_Element * element) {
     return false;
 }
 
-void LinkedList_clear(LinkedList * list) {
+void LinkedList_destruct(LinkedList * list) {
     if(list == NULL) return;
 
     LinkedList_Element * element = list->first;
@@ -171,11 +170,4 @@ void LinkedList_clear(LinkedList * list) {
     list->first = NULL;
     list->last = NULL;
     list->count = 0;
-}
-
-void LinkedList_dectruct(LinkedList * list) {
-    if(list == NULL) return;
-
-    LinkedList_clear(list);
-    //free(list);
 }

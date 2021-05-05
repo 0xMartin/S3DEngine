@@ -59,7 +59,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
     .pressKeyEvt = pressKeyEvt,
-    .releaseKeyEvt = releaseKeyEvt
+    .releaseKeyEvt = releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */

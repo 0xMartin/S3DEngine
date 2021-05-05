@@ -177,15 +177,20 @@ void Render_clearOffset() {
 }
 
 void Render_setScissor(GLfloat x, GLfloat y, GLfloat width,
-                       GLfloat heigh, const Event_Render * evt) {
-    if(width > 0 && heigh > 0 && evt->window_width > 0 && evt->window_height > 0) {
-        glScissor(x, evt->window_height - y, width, heigh);
+                       GLfloat height, const Event_Render * evt) { return;
+    if(width > 0 && height > 0 && evt->window_width > 0 && evt->window_height > 0) {
+        int x_s = OFFSET_X + x;
+        int y_s = evt->window_height - y - OFFSET_Y;
+        glScissor(x_s, y_s,
+                  MIN(width, evt->window_width - x),
+                  MIN(height, evt->window_height - y));
     }
 }
 
 void Render_resetScissor(const Event_Render * evt) {
     if(evt->window_width > 0 && evt->window_height > 0) {
-        glScissor(0, 0, evt->window_width, evt->window_height);
+        glScissor(OFFSET_X, OFFSET_Y,
+                  evt->window_width, evt->window_height);
     }
 }
 

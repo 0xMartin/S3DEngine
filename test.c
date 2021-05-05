@@ -31,19 +31,17 @@ static void event(void * sender, const void * evt) {
 }
 
 int main(int argc, char **argv) {
-    CORE core = CORE_DEFAULT_CONIFG;
+    CORE core = CORE_DEFAULT_CONFIG;
     sprintf(core.windonw_title, "%s", "Engine");
     CORE_init(argc, argv, &core);
     core.clearColor = UI_BG_COLOR;
 
-    Context contx;
-    Context_init(&contx);
-    CORE_setContext(&contx);
-
+    SceneData * scene = SceneData_create();
+    CORE_setSceneData(scene);
 
     Panel * pan;
     pan = Panel_create(10, 10, 300, 400);
-    E_Obj_insertToList(contx.gameData, (E_Obj*) pan);
+    E_Obj_insertToList(scene->gameData, (E_Obj*) pan);
 
     Button * btn;
     char buffer[255];

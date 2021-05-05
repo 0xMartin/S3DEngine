@@ -17,53 +17,53 @@
 #define DEFAULT_LOG_ERR_FILE "error.txt"
 
 /**
- * @brief readStringFromFile
+ * @brief IO_readStringFromFile
  * @param path
  * @param buffer
  * @param size
  * @return
  */
-bool readStringFromFile(const char * const path, char * buffer, unsigned int size);
+bool IO_readStringFromFile(const char * const path, char * buffer, unsigned int size);
 
 /**
- * @brief writeStringToFile
+ * @brief IO_writeStringToFile
  * @param path
  * @param buffer
  * @return
  */
-bool writeStringToFile(const char * const path, char * buffer);
+bool IO_writeStringToFile(const char * const path, char * buffer);
 
 /**
- * @brief appendStringToFile
+ * @brief IO_appendStringToFile
  * @param path
  * @param buffer
  * @return
  */
-bool appendStringToFile(const char * const path, char * buffer);
+bool IO_appendStringToFile(const char * const path, char * buffer);
 
 /**
- * @brief readDataFromFile
+ * @brief IO_readDataFromFile
  * @param path
  * @param data
  * @return
  */
-bool readDataFromFile(const char * const path, void * data);
+bool IO_readDataFromFile(const char * const path, void * data);
 
 /**
- * @brief writeDataToFile
+ * @brief IO_writeDataToFile
  * @param path
  * @param data
  * @return
  */
-bool writeDataToFile(const char * const path, void * data);
+bool IO_writeDataToFile(const char * const path, void * data);
 
 /**
- * @brief writeDataToFile
+ * @brief IO_writeDataToFile
  * @param path
  * @param data
  * @return
  */
-bool logError(const char * const str);
+bool IO_logError(const char * const str);
 
 
 #endif // IO_H

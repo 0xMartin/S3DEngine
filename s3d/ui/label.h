@@ -35,6 +35,7 @@ typedef struct {
     //data
     Color foreground;
     char * text;
+    bool centered;
 } Label;
 
 

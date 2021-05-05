@@ -47,11 +47,15 @@
 #define COLOR_WHITE     (Color){1.0,   1.0,    1.0,    1.0}
 #define COLOR_YELLOW	(Color){1.0,   1.0,    0.0,    1.0}
 
+
 #define COLOR_DARKER(c, factor)	((Color){.red=c.red*(1.0-factor),\
     .green=c.green*(1.0-factor), .blue=c.blue*(1.0-factor), .alpha=c.alpha})
 
 #define COLOR_LIGHTER(c, factor) ((Color){.red=MIN(1.0, c.red * 1.0 + factor),\
     .green=MIN(1.0, c.green * 1.0 + factor), .blue=MIN(1.0, c.blue * 1.0 + factor), .alpha=c.alpha})
+
+#define COLOR_CHANGE_OPACITY(c, opacity) ((Color){.red=c.red, .green=c.green, .blue=c.blue, .alpha=opacity})
+
 
 //fonts
 #define E2D_STROKE_ROMAN            GLUT_STROKE_ROMAN
@@ -65,6 +69,7 @@
 #define E2D_BITMAP_HELVETICA_18     GLUT_BITMAP_HELVETICA_18
 
 #define RENDER_DEFAULT_LINE_WIDTH 1
+
 
 //RGB color
 typedef struct {
@@ -212,7 +217,7 @@ void Render_clearOffset();
  * @param evt
  */
 void Render_setScissor(GLfloat x, GLfloat y, GLfloat width,
-                       GLfloat heigh, const Event_Render * evt);
+                       GLfloat height, const Event_Render * evt);
 
 /**
  * @brief Render_resetScissor
@@ -348,5 +353,6 @@ void Render_drawString(GLfloat x, GLfloat y,  const char * const str);
  * @param p
  */
 void Render_mesh(Point2D * p, LinkedList * faces);
+
 
 #endif // RENDER_H

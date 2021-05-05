@@ -28,12 +28,20 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     Label * lab = (Label*) obj;
+    if(!lab->events.visible) return;
 
     Render_setColor(&lab->foreground);
-    Render_drawString(
-                lab->position.x,
-                lab->position.y,
-                lab->text);
+    if(lab->centered) {
+        Render_drawString(
+                    lab->position.x - Render_getStringWidth(lab->text) / 2,
+                    lab->position.y,
+                    lab->text);
+    } else {
+        Render_drawString(
+                    lab->position.x,
+                    lab->position.y,
+                    lab->text);
+    }
 }
 
 
@@ -45,14 +53,13 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = UI_OBJ_mouseMoveEvt,
     .mouseButtonEvt = UI_OBJ_mouseButtonEvt,
     .pressKeyEvt = UI_OBJ_pressKeyEvt,
-    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */
 
 Label * Label_create(int x, int y, const char * const txt) {
-    if(txt == NULL) return NULL;
-
     Label * lab = malloc(sizeof(Label));
     if(lab == NULL) return NULL;
 
@@ -62,8 +69,13 @@ Label * Label_create(int x, int y, const char * const txt) {
     lab->foreground = UI_LABEL_FG_COLOR;
     lab->position.x = x;
     lab->position.y = y;
-    lab->text = malloc(sizeof (char) * (strlen(txt) + 1));
-    sprintf(lab->text, "%s", txt);
+    lab->centered = false;
+    if(txt != NULL) {
+        lab->text = malloc(sizeof (char) * (strlen(txt) + 1));
+        sprintf(lab->text, "%s", txt);
+    } else {
+        lab->text = NULL;
+    }
 
     return lab;
 }

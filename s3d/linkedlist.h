@@ -89,15 +89,9 @@ bool LinkedList_removeIndex(LinkedList * list, unsigned int index, bool destruct
 bool LinkedList_contains(LinkedList * list, LinkedList_Element * element);
 
 /**
- * @brief Clear linked list
+ * @brief Clear linked list (call destructor of each element in list), LinkedList struct is not freed
  * @param list  Pointer at LinkedList structure
  */
-void LinkedList_clear(LinkedList * list);
-
-/**
- * @brief Destruct all elements in list
- * @param list  Pointer at LinkedList structure
- */
-void LinkedList_dectruct(LinkedList * list);
+void LinkedList_destruct(LinkedList * list);
 
 #endif // LINKEDLIST_H

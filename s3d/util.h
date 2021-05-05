@@ -20,6 +20,7 @@
 #endif
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <time.h>
 
 
@@ -36,20 +37,13 @@ typedef struct {
     GLuint textureID;
 } Texture;
 
+
 /**
  * @brief Load bmp image and create opengl texture
  * @param path Path to image
  * @return Pointer on loaded texture
  */
-Texture * UTIL_loadBMP(const char * path);
-
-/**
- * @brief UTIL_loadJPEG
- * @param path
- * @param fast
- * @return
- */
-Texture * UTIL_loadJPEG(const char * path);
+Texture * UTIL_loadTexture(const char * path);
 
 /**
  * @brief Generate random number in range from 0 to n
@@ -81,6 +75,5 @@ struct timespec UTIL_getSystemTime();
  * @param data  Pointer on data structure
  */
 void UTIL_simpleDestructor(void * data);
-
 
 #endif // UTIL_H

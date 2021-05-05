@@ -26,6 +26,7 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     RadioButton * rb = (RadioButton*) obj;
+    if(!rb->events.visible) return;
 
     Point2D p = rb->position;
     p.x += rb->width/2;
@@ -68,7 +69,7 @@ static void resize(void * obj, const Event_Resize * evt) {
 
 static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     RadioButton * rb = (RadioButton*) obj;
-    if(!rb->events.enabled) return;
+    if(!rb->events.enabled || !rb->events.visible) return;
 
     rb->events.focus = false;
     if(evt->x >= 0 && evt->y >= 0) {
@@ -108,7 +109,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = UI_OBJ_mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
     .pressKeyEvt = UI_OBJ_pressKeyEvt,
-    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */

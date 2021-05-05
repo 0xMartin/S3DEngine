@@ -12,11 +12,9 @@
 #ifndef AI_H
 #define AI_H
 
-#include "linkedlist.h"
 #include <stdbool.h>
 
 typedef struct _AI {
-    LinkedList * data;
     bool (*init)(struct _AI ai);    /** Init AI */
     bool (*destruct)(struct _AI ai);    /** Destruct AI */
     bool (*process)(struct _AI ai, void * gameData);    /** Process game data and perform action */

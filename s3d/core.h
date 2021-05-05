@@ -27,18 +27,17 @@
     600,\
     "Window",\
     false,\
-    false,\
     50,\
     50,\
     true,\
     false,\
     (Color){0.0, 0.0, 0.0, 1.0},\
+    NULL,\
     NULL\
     }
 
 typedef struct {
     LinkedList * gameData;  /** game data, list consisting only from <E_Obj> engine_object.h */
-    Vector * textures;    /** vector of all textures, consisting only from <Texture> util.h */
     Vector * files; /** vector of all opened files */
 } SceneData;
 
@@ -47,13 +46,13 @@ typedef struct {
     unsigned int window_height; /** Window height */
     char windonw_title[255];   /** Window title */
     bool window_fullScreen; /** True -> fullscreen mode */
-    bool running;   /** True -> core is running */
     unsigned int fps;   /** Frames per second */
     unsigned int ups;   /** Updates per second */
     bool visibleCursor; /** Is cursor visible? */
     bool mouseCamControl; /** Control camera by mouse motion */
     Color clearColor; /** Background color of window */
     SceneData * scene;  /** Core context */
+    Vector * textures;    /** vector of all textures, consisting only from <Texture> util.h */
 } CORE;
 
 

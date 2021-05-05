@@ -88,13 +88,15 @@ typedef struct {
 typedef struct {
     __syscall_slong_t ns_time;  /** current ns system time*/
     __time_t s_time;    /** current sec system time*/
+    __syscall_slong_t ns_diff;   /** ns difference */
+    __time_t s_diff;    /** s difference*/
     void * sender; /** object that triggered the event */
 } Event_Update;
 
 
 typedef void (*Event_action)(void * sender, const void * evt);
 
-#define UI_EVENTS_INIT (UI_Events){false, false, true, false, NULL, NULL, NULL, NULL, NULL, NULL}
+#define UI_EVENTS_INIT (UI_Events){false, false, true, false, true, NULL, NULL, NULL, NULL, NULL, NULL}
 
 
 //UI events
@@ -104,6 +106,7 @@ typedef struct {
     bool hover;
     bool enabled;
     bool resizable;
+    bool visible;
     Event_action mousePressAction;
     Event_action mouseReleaseAction;
     Event_action keyPressedAction;

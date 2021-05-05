@@ -29,6 +29,7 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     Panel * pan = (Panel*) obj;
+    if(!pan->events.visible) return;
 
     Event_Render panel_evt;
     panel_evt.window_width = pan->width;
@@ -42,13 +43,11 @@ static void render(void * obj, const Event_Render * evt) {
     Render_setColor(&border_color);
     Render_drawRectangle(&pan->position, pan->width, pan->height);
 
-    //shift origin
-    //glTranslatef(pan->position.x, pan->position.y, 0);
-    Render_applyOffset(pan->position.x, pan->position.y, 0.0);
 
     //render childs
     Render_setScissor(pan->position.x,pan->position.y + pan->height,
                       pan->width, pan->height, evt);
+    Render_applyOffset(pan->position.x, pan->position.y, 0.0);
 
     E_Obj * child;
     LinkedList_Element * el = pan->childs.first;
@@ -62,11 +61,8 @@ static void render(void * obj, const Event_Render * evt) {
         el = LinkedList_next(el);
     }
 
-    Render_resetScissor(evt);
-
-    //shift back origin
-    //glTranslatef(-pan->position.x, -pan->position.y, 0);
     Render_clearOffset();
+    Render_resetScissor(evt);
 }
 
 static void resize(void * obj, const Event_Resize * evt) {
@@ -119,6 +115,7 @@ static void update(void * obj, SceneData * scene, const Event_Update * evt) {
 
 static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Panel * pan = (Panel*) obj;
+    if(!pan->events.enabled || !pan->events.visible) return;
 
     if(IN_RANGE(evt->x, pan->position.x - MOUSE_POS_THRESHOLD,
                 pan->position.x + pan->width + MOUSE_POS_THRESHOLD)) {
@@ -148,6 +145,7 @@ static void mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt)
 
 static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt) {
     Panel * pan = (Panel*) obj;
+    if(!pan->events.enabled || !pan->events.visible) return;
 
     pan->events.focus = false;
     if(IN_RANGE(evt->x, pan->position.x - MOUSE_POS_THRESHOLD,
@@ -179,6 +177,7 @@ static void mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * ev
 
 static void pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     Panel * pan = (Panel*) obj;
+    if(!pan->events.enabled || !pan->events.visible) return;
 
     if(pan->events.focus) {
         Event_Key panel_evt = *evt;
@@ -200,6 +199,7 @@ static void pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
 
 static void releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt) {
     Panel * pan = (Panel*) obj;
+    if(!pan->events.enabled || !pan->events.visible) return;
 
     if(pan->events.focus) {
         Event_Key panel_evt = *evt;
@@ -228,7 +228,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = mouseMoveEvt,
     .mouseButtonEvt = mouseButtonEvt,
     .pressKeyEvt = pressKeyEvt,
-    .releaseKeyEvt = releaseKeyEvt
+    .releaseKeyEvt = releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */
@@ -253,7 +254,7 @@ Panel * Panel_create(int x, int y, size_t width, size_t height) {
 
 void Panel_destruct(Panel * pan) {
     if(pan != NULL) {
-        LinkedList_dectruct(&pan->childs);
+        LinkedList_destruct(&pan->childs);
         free(pan);
     }
 }

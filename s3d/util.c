@@ -11,11 +11,11 @@
 
 #include "util.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-Texture * UTIL_loadBMP(const char * path) {
+
+Texture * UTIL_loadTexture(const char * path) {
     if(strlen(path) == 0) return NULL;
 
     // Data read from the header of the BMP file
@@ -56,6 +56,8 @@ Texture * UTIL_loadBMP(const char * path) {
     //Everything is in memory now, the file can be closed
     fclose(file);
 
+
+
     // Create one OpenGL texture
     glGenTextures(1, &texture->textureID);
 
@@ -67,10 +69,6 @@ Texture * UTIL_loadBMP(const char * path) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     return texture;
-}
-
-Texture * UTIL_loadJPEG(const char * path) {
-
 }
 
 int UTIL_randInt(int n) {
@@ -108,3 +106,4 @@ void UTIL_simpleDestructor(void * data) {
         free(data);
     }
 }
+

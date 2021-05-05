@@ -11,11 +11,28 @@
 
 #include "core.h"
 
+#include <pthread.h>
+#include <unistd.h>
 #include "engine_object.h"
 
 
 static CORE * _core = NULL;
 
+static pthread_t _thread_update;
+
+static bool _running = false;
+static bool _glut_main_loop = false;
+
+//core events iterrupts
+static bool _interrupt_resize = false;
+static bool _interrupt_render = false;
+static bool _interrupt_update = false;
+static bool _interrupt_press_key = false;
+static bool _interrupt_release_key = false;
+static bool _interrupt_mouse_move = false;
+static bool _interrupt_mouse_button = false;
+
+//core events
 static Event_Key    _key_event_press;
 static Event_Key    _key_event_release;
 static Event_Mouse  _mouse_event_move;
@@ -26,6 +43,8 @@ static Event_Update _update_event;
 
 
 /* Private func declaration -------------------------------------------------------- */
+
+static bool switchSceneData(SceneData * data);
 
 /**
  * @brief Keyboard pressed function
@@ -96,11 +115,6 @@ static void evt_mouseMove(int x, int y);
 static void evt_mouseButton(int button, int state, int x, int y);
 
 /**
- * @brief GLUT window close function
- */
-static void closeFunc();
-
-/**
  * @brief GLUT reshape function
  * @param w Window width
  * @param h Window height
@@ -108,19 +122,29 @@ static void closeFunc();
 static void reshape(int w, int h);
 
 /**
- * @brief Main update loop
+ * @brief Update eache E_Obj of current scene
  */
-static void updateLoop();
+static void updateScene();
 
 /**
- * @brief Main render loop
+ * @brief Rendering loop
  */
 static void renderLoop();
 
 /**
- * @brief Render scene
+ * @brief Update loop
+ */
+static void * updateLoop(void * args);
+
+/**
+ * @brief Render each E_Obj of current scene
  */
 static void renderScene();
+
+/**
+ * @brief Exit event of engine
+ */
+static void exitEvent();
 
 
 bool CORE_init(int argc, char **argv, CORE * core) {
@@ -130,6 +154,9 @@ bool CORE_init(int argc, char **argv, CORE * core) {
     _core = core;
     _core->scene = NULL;
 
+    _core->textures = (Vector*) malloc(sizeof(Vector));
+    if(!Vector_init(_core->textures, 20, 10)) return false;
+
     //init glut window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
@@ -138,6 +165,9 @@ bool CORE_init(int argc, char **argv, CORE * core) {
                            (glutGet(GLUT_SCREEN_HEIGHT) - core->window_height) / 2
                            );
     glutCreateWindow(core->windonw_title);
+
+    //exit evt
+    atexit(exitEvent);
 
     //rendering
     glutDisplayFunc(renderScene);
@@ -175,20 +205,51 @@ bool CORE_init(int argc, char **argv, CORE * core) {
 bool CORE_setSceneData(SceneData * scene) {
     if(_core == NULL || scene == NULL) return false;
 
+    bool status = false;
     if(_core->scene == NULL) {
         _core->scene = scene;
+        status = true;
+    } else {
+        status = switchSceneData(scene);
     }
 
-    return true;
+    E_Obj * obj;
+    LinkedList_Element * el = _core->scene->gameData->first;
+    while(el != NULL) {
+        if(el->ptr != NULL) {
+            obj = (E_Obj*) el->ptr;
+            if(obj->events) {
+                if(obj->events->onLoad) obj->events->onLoad(obj, _core->scene);
+            }
+        }
+        el = LinkedList_next(el);
+    }
+
+    return status;
 }
 
 bool CORE_run() {
     if(_core == NULL) return false;
 
-    _core->running = true;
-    updateLoop();
+    _interrupt_resize = true;
+    _interrupt_render = true;
+    _interrupt_update = true;
+    _interrupt_press_key = true;
+    _interrupt_release_key = true;
+    _interrupt_mouse_move = true;
+    _interrupt_mouse_button = true;
+    _running = true;
+
+    if(pthread_create(&_thread_update, NULL, updateLoop, NULL)) {
+        return false;
+    }
+
     renderLoop();
-    glutMainLoop();
+
+    if(!_glut_main_loop) {
+        _glut_main_loop = true;
+        glutMainLoop();
+    }
 
     return true;
 }
@@ -196,8 +257,14 @@ bool CORE_run() {
 
 void CORE_stop() {
     if(_core == NULL) return;
-
-    _core->running = false;
+    _interrupt_resize = false;
+    _interrupt_render = false;
+    _interrupt_update = false;
+    _interrupt_press_key = false;
+    _interrupt_release_key = false;
+    _interrupt_mouse_move = false;
+    _interrupt_mouse_button = false;
+    _running = false;
 }
 
 
@@ -208,21 +275,25 @@ bool CORE_destruct() {
         _core->scene = NULL;
     }
 
+    if(_core->textures != NULL) {
+        Vector_destruct(_core->textures);
+        free(_core->textures);
+    }
+
     return true;
 }
 
 bool CORE_loadTexture(const char * path, Texture ** texture) {
     if(_core == NULL) return false;
-    if(_core->scene == NULL) return false;
-    if(_core->scene->textures == NULL) return false;
+    if(_core->textures == NULL) return false;
 
-    Texture * tex = UTIL_loadBMP(path);
+    Texture * tex = UTIL_loadTexture(path);
     if(tex == NULL) return false;
-    Vector_Element * el = malloc(sizeof (Vector_Element));
+    Vector_Element * el = (Vector_Element*) malloc(sizeof (Vector_Element));
     if(el == NULL) return false;
     el->ptr = tex;
     el->destruct = UTIL_simpleDestructor;
-    Vector_append(_core->scene->textures, el);
+    Vector_append(_core->textures, el);
     if(texture != NULL) {
         *texture = tex;
     }
@@ -231,26 +302,18 @@ bool CORE_loadTexture(const char * path, Texture ** texture) {
 }
 
 SceneData * SceneData_create() {
-    SceneData * scene = malloc(sizeof(SceneData));
+    SceneData * scene = (SceneData*) malloc(sizeof(SceneData));
     if(scene == NULL) return NULL;
 
-    scene->gameData = malloc(sizeof(LinkedList));
+    scene->gameData = (LinkedList*) malloc(sizeof(LinkedList));
     if(!LinkedList_init(scene->gameData)) {
         free(scene);
         return NULL;
     }
 
-    scene->textures = malloc(sizeof(Vector));
-    if(!Vector_init(scene->textures, 20, 10)) {
-        free(scene->gameData);
-        free(scene);
-        return NULL;
-    }
-
-    scene->files = malloc(sizeof(Vector));
+    scene->files = (Vector*) malloc(sizeof(Vector));
     if(!Vector_init(scene->files, 20, 10)) {
         free(scene->gameData);
-        free(scene->textures);
         free(scene);
         return NULL;
     }
@@ -259,14 +322,11 @@ SceneData * SceneData_create() {
 }
 
 bool SceneData_destruct(SceneData * scene) {
-    if(scene == NULL) return NULL;
+    if(scene == NULL) return false;
 
     if(scene) {
         if(scene->gameData) {
-            LinkedList_dectruct(scene->gameData);
-        }
-        if(scene->textures) {
-            Vector_destruct(scene->textures);
+            LinkedList_destruct(scene->gameData);
         }
         if(scene->files) {
             Vector_destruct(scene->files);
@@ -279,7 +339,6 @@ bool SceneData_destruct(SceneData * scene) {
 
 static void reshape(int w, int h) {
     if(_core != NULL) {
-
         _resize_event.resize_ratio_horizontal = (double) w / (double) _core->window_width;
         _resize_event.resize_ratio_vertical = (double) h / (double) _core->window_height;
         _resize_event.current_window_width = w;
@@ -299,6 +358,10 @@ static void reshape(int w, int h) {
                 E_Obj * obj;
                 LinkedList_Element * el = _core->scene->gameData->first;
                 while(el != NULL) {
+                    if(_interrupt_resize) {
+                        _interrupt_resize = false;
+                        break;
+                    }
                     if(el->ptr != NULL) {
                         obj = (E_Obj*) el->ptr;
                         if(obj->events) {
@@ -333,6 +396,10 @@ static void renderScene() {
     E_Obj * obj;
     LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
+        if(_interrupt_render) {
+            _interrupt_render = false;
+            break;
+        }
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
@@ -345,20 +412,36 @@ static void renderScene() {
     glutSwapBuffers();
 }
 
-static void updateLoop() {
+static void updateScene() {
     if(_core == NULL) return;
-    if(!_core->running) return;
+    if(!_running) return;
 
     if(_core->scene != NULL) {
         if(_core->scene->gameData != NULL) {
+
             struct timespec time = UTIL_getSystemTime();
+            //diff
+            __syscall_slong_t diff = time.tv_nsec - _update_event.ns_time;
+            if (diff < 0) {
+                _update_event.ns_diff = time.tv_nsec - _update_event.ns_time + 1000000000UL;
+                _update_event.s_diff = time.tv_sec - _update_event.s_time + 1;
+            } else {
+                _update_event.ns_diff = diff;
+                _update_event.s_diff = time.tv_sec - _update_event.s_time;
+            }
+            //current time
             _update_event.ns_time = time.tv_nsec;
             _update_event.s_time = time.tv_sec;
             _update_event.sender = &_core;
 
+            //update all
             E_Obj * obj;
             LinkedList_Element * el = _core->scene->gameData->first;
             while(el != NULL) {
+                if(_interrupt_update) {
+                    _interrupt_update = false;
+                    break;
+                }
                 if(el->ptr != NULL) {
                     obj = (E_Obj*) el->ptr;
                     if(obj->events) {
@@ -370,15 +453,21 @@ static void updateLoop() {
             }
         }
     }
-
-    glutTimerFunc(1000.0/_core->ups, updateLoop, 0);
 }
 
 static void renderLoop() {
-    if(_core == NULL) return;
-    if(!_core->running) return;
+    if(!_core) return;
+    if(!_running) return;
     glutPostRedisplay();
     glutTimerFunc(1000.0/_core->fps, renderLoop, 0);
+}
+
+static void * updateLoop(void * args) {
+    while(_running) {
+        updateScene();
+        usleep((unsigned int)(1e6/_core->ups));
+    }
+    return NULL;
 }
 
 static void keyboardFunc(unsigned char key, int x, int y) {
@@ -443,13 +532,17 @@ static void evt_pressKey(unsigned char key, bool ctrl,
     _key_event_press.sender = &_core;
 
     if(_core == NULL) return;
-    if(!_core->running) return;
+    if(!_running) return;
     if(_core->scene == NULL) return;
     if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
     LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
+        if(_interrupt_press_key) {
+            _interrupt_press_key = false;
+            break;
+        }
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
@@ -471,13 +564,17 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
     _key_event_release.sender = &_core;
 
     if(_core == NULL) return;
-    if(!_core->running) return;
+    if(!_running) return;
     if(_core->scene == NULL) return;
     if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
     LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
+        if(_interrupt_release_key) {
+            _interrupt_release_key = false;
+            break;
+        }
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
@@ -495,13 +592,17 @@ static void evt_mouseMove(int x, int y) {
     _mouse_event_button.sender = &_core;
 
     if(_core == NULL) return;
-    if(!_core->running) return;
+    if(!_running) return;
     if(_core->scene == NULL) return;
     if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
     LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
+        if(_interrupt_mouse_move) {
+            _interrupt_mouse_move = false;
+            break;
+        }
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
@@ -522,13 +623,17 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     _mouse_event_button.sender = &_core;
 
     if(_core == NULL) return;
-    if(!_core->running) return;
+    if(!_running) return;
     if(_core->scene == NULL) return;
     if(_core->scene->gameData == NULL) return;
 
     E_Obj * obj;
     LinkedList_Element * el = _core->scene->gameData->first;
     while(el != NULL) {
+        if(_interrupt_mouse_button) {
+            _interrupt_mouse_button = false;
+            break;
+        }
         if(el->ptr != NULL) {
             obj = (E_Obj*) el->ptr;
             if(obj->events) {
@@ -540,8 +645,36 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     }
 }
 
-static void closeFunc() {
+static bool switchSceneData(SceneData * data) {
+    if(data == NULL) return false;
+    if(_core == NULL) return false;
+
+    _interrupt_resize = false;
+    _interrupt_render = false;
+    _interrupt_update = false;
+    _interrupt_press_key = false;
+    _interrupt_release_key = false;
+    _interrupt_mouse_move = false;
+    _interrupt_mouse_button = false;
+
+    _core->scene = data;
+
+    return true;
+}
+
+static void exitEvent() {
     if(_core != NULL) {
+
+        _running = false;
+        _interrupt_resize = false;
+        _interrupt_render = false;
+        _interrupt_update = false;
+        _interrupt_press_key = false;
+        _interrupt_release_key = false;
+        _interrupt_mouse_move = false;
+        _interrupt_mouse_button = false;
+        sleep(1);
+
         CORE_destruct();
     }
 }

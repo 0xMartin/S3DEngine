@@ -26,6 +26,7 @@ static void destruct(void * obj) {
 
 static void render(void * obj, const Event_Render * evt) {
     Image * img = (Image*) obj;
+    if(!img->events.visible) return;
 
     if(img->width == IMAGE_SIZE_AUTO && img->height == IMAGE_SIZE_AUTO) {
         //default size of texture
@@ -69,7 +70,8 @@ static const E_Obj_Evts e_obj_evts = {
     .mouseMoveEvt = UI_OBJ_mouseMoveEvt,
     .mouseButtonEvt = UI_OBJ_mouseButtonEvt,
     .pressKeyEvt = UI_OBJ_pressKeyEvt,
-    .releaseKeyEvt = UI_OBJ_releaseKeyEvt
+    .releaseKeyEvt = UI_OBJ_releaseKeyEvt,
+    .onLoad = NULL
 };
 
 /* Object functions -------------------------------------------------------- */
