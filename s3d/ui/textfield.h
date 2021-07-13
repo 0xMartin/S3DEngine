@@ -1,64 +1,48 @@
-/**
- * <------------------------------------------------------------------>
- * @name    2D Engine
- * @author  Martin Krcma
- * @date    11. 3. 2021
- * <------------------------------------------------------------------>
- * @file    textfield.h
- * @brief
- * <------------------------------------------------------------------>
- */
-
 #ifndef TEXTFIELD_H
 #define TEXTFIELD_H
 
-#include "../event.h"
-#include "../render.h"
-#include "../engine_object.h"
-#include <stdbool.h>
+#include "ui_obj.h"
+#include "../graphics2d.h"
 
 
-typedef struct {
-    //[engine object event]
-    const E_Obj_Evts * objEvts;
-
-    //[data]
-
-    //UI object events
-    UI_Events events;
-
-    //position and size of UI object
-    Point2D position;
-    GLfloat width;
-    GLfloat height;
-
-    //data
+class TextField : public UI_obj
+{
+private:
+    Graphics * graphics;
+protected:
     Color background;
     Color foreground;
     Color caret;
     int caret_position;
     int caret_offset;
     int caret_time;
-    int maxTextLength;
+    size_t maxTextLength;
+
+public:
     char * text;
-} TextField;
 
+    TextField(int x, int y, size_t width, size_t heigth,
+              size_t max_str_len);
+    virtual ~TextField();
 
-/**
- * @brief TextField_create
- * @param x
- * @param y
- * @param width
- * @param heigth
- * @param max_str_len
- * @return
- */
-TextField * TextField_create(int x, int y, size_t width, size_t heigth, size_t max_str_len);
+    bool setText(const char * const txt);
 
-/**
- * @brief TextField_destruct
- * @param btn
- */
-void TextField_destruct(TextField * btn);
+    virtual void render(const Event_Render * evt, Graphics * graphics);
 
-#endif // BUTTON_H
+    virtual void update(std::vector<EngineObject*> * objects,
+                        const Event_Update * evt);
+
+    virtual void mouseMoveEvt(std::vector<EngineObject*> * objects,
+                              const Event_Mouse * evt);
+
+    virtual void mouseButtonEvt(std::vector<EngineObject*> * objects,
+                                const Event_Mouse * evt);
+
+    virtual void pressKeyEvt(std::vector<EngineObject*> * objects,
+                             const Event_Key * evt);
+
+    virtual void releaseKeyEvt(std::vector<EngineObject*> * objects,
+                               const Event_Key * evt);
+};
+
+#endif // TEXTFIELD_H

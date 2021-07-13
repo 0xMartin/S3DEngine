@@ -1,60 +1,37 @@
-/**
- * <------------------------------------------------------------------>
- * @name    2D Engine
- * @author  Martin Krcma
- * @date    11. 3. 2021
- * <------------------------------------------------------------------>
- * @file    button.h
- * @brief
- * <------------------------------------------------------------------>
- */
-
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "../event.h"
-#include "../render.h"
-#include "../engine_object.h"
-#include <stdbool.h>
+#include "ui_obj.h"
+#include "../graphics2d.h"
 
 
-typedef struct {
-    //[engine object event]
-    const E_Obj_Evts * objEvts;
-
-    //[data]
-
-    //UI object events
-    UI_Events events;
-
-    //position and size of UI object
-    Point2D position;
-    GLfloat width;
-    GLfloat height;
-
-    //data
+class Button : public UI_obj
+{
+protected:
     Color background;
     Color foreground;
-    char * text;
-} Button;
+    char text[LABEL_MAX_LENGTH];
+public:
+    Button(int x, int y, size_t width, size_t heigth,
+           const char * const txt);
 
+    void setBGColor(Color color);
 
-/**
- * @brief Button_create
- * @param x
- * @param y
- * @param width
- * @param heigth
- * @param txt
- * @return
- */
-Button * Button_create(int x, int y, size_t width, size_t heigth,
-                       const char * const txt);
+    void setFGColor(Color color);
 
-/**
- * @brief Button_destruct
- * @param btn
- */
-void Button_destruct(Button * btn);
+    bool setText(char * txt);
+
+    char * getText();
+
+    virtual void render(const Event_Render * evt, Graphics * graphics);
+
+    virtual void mouseMoveEvt(std::vector<EngineObject*> * objects,
+                              const Event_Mouse * evt);
+
+    virtual void mouseButtonEvt(std::vector<EngineObject*> * objects,
+                                const Event_Mouse * evt);
+
+};
+
 
 #endif // BUTTON_H

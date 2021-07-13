@@ -1,66 +1,26 @@
-/**
- * <------------------------------------------------------------------>
- * @name    2D Engine
- * @author  Martin Krcma
- * @date    11. 3. 2021
- * <------------------------------------------------------------------>
- * @file    label.h
- * @brief
- * <------------------------------------------------------------------>
- */
-
 #ifndef LABEL_H
 #define LABEL_H
 
-#include "../event.h"
-#include "../render.h"
-#include "../engine_object.h"
-#include <stdbool.h>
+#include "ui_obj.h"
+#include "../graphics2d.h"
 
 
-typedef struct {
-    //[engine object event]
-    const E_Obj_Evts * objEvts;
+class Label : public UI_obj
+{
 
-    //[data]
-
-    //UI object events
-    UI_Events events;
-
-    //position and size of UI object
-    Point2D position;
-    GLfloat width;
-    GLfloat height;
-
-    //data
+protected:
+    char text[LABEL_MAX_LENGTH];
     Color foreground;
-    char * text;
     bool centered;
-} Label;
 
+public:
+    Label(int x, int y, const char * const txt);
 
-/**
- * @brief Button_create
- * @param x
- * @param y
- * @param width
- * @param heigth
- * @param txt
- * @return
- */
-Label * Label_create(int x, int y, const char * const txt);
+    void changeText(const char * const txt);
 
-/**
- * @brief Button_destruct
- * @param btn
- */
-void Label_destruct(Label * lab);
+    void setCentered(bool centered);
 
-/**
- * @brief Label_changeText
- * @param lab
- * @param txt
- */
-void Label_changeText(Label * lab, const char * const txt);
+    virtual void render(const Event_Render * evt, Graphics * graphics);
+};
 
-#endif // BUTTON_H
+#endif // LABEL_H

@@ -1,17 +1,6 @@
-/**
- * <------------------------------------------------------------------>
- * @name    2D Engine
- * @author  Martin Krcma
- * @date    6. 3. 2021
- * <------------------------------------------------------------------>
- * @file    util.h
- * @brief
- * <------------------------------------------------------------------>
- */
-
-
 #ifndef UTIL_H
 #define UTIL_H
+
 
 #if __APPLE__
 #include <OpenGL/gl.h>
@@ -29,6 +18,14 @@
 #define IN_RANGE(v, min, max) (v >= min && v <= max)
 
 
+template <typename T>
+class Range {
+public:
+    T min;
+    T max;
+};
+
+
 //texture
 typedef struct {
     GLuint width;
@@ -43,7 +40,14 @@ typedef struct {
  * @param path Path to image
  * @return Pointer on loaded texture
  */
-Texture * UTIL_loadTexture(const char * path);
+Texture * UTIL_loadTextureBMP(const char * path, bool rgba_mode);
+
+/**
+ * @brief Load png image and create opengl texture
+ * @param path Path to image
+ * @return Pointer on loaded texture
+ */
+Texture * UTIL_loadTexturePNG(const char * path);
 
 /**
  * @brief Generate random number in range from 0 to n
@@ -75,5 +79,6 @@ struct timespec UTIL_getSystemTime();
  * @param data  Pointer on data structure
  */
 void UTIL_simpleDestructor(void * data);
+
 
 #endif // UTIL_H

@@ -1,68 +1,74 @@
 #ifndef UI_OBJ_H
 #define UI_OBJ_H
 
-#include "../event.h"
-#include "../render.h"
 #include "../engine_object.h"
-#include <stdbool.h>
+#include "../event.h"
+#include "../graphics2d.h"
 
 
-typedef struct {
-    //[engine object event]
-    const E_Obj_Evts * objEvts;
 
-    //[data]
+//background of window
+#define UI_BG_COLOR (Color){0.050, 0.065, 0.090, 1.000}
 
-    //UI object events
-    UI_Events events;
+//panel
+#define UI_PANEL_BG_COLOR (Color){0.10, 0.120, 0.170, 0.900}
 
-    //position and size of UI object
+//button
+#define UI_BUTTON_BG_COLOR (Color){0.259, 0.267, 0.314, 0.800}
+#define UI_BUTTON_FG_COLOR (Color){0.251, 0.251, 0.271, 1.000}
+
+
+//check box
+#define UI_CHECK_BG_COLOR (Color){0.050, 0.065, 0.090, 1.000}
+#define UI_CHECK_BORDER_COLOR (Color){0.259, 0.267, 0.314, 1.000}
+#define UI_CHECK_FG_COLOR (Color){0.400, 0.400, 0.500, 1.000}
+
+//label
+#define UI_LABEL_FG_COLOR (Color){0.525, 0.533, 0.535, 1.000}
+
+//textfiled
+#define UI_TEXTFIELD_BG_COLOR (Color){0.15, 0.15, 0.15, 1.0}
+#define UI_TEXTFIELD_FG_COLOR (Color){0.800, 0.800, 0.800, 1.000}
+#define UI_TEXTFIELD_CARET_COLOR (Color){1.0, 1.0, 1.0, 1.0}
+
+#define LABEL_MAX_LENGTH 255
+
+
+
+
+class UI_obj : public EngineObject
+{
+
+protected:
     Point2D position;
     GLfloat width;
     GLfloat height;
 
-    //data
-    void * data;
-} UI_Obj;
+public:
+    UI_Events events;
 
+    virtual ~UI_obj();
 
-/**
- * @brief UI_OBJ_resize
- * @param obj
- * @param evt
- */
-void UI_OBJ_resize(void * obj, const Event_Resize * evt);
+    virtual void render(const Event_Render * evt, Graphics * graphics);
 
-/**
- * @brief mouseMoveEvt
- * @param obj
- * @param cntx
- * @param evt
- */
-void UI_OBJ_mouseMoveEvt(void * obj, SceneData * scene, const Event_Mouse * evt);
+    virtual void resize(const Event_Resize * evt);
 
-/**
- * @brief mouseButtonEvt
- * @param obj
- * @param cntx
- * @param evt
- */
-void UI_OBJ_mouseButtonEvt(void * obj, SceneData * scene, const Event_Mouse * evt);
+    virtual void update(std::vector<EngineObject*> * objects,
+                        const Event_Update * evt);
 
-/**
- * @brief UI_OBJ_pressKeyEvt
- * @param obj
- * @param cntx
- * @param evt
- */
-void UI_OBJ_pressKeyEvt(void * obj, SceneData * scene, const Event_Key * evt);
+    virtual void mouseMoveEvt(std::vector<EngineObject*> * objects,
+                              const Event_Mouse * evt);
 
-/**
- * @brief UI_OBJ_releaseKeyEvt
- * @param obj
- * @param cntx
- * @param evt
- */
-void UI_OBJ_releaseKeyEvt(void * obj, SceneData * scene, const Event_Key * evt);
+    virtual void mouseButtonEvt(std::vector<EngineObject*> * objects,
+                                const Event_Mouse * evt);
+
+    virtual void pressKeyEvt(std::vector<EngineObject*> * objects,
+                             const Event_Key * evt);
+
+    virtual void releaseKeyEvt(std::vector<EngineObject*> * objects,
+                               const Event_Key * evt);
+
+    virtual void onLoad(std::vector<EngineObject*> * objects);
+};
 
 #endif // UI_OBJ_H
