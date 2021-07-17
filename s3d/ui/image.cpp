@@ -9,7 +9,7 @@ Image::Image(int x, int y, size_t width, size_t heigth, Texture * texture) {
     Image::texture = texture;
 }
 
-void Image::render(const Event_Render * evt, Graphics * graphics) {
+void Image::render(Graphics * graphics, const Event_Render * evt) {
     if(!Image::events.visible) return;
 
     Graphics2D * g2 = (Graphics2D*)graphics;

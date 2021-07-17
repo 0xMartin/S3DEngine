@@ -6,38 +6,43 @@
 #include "util.h"
 #include "event.h"
 #include "graphics3d.h"
-#include "engine_object.h"
+#include "object.h"
+#include "camera.h"
 #include "io.h"
 #include <vector>
 #include <stdbool.h>
 
 
-#define CORE_DEFAULT_CONFIG {\
-    0,\
-    800,\
-    600,\
-    "Window",\
-    false,\
-    50,\
-    50,\
-    (Color){0.0, 0.0, 0.0, 1.0},\
-    NULL,\
-    NULL,\
-    NULL,\
-    NULL\
-    }
+#define CORE_DEFAULT_CONFIG (CoreContext){0, 800, 600,\
+    "S3DEngine", false, 50, 50, (Color){0.0, 0.0, 0.0, 1.0},\
+    NULL, NULL, NULL, NULL}
 
 
 class Scene {
+protected:
+    Camera * camera;
 public:
-    bool visibleCursor; /** Is cursor visible? */
-    bool mouseCamControl; /** Control camera by mouse motion */
-    std::vector<EngineObject*> * objects;
+    bool visibleCursor; /** is cursor visible? */
+    bool mouseCamControl; /** control camera by mouse motion */
+    GLfloat min_renderDistance; /** minimal render distance */
+    GLfloat max_renderDistance; /** maximal render distance */
+    std::vector<Object*> * objects; /** all objects of scene */
 
     Scene();
     ~Scene();
 
-    bool addObject(EngineObject * object);
+    /**
+     * @brief addObject
+     * @param object
+     * @return
+     */
+    bool addObject(Object * object);
+
+    /**
+     * @brief getCamera
+     * @return
+     */
+    Camera * getCamera();
 };
 
 
@@ -45,13 +50,13 @@ typedef struct {
     int windowHandle;   /** GLUT window width */
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
-    char windonw_title[255];   /** Window title */
+    char window_title[255];   /** Window title */
     bool window_fullScreen; /** True -> fullscreen mode */
     unsigned int fps;   /** Frames per second */
     unsigned int ups;   /** Updates per second */
     Color clearColor; /** Background color of window */
     std::vector<Texture*> * textures;    /** Vector of all textures, consisting only from <Texture> util.h */
-    Scene * scene;  /** Currently processed scene */
+    Scene * activeScene;  /** Currently processed scene */
     std::vector<Scene*> * scenes;  /** List of all scenes */
     Graphics3D * graphics;
 } CoreContext;
@@ -73,20 +78,20 @@ public:
      * @param argv
      * @param config
      */
-    S3DCore(int argc, char *argv[], CoreContext * config);
+    S3D_API S3DCore(int argc, char *argv[], CoreContext * config);
 
-    ~S3DCore();
+    S3D_API ~S3DCore();
 
     /**
      * @brief run
      * @return
      */
-    bool run();
+    S3D_API bool S3D_API_ENTRY run();
 
     /**
      * @brief stop
      */
-    void stop();
+    S3D_API void S3D_API_ENTRY stop();
 
     /**
      * @brief loadTexture
@@ -94,41 +99,42 @@ public:
      * @param rgba_mode
      * @return
      */
-    Texture * loadTexture(const char * path, bool rgba_mode);
+    S3D_API Texture * S3D_API_ENTRY loadTexture(const char * path, bool rgba_mode);
 
     /**
      * @brief getTextures
      * @return
      */
-    std::vector<Texture*> * getTextures();
+    S3D_API std::vector<Texture*> * S3D_API_ENTRY getTextures();
 
     /**
      * @brief createScene
      * @return
      */
-    Scene * createScene();
+    S3D_API Scene * S3D_API_ENTRY createScene();
 
     /**
      * @brief setActiveScene
      * @param scene
      * @return
      */
-    bool setActiveScene(Scene * scene);
+    S3D_API bool S3D_API_ENTRY setActiveScene(Scene * scene);
 
     /**
      * @brief deleteScene
      * @param scene
      * @return
      */
-    bool deleteScene(Scene * scene);
+    S3D_API bool S3D_API_ENTRY deleteScene(Scene * scene);
 
     /**
      * @brief getScenes
      * @return
      */
-    std::vector<Scene*> * getScenes();
+    S3D_API std::vector<Scene*> * S3D_API_ENTRY getScenes();
 
 };
 
+float CORE_getFPS();
 
 #endif // CORE_H

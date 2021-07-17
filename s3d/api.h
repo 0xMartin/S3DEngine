@@ -32,31 +32,31 @@
 
 #if defined(__WIN32s__) && !defined(__CYGWIN__)
 #  if (defined(_MSC_VER) || defined(__MINGW32__)) && defined(BUILD_GL32) /* tag specify we're building mesa as a DLL */
-#    define E2API __declspec(dllexport)
+#    define S3D_API __declspec(dllexport)
 #  elif (defined(_MSC_VER) || defined(__MINGW32__)) && defined(_DLL) /* tag specifying we're building for DLL runtime support */
-#    define E2API __declspec(dllimport)
+#    define S3D_API __declspec(dllimport)
 #  else /* for use with static link lib build of Win32 edition only */
-#    define E2API extern
+#    define S3D_API extern
 #  endif
 #  if defined(__MINGW32__) && defined(GL_NO_STDCALL) || defined(UNDER_CE)  /* The generated DLLs by MingW with STDCALL are not compatible with the ones done by Microsoft's compilers */
-#    define E2APIENTRY
+#    define S3D_API_ENTRY
 #  else
-#    define E2APIENTRY __stdcall
+#    define S3D_API_ENTRY __stdcall
 #  endif
 #elif defined(__CYGWIN__) && defined(USE_OPENGL32) /* use native windows opengl32 */
-#  define E2API extern
-#  define E2APIENTRY __stdcall
+#  define S3D_API extern
+#  define S3D_API_ENTRY __stdcall
 #elif (defined(__GNUC__) && __GNUC__ >= 4) || (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590))
-#  define E2API __attribute__((visibility("default")))
-#  define E2APIENTRY
+#  define S3D_API __attribute__((visibility("default")))
+#  define S3D_API_ENTRY
 #endif /* WIN32 && !CYGWIN */
 
-#ifndef E2API
-#define E2API extern
+#ifndef S3D_API
+#define S3D_API extern
 #endif
 
-#ifndef E2APIENTRY
-#define E2APIENTRY
+#ifndef S3D_API_ENTRY
+#define S3D_API_ENTRY
 #endif
 
 

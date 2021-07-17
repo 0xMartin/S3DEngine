@@ -1,16 +1,24 @@
 #include "core.h"
 
 
-#include "engine_object.h"
+#include "object.h"
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <iostream>
 
-
+/**
+ * @brief Current engine context, only one context could be processed
+ * in application
+ */
 static CoreContext * CONTEXT = NULL;
 
+/**
+ * @brief Thread for updating
+ */
 static pthread_t thread_update;
+
+//running status bools
 static bool running;
 static bool glut_main_loop;
 
@@ -116,7 +124,7 @@ static void evt_mouseButton(int button, int state, int x, int y);
 static void reshape(int w, int h);
 
 /**
- * @brief Update eache E_Obj of current scene
+ * @brief Update actual scene (each object) of engine context
  */
 static void updateScene();
 
@@ -131,7 +139,7 @@ static void renderLoop(int value);
 static void * updateLoop(void * args);
 
 /**
- * @brief Render each E_Obj of current scene
+ * @brief Render actual scene (each object) of engine context
  */
 static void renderScene();
 
@@ -141,7 +149,7 @@ static void renderScene();
 static void exitEvent();
 
 /**
- * @brief destruct
+ * @brief Destruct engine core
  */
 static bool destruct(CoreContext * cntx);
 
@@ -156,7 +164,9 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
         return;
     }
 
-    //init core
+    /**
+     * init core
+     */
     S3DCore::context = context;
 
     S3DCore::context->scenes = new std::vector<Scene*>();
@@ -172,14 +182,16 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
         return;
     }
 
-    //init glut window
+    /**
+     * init glut window
+     */
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glutInitWindowSize(S3DCore::context->window_width, S3DCore::context->window_height);
     glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - S3DCore::context->window_width) / 2,
                            (glutGet(GLUT_SCREEN_HEIGHT) - S3DCore::context->window_height) / 2
                            );
-    S3DCore::context->windowHandle = glutCreateWindow(S3DCore::context->windonw_title);
+    S3DCore::context->windowHandle = glutCreateWindow(S3DCore::context->window_title);
 
     if(S3DCore::context->windowHandle < 1) {
         std::cerr << __FUNCTION__ << ": failed to create window\n";
@@ -191,6 +203,10 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
         std::cerr << __FUNCTION__ << ": failed to init renderer\n";
         return;
     }
+
+    /**
+     * register callbacks
+     */
 
     //exit evt
     atexit(exitEvent);
@@ -208,9 +224,14 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     glutMouseFunc(evt_mouseButton);
     glutPassiveMotionFunc(evt_mouseMove);
 
+    /**
+     * init OpenGL
+     */
+
     //opengl config
     glEnable(GL_SCISSOR_TEST);
-    glDepthFunc(GL_NEVER);
+    glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_NEVER);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     glEnable(GL_LINE_SMOOTH);
@@ -219,13 +240,6 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    //cursor
-    if(S3DCore::context->scene) {
-        if(!S3DCore::context->scene->visibleCursor) {
-            glutSetCursor(GLUT_CURSOR_NONE);
-        }
-    }
 }
 
 S3DCore::~S3DCore() {
@@ -243,13 +257,13 @@ bool S3DCore::run() {
     CONTEXT = S3DCore::context;
     glutSetWindow(CONTEXT->windowHandle);
 
-    interrupt_resize = true;
-    interrupt_render = true;
-    interrupt_update = true;
-    interrupt_press_key = true;
-    interrupt_release_key = true;
-    interrupt_mouse_move = true;
-    interrupt_mouse_button = true;
+    interrupt_resize = false;
+    interrupt_render = false;
+    interrupt_update = false;
+    interrupt_press_key = false;
+    interrupt_release_key = false;
+    interrupt_mouse_move = false;
+    interrupt_mouse_button = false;
     running = true;
 
     if(pthread_create(&thread_update, NULL, updateLoop, NULL)) {
@@ -268,13 +282,13 @@ bool S3DCore::run() {
 
 
 void S3DCore::stop() {
-    interrupt_resize = false;
-    interrupt_render = false;
-    interrupt_update = false;
-    interrupt_press_key = false;
-    interrupt_release_key = false;
-    interrupt_mouse_move = false;
-    interrupt_mouse_button = false;
+    interrupt_resize = true;
+    interrupt_render = true;
+    interrupt_update = true;
+    interrupt_press_key = true;
+    interrupt_release_key = true;
+    interrupt_mouse_move = true;
+    interrupt_mouse_button = true;
     running = false;
 }
 
@@ -327,21 +341,35 @@ Scene * S3DCore::createScene() {
 }
 
 Scene::Scene() {
-    Scene::objects = new std::vector<EngineObject*>();
+    Scene::objects = new std::vector<Object*>();
+    if(Scene::objects == NULL) {
+        std::cerr << __FUNCTION__ << ": faild to create vector for 3D objects";
+        return;
+    }
+    Scene::camera = new Camera();
+    if(Scene::camera == NULL) {
+        std::cerr << __FUNCTION__ << ": faild to create camera";
+        return;
+    }
     Scene::mouseCamControl = false;
     Scene::visibleCursor = true;
+    Scene::min_renderDistance = 0.05f;
+    Scene::max_renderDistance = 200.0f;
 }
 
 Scene::~Scene() {
     if(Scene::objects) {
-        for(EngineObject * obj : *Scene::objects) {
+        for(Object * obj : *Scene::objects) {
             if(obj) delete obj;
         }
         delete Scene::objects;
     }
+    if(Scene::camera) {
+        delete Scene::camera;
+    }
 }
 
-bool Scene::addObject(EngineObject * object) {
+bool Scene::addObject(Object * object) {
     if(Scene::objects == NULL) {
         std::cerr << __FUNCTION__ << ": object vector in current scene is NULL\n";
         return false;
@@ -350,10 +378,15 @@ bool Scene::addObject(EngineObject * object) {
         std::cerr << __FUNCTION__ << ": new object is NULL\n";
         return false;
     }
+
     Scene::objects->push_back(object);
+
     return true;
 }
 
+Camera * Scene::getCamera() {
+    return Scene::camera;
+}
 
 bool S3DCore::setActiveScene(Scene * scene) {
     if(S3DCore::context == NULL) {
@@ -366,16 +399,23 @@ bool S3DCore::setActiveScene(Scene * scene) {
     }
 
     bool status = false;
-    if(S3DCore::context->scene == NULL) {
-        S3DCore::context->scene = scene;
+    if(S3DCore::context->activeScene == NULL) {
+        S3DCore::context->activeScene = scene;
         status = true;
     } else {
         status = switchSceneData(scene);
     }
 
-    for(EngineObject * obj : *S3DCore::context->scene->objects) {
+    for(Object * obj : *S3DCore::context->activeScene->objects) {
         if(obj) {
-            obj->onLoad(S3DCore::context->scene->objects);
+            obj->onLoad(S3DCore::context->activeScene->objects);
+        }
+    }
+
+    //cursor
+    if(S3DCore::context->activeScene) {
+        if(!S3DCore::context->activeScene->visibleCursor) {
+            glutSetCursor(GLUT_CURSOR_NONE);
         }
     }
 
@@ -418,109 +458,203 @@ std::vector<Scene*> * S3DCore::getScenes() {
 }
 
 
-//###################################################################################
-//STATIC FUNCTIONS
-//###################################################################################
+
+//###############################################################################
+//STATIC ENGINE FUNCTIONS
+//###############################################################################
+
 
 
 static void reshape(int w, int h) {
-    if(CONTEXT != NULL) {
-        resize_event.resize_ratio_horizontal = (double) w / (double) CONTEXT->window_width;
-        resize_event.resize_ratio_vertical = (double) h / (double) CONTEXT->window_height;
-        resize_event.current_window_width = w;
-        resize_event.current_window_height = h;
+    if(CONTEXT == NULL) return;
+    if(CONTEXT->activeScene == NULL) return;
+    resize_event.resize_ratio_horizontal = (double) w / (double) CONTEXT->window_width;
+    resize_event.resize_ratio_vertical = (double) h / (double) CONTEXT->window_height;
+    resize_event.current_window_width = w;
+    resize_event.current_window_height = h;
 
-        CONTEXT->window_width = w;
-        CONTEXT->window_height = h;
-        glViewport(0, 0, w, h);       /* Establish viewing area to cover entire window. */
-        glMatrixMode(GL_PROJECTION);  /* Start modifying the projection matrix. */
-        glLoadIdentity();             /* Reset project matrix. */
-        glOrtho(0, w, 0, h, -1, 1);   /* Map abstract coords directly to window coords. */
-        glScalef(1, -1, 1);           /* Invert Y axis so increasing Y goes down. */
-        glTranslatef(0, -h, 0);       /* Shift origin up to upper-left corner. */
+    CONTEXT->window_width = w;
+    CONTEXT->window_height = h;
 
-        if(CONTEXT->scene != NULL) {
-            if(CONTEXT->scene->objects != NULL) {
-                for(EngineObject * obj : *CONTEXT->scene->objects) {
-                    if(interrupt_resize) {
-                        interrupt_resize = false;
-                        break;
-                    }
-                    if(obj) {
-                        obj->resize(&resize_event);
-                    }
-                }
+    if(CONTEXT->activeScene->objects != NULL) {
+        for(Object * obj : *CONTEXT->activeScene->objects) {
+            if(interrupt_resize) {
+                interrupt_resize = false;
+                break;
+            }
+            if(obj) {
+                obj->resize(&resize_event);
             }
         }
     }
+
+    //use the Projection Matrix
+    glMatrixMode(GL_PROJECTION);
+
+    //reset Matrix
+    glLoadIdentity();
+
+    //set the viewport to be the entire window
+    glViewport(0, 0, w, h);
+
+    //set the correct perspective
+    if (h == 0) h = 1;
+    float ratio =  w * 1.0 / h;
+    gluPerspective(45.0f, ratio, CONTEXT->activeScene->min_renderDistance,
+                   CONTEXT->activeScene->max_renderDistance);
+
+    //get Back to the Modelview
+    glMatrixMode(GL_MODELVIEW);
 }
 
+
+//###############################################################################
+//FPS
+//###############################################################################
+static int frame = 0;
+static float fps = 0.0;
+static int time_now = 0;
+static int time_last = 0;
+
+float CORE_getFPS() {
+    return fps;
+};
+//###############################################################################
 
 static void renderScene() {
     if(CONTEXT == NULL) return;
     if(CONTEXT->graphics == NULL) return;
 
+    /**
+     * init render event
+     */
     render_event.window_width = CONTEXT->window_width;
     render_event.window_height = CONTEXT->window_height;
     render_event.sender = NULL;
 
+
+    /**
+     * begin rendering
+     */
     Graphics * graphics = CONTEXT->graphics;
     graphics->begin(&render_event, &CONTEXT->clearColor);
 
-    if(CONTEXT->scene == NULL) {
+    /**
+     * No active scene or arrays with objects not exists
+     */
+    if(CONTEXT->activeScene == NULL) {
         glutSwapBuffers();
         return;
     }
-    if(CONTEXT->scene->objects == NULL) {
+    if(CONTEXT->activeScene->objects == NULL) {
         glutSwapBuffers();
         return;
     }
 
-    for(EngineObject * obj : *CONTEXT->scene->objects) {
+    /**
+     * 3D objects rendering (on background of window)
+     */
+
+    //apply camera transformation
+    Camera * cam = CONTEXT->activeScene->getCamera();
+    if(cam) cam->viewTransformation();
+
+    //render 3D objects first
+    for(Object * obj : *CONTEXT->activeScene->objects) {
         if(interrupt_render) {
             interrupt_render = false;
             break;
         }
         if(obj) {
-            obj->render(&render_event, graphics);
+            if(obj->type == Obj3D) {
+                glPushMatrix();
+                obj->render(graphics, &render_event);
+                glPopMatrix();
+            }
         }
     }
 
+    /**
+     * 2D objects rendering (on foreground of window)
+     */
+
+    graphics->setOrthographicProjection(&render_event);
+    glPushMatrix();
+    glLoadIdentity();
+
+    //render 2D objects
+    for(Object * obj : *CONTEXT->activeScene->objects) {
+        if(interrupt_render) {
+            interrupt_render = false;
+            break;
+        }
+        if(obj) {
+            if(obj->type == Obj2D) {
+                glPushMatrix();
+                obj->render(graphics, &render_event);
+                glPopMatrix();
+            }
+        }
+    }
+
+    glPopMatrix();
+    graphics->restorePerspectiveProjection();
+
+    /**
+     * Swap buffers
+     */
     glutSwapBuffers();
+
+    /**
+     * FPS
+     */
+    frame++;
+    time_now=glutGet(GLUT_ELAPSED_TIME);
+    if (time_now - time_last > 1000) {
+        fps = frame*1000.0/(time_now-time_last);
+        time_last = time_now;
+        frame = 0;
+    }
 }
 
 static void updateScene() {
     if(CONTEXT == NULL) return;
     if(!running) return;
+    if(CONTEXT->activeScene == NULL) return;
+    if(CONTEXT->activeScene->objects == NULL) return;
 
-    if(CONTEXT->scene != NULL) {
-        if(CONTEXT->scene->objects != NULL) {
 
-            struct timespec time = UTIL_getSystemTime();
-            //diff
-            __syscall_slong_t diff = time.tv_nsec - update_event.ns_time;
-            if (diff < 0) {
-                update_event.ns_diff = time.tv_nsec - update_event.ns_time + 1000000000UL;
-                update_event.s_diff = time.tv_sec - update_event.s_time + 1;
-            } else {
-                update_event.ns_diff = diff;
-                update_event.s_diff = time.tv_sec - update_event.s_time;
-            }
-            //current time
-            update_event.ns_time = time.tv_nsec;
-            update_event.s_time = time.tv_sec;
-            update_event.sender = NULL;
+    /**
+     * Update camera position
+     */
+    Camera * cam;
+    if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
+        cam->computePosition();
+    }
 
-            //update all
-            for(EngineObject * obj : *CONTEXT->scene->objects) {
-                if(interrupt_update) {
-                    interrupt_update = false;
-                    break;
-                }
-                if(obj) {
-                    obj->update(CONTEXT->scene->objects, &update_event);
-                }
-            }
+    struct timespec time = UTIL_getSystemTime();
+    //diff
+    __syscall_slong_t diff = time.tv_nsec - update_event.ns_time;
+    if (diff < 0) {
+        update_event.ns_diff = time.tv_nsec - update_event.ns_time + 1000000000UL;
+        update_event.s_diff = time.tv_sec - update_event.s_time + 1;
+    } else {
+        update_event.ns_diff = diff;
+        update_event.s_diff = time.tv_sec - update_event.s_time;
+    }
+    //current time
+    update_event.ns_time = time.tv_nsec;
+    update_event.s_time = time.tv_sec;
+    update_event.sender = NULL;
+
+    //update all
+    for(Object * obj : *CONTEXT->activeScene->objects) {
+        if(interrupt_update) {
+            interrupt_update = false;
+            break;
+        }
+        if(obj) {
+            obj->update(CONTEXT->activeScene->objects, &update_event);
         }
     }
 }
@@ -569,6 +703,7 @@ static void specialFunc(int key, int x, int y) {
         arrow_key = RIGHT;
         break;
     }
+
     evt_pressKey(0x0, key == 0x72, key == 0x74, key == 0x70, arrow_key);
 }
 
@@ -589,11 +724,19 @@ static void specialUpFunc(int key, int x, int y) {
         arrow_key = RIGHT;
         break;
     }
+
     evt_releaseKey(0x0, key == 0x72, key == 0x74, key == 0x70, arrow_key);
 }
 
 static void evt_pressKey(unsigned char key, bool ctrl,
                          bool alt, bool shift, Arrow_key arrow) {
+    if(CONTEXT == NULL) return;
+    if(!running) return;
+    if(CONTEXT->activeScene == NULL) return;
+
+    /**
+     * init key press event
+     */
     key_event_press.key = key;
     key_event_press.ctrl = ctrl;
     key_event_press.alt = alt;
@@ -601,24 +744,55 @@ static void evt_pressKey(unsigned char key, bool ctrl,
     key_event_press.arrow = arrow;
     key_event_press.sender = NULL;
 
-    if(CONTEXT == NULL) return;
-    if(!running) return;
-    if(CONTEXT->scene == NULL) return;
-    if(CONTEXT->scene->objects == NULL) return;
-
-    for(EngineObject * obj : *CONTEXT->scene->objects) {
-        if(interrupt_press_key) {
-            interrupt_press_key = false;
+    /**
+     * Control camera of active scene
+     */
+#define CAM_SPEED 0.1f
+    Camera * cam;
+    if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
+        switch(key)
+        {
+        case 'w': case 'W':
+            cam->deltaPos.z = CAM_SPEED;
             break;
+        case 's': case 'S':
+            cam->deltaPos.z = -CAM_SPEED;
+            break;
+        case 'a': case 'A':
+            cam->deltaPos.x = -CAM_SPEED;
+            break;
+        case 'd': case 'D':
+            cam->deltaPos.x = CAM_SPEED;
+            break;
+        case EVT_C_SPACE:
+            cam->deltaPos.y = CAM_SPEED;
+            break;
+        default:
+            if(shift) {
+                cam->deltaPos.y = -CAM_SPEED;
+            }
         }
-        if(obj) {
-            obj->pressKeyEvt(CONTEXT->scene->objects, &key_event_press);
+    }
+
+    if(CONTEXT->activeScene->objects != NULL) {
+        for(Object * obj : *CONTEXT->activeScene->objects) {
+            if(interrupt_press_key) {
+                interrupt_press_key = false;
+                break;
+            }
+            if(obj) {
+                obj->pressKeyEvt(CONTEXT->activeScene->objects, &key_event_press);
+            }
         }
     }
 }
 
 static void evt_releaseKey(unsigned char key, bool ctrl,
                            bool alt, bool shift, Arrow_key arrow) {
+    if(CONTEXT == NULL) return;
+    if(!running) return;
+    if(CONTEXT->activeScene == NULL) return;
+
     key_event_release.key = key;
     key_event_release.ctrl = ctrl;
     key_event_release.alt = alt;
@@ -626,44 +800,82 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
     key_event_release.arrow = arrow;
     key_event_release.sender = NULL;
 
-    if(CONTEXT == NULL) return;
-    if(!running) return;
-    if(CONTEXT->scene == NULL) return;
-    if(CONTEXT->scene->objects == NULL) return;
-
-    for(EngineObject * obj : *CONTEXT->scene->objects) {
-        if(interrupt_release_key) {
-            interrupt_release_key = false;
+    /**
+     * Control camera of active scene
+     */
+    Camera * cam;
+    if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
+        switch(key)
+        {
+        case 'w': case 'W': case 's': case 'S':
+            cam->deltaPos.z = 0;
             break;
+        case 'a': case 'A': case 'd': case 'D':
+            cam->deltaPos.x = 0;
+            break;
+        case EVT_C_SPACE:
+            cam->deltaPos.y = 0;
+            break;
+        default:
+            if(shift) {
+                cam->deltaPos.y = 0;
+            }
         }
-        if(obj) {
-            obj->releaseKeyEvt(CONTEXT->scene->objects, &key_event_release);
+    }
+
+    if(CONTEXT->activeScene->objects != NULL) {
+        for(Object * obj : *CONTEXT->activeScene->objects) {
+            if(interrupt_release_key) {
+                interrupt_release_key = false;
+                break;
+            }
+            if(obj) {
+                obj->releaseKeyEvt(CONTEXT->activeScene->objects, &key_event_release);
+            }
         }
     }
 }
 
+static bool center_cursor = false;
+
 static void evt_mouseMove(int x, int y) {
+    if(CONTEXT == NULL) return;
+    if(!running) return;
+    if(CONTEXT->activeScene == NULL) return;
+
+    Camera * cam;
+    if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
+        if(center_cursor) {
+            glutWarpPointer(CONTEXT->window_width / 2, CONTEXT->window_height / 2);
+            cam->deltaAngleY = (y - mouse_event_move.y)/1000.0f;
+            cam->deltaAngleXZ = (x - mouse_event_move.x)/1000.0f;
+            cam->computeDirection();
+        }
+        center_cursor = !center_cursor;
+    }
+
     mouse_event_move.x = x;
     mouse_event_move.y = y;
     mouse_event_button.sender = NULL;
 
-    if(CONTEXT == NULL) return;
-    if(!running) return;
-    if(CONTEXT->scene == NULL) return;
-    if(CONTEXT->scene->objects == NULL) return;
-
-    for(EngineObject * obj : *CONTEXT->scene->objects) {
-        if(interrupt_mouse_move) {
-            interrupt_mouse_move = false;
-            break;
-        }
-        if(obj) {
-            obj->mouseMoveEvt(CONTEXT->scene->objects, &mouse_event_move);
+    if(CONTEXT->activeScene->objects != NULL) {
+        for(Object * obj : *CONTEXT->activeScene->objects) {
+            if(interrupt_mouse_move) {
+                interrupt_mouse_move = false;
+                break;
+            }
+            if(obj) {
+                obj->mouseMoveEvt(CONTEXT->activeScene->objects, &mouse_event_move);
+            }
         }
     }
 }
 
 static void evt_mouseButton(int button, int state, int x, int y) {
+    if(CONTEXT == NULL) return;
+    if(!running) return;
+    if(CONTEXT->activeScene == NULL) return;
+
     mouse_event_button.button = button;
     mouse_event_button.state = state;
     mouse_event_button.x = x;
@@ -671,18 +883,15 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     mouse_event_button.y = y;
     mouse_event_button.sender = NULL;
 
-    if(CONTEXT == NULL) return;
-    if(!running) return;
-    if(CONTEXT->scene == NULL) return;
-    if(CONTEXT->scene->objects == NULL) return;
-
-    for(EngineObject * obj : *CONTEXT->scene->objects) {
-        if(interrupt_mouse_button) {
-            interrupt_mouse_button = false;
-            break;
-        }
-        if(obj) {
-            obj->mouseButtonEvt(CONTEXT->scene->objects, &mouse_event_button);
+    if(CONTEXT->activeScene->objects != NULL) {
+        for(Object * obj : *CONTEXT->activeScene->objects) {
+            if(interrupt_mouse_button) {
+                interrupt_mouse_button = false;
+                break;
+            }
+            if(obj) {
+                obj->mouseButtonEvt(CONTEXT->activeScene->objects, &mouse_event_button);
+            }
         }
     }
 }
@@ -705,7 +914,7 @@ static bool switchSceneData(Scene * scene) {
     interrupt_mouse_move = false;
     interrupt_mouse_button = false;
 
-    CONTEXT->scene = scene;
+    CONTEXT->activeScene = scene;
 
     return true;
 }

@@ -4,7 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 
-
 TextField::TextField(int x, int y, size_t width, size_t heigth,
                      size_t max_str_len) {
     TextField::events = UI_EVENTS_INIT;
@@ -38,7 +37,7 @@ bool TextField::setText(const char * const txt) {
     return true;
 }
 
-void TextField::render(const Event_Render * evt, Graphics * graphics) {
+void TextField::render(Graphics * graphics, const Event_Render * evt) {
     if(!TextField::events.visible) return;
 
     Graphics2D * g2 = (Graphics2D*)graphics;
@@ -62,11 +61,11 @@ void TextField::render(const Event_Render * evt, Graphics * graphics) {
     float line_start = (TextField::height + g2->getStringHeight())/2;
 
     g2->setScissor(TextField::position.x + 5, TextField::position.y + TextField::height,
-                      TextField::width - 10, TextField::height, evt);
+                   TextField::width - 10, TextField::height, evt);
     g2->drawString(TextField::position.x + 5 - g2->getStringWidthRange(
-                          TextField::text, TextField::caret_position - abs(TextField::caret_offset), TextField::caret_position),
-                      TextField::position.y + line_start,
-                      TextField::text);
+                       TextField::text, TextField::caret_position - abs(TextField::caret_offset), TextField::caret_position),
+                   TextField::position.y + line_start,
+                   TextField::text);
 
     if(TextField::events.focus) {
         if(TextField::caret_time % 2 == 0) {
@@ -83,12 +82,12 @@ void TextField::render(const Event_Render * evt, Graphics * graphics) {
     g2->resetScissor(evt);
 }
 
-void TextField::update(std::vector<EngineObject*> * objects,
+void TextField::update(std::vector<Object*> * objects,
                        const Event_Update * evt) {
     TextField::caret_time = evt->ns_time/4e8;
 }
 
-void TextField::mouseMoveEvt(std::vector<EngineObject*> * objects,
+void TextField::mouseMoveEvt(std::vector<Object*> * objects,
                              const Event_Mouse * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 
@@ -104,7 +103,7 @@ void TextField::mouseMoveEvt(std::vector<EngineObject*> * objects,
     TextField::events.hover = false;
 }
 
-void TextField::mouseButtonEvt(std::vector<EngineObject*> * objects,
+void TextField::mouseButtonEvt(std::vector<Object*> * objects,
                                const Event_Mouse * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 
@@ -123,7 +122,9 @@ void TextField::mouseButtonEvt(std::vector<EngineObject*> * objects,
                 int v;
                 int index = 0;
                 for(size_t i = 0; i <= TextField::maxTextLength; ++i) {
-                    v = TextField::position.x + 5 + TextField::graphics->getStringWidthIndex(TextField::text, i) + 2;
+                    v = TextField::position.x + 5 + TextField::graphics->getStringWidthIndex(TextField::text, i) + 2 ;
+                    v -= TextField::graphics->getStringWidthRange(
+                                TextField::text, TextField::caret_position - abs(TextField::caret_offset), TextField::caret_position);
                     v = abs(v - evt->x);
                     if(v < min) {
                         min = v;
@@ -136,7 +137,7 @@ void TextField::mouseButtonEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void TextField::pressKeyEvt(std::vector<EngineObject*> * objects,
+void TextField::pressKeyEvt(std::vector<Object*> * objects,
                             const Event_Key * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 
@@ -186,7 +187,7 @@ void TextField::pressKeyEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void TextField::releaseKeyEvt(std::vector<EngineObject*> * objects,
+void TextField::releaseKeyEvt(std::vector<Object*> * objects,
                               const Event_Key * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 

@@ -6,55 +6,71 @@
 #include "s3d/ui/image.h"
 #include "s3d/ui/radiobutton.h"
 #include "s3d/ui/panel.h"
+#include "s3d/ui/textfield.h"
 
 
 using namespace std;
 
 
-class Triangle : public EngineObject {
+class Triangle : public Object3D {
 private:
-    Point2D pts[3];
-    double time;
+    Vertex position;
 public:
-    Triangle();
-    void render(const Event_Render *evt, Graphics * graphics);
-    void update(std::vector<EngineObject *> * objects, const Event_Update *evt);
+    float angle;
+    Triangle(Vertex position);
+    void render(Graphics * graphics, const Event_Render *evt);
+    void update(std::vector<Object *> * objects, const Event_Update *evt);
 };
 
-Triangle::Triangle() {
-    time = 0.0;
-
-    pts[0].x = 50;
-    pts[0].y = 50;
-    pts[0].color = (Color){0.0, 0.0, 0.0, 1.0};
-
-    pts[1].x = 250;
-    pts[1].y = 350;
-    pts[1].color = (Color){0.0, 0.0, 0.0, 1.0};
-
-    pts[2].x = 450;
-    pts[2].y = 50;
-    pts[2].color = (Color){1.0, 0.0, 0.0, 1.0};
+Triangle::Triangle(Vertex position) {
+    Triangle::position = position;
+    Triangle::angle = 0.0f;
 }
 
-void Triangle::render(const Event_Render *evt, Graphics * graphics) {
-    Graphics2D * g2 = (Graphics2D*)graphics;
-    g2->enableVertexColor();
-    g2->fillPolygon(pts, 3);
+void Triangle::render(Graphics * graphics, const Event_Render *evt) {
+
+    glTranslatef(Triangle::position.x, Triangle::position.y,
+                 Triangle::position.z);
+    glRotatef(Triangle::angle, 0.0, 1.0, 0.0);
+    glBegin(GL_TRIANGLES);           // Begin drawing the pyramid with 4 triangles
+    // Front
+    glColor3f(1.0f, 0.0f, 0.0f);     // Red
+    glVertex3f( 0.0f, 1.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);     // Green
+    glVertex3f(-1.0f, -1.0f, 1.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+    glVertex3f(1.0f, -1.0f, 1.0f);
+
+    // Right
+    glColor3f(1.0f, 0.0f, 0.0f);     // Red
+    glVertex3f(0.0f, 1.0f, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+    glVertex3f(1.0f, -1.0f, 1.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);     // Green
+    glVertex3f(1.0f, -1.0f, -1.0f);
+
+    // Back
+    glColor3f(1.0f, 0.0f, 0.0f);     // Red
+    glVertex3f(0.0f, 1.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);     // Green
+    glVertex3f(1.0f, -1.0f, -1.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);     // Blue
+    glVertex3f(-1.0f, -1.0f, -1.0f);
+
+    // Left
+    glColor3f(1.0f,0.0f,0.0f);       // Red
+    glVertex3f( 0.0f, 1.0f, 0.0f);
+    glColor3f(0.0f,0.0f,1.0f);       // Blue
+    glVertex3f(-1.0f,-1.0f,-1.0f);
+    glColor3f(0.0f,1.0f,0.0f);       // Green
+    glVertex3f(-1.0f,-1.0f, 1.0f);
+    glEnd();   // Done drawing the pyramid
 }
 
-#include <math.h>
 
-void Triangle::update(std::vector<EngineObject *> * objects, const Event_Update * evt) {
-    time += evt->ns_diff/3e8;
-    pts[0].color.red = sin(time/3);
-    pts[0].color.green = cos(time);
-
-    pts[1].color.blue = cos(time/2);
-    pts[1].color.red = sin(time/3);
-
-    pts[2].color.green = sin(time);
-    pts[2].color.blue = cos(time/2);
+void Triangle::update(std::vector<Object *> * objects,
+                      const Event_Update * evt) {
+    Triangle::angle += 1.0f;
 }
 
 
@@ -64,39 +80,19 @@ int main(int argc, char *argv[])
     S3DCore * core = new S3DCore(argc, argv, &context);
 
     Scene * s = core->createScene();
+    s->mouseCamControl = true;
+    s->visibleCursor = false;
+    s->getCamera()->setPosition(-4.0, 2.0, 0.0);
 
-    UI_obj * obj;
-
-    Texture * tex = core->loadTexture("data/img.bmp", false);
-    if(tex != NULL) {
-        obj = new Image(300, 220, 300, 300, tex);
-        s->addObject(obj);
-    }
-
-    Triangle * t = new Triangle();
+    Triangle * t = new Triangle((Vertex){0.0, 1.0, 0.0});
     s->addObject(t);
 
-    obj = new Button(250-70, 130, 140, 50, "Button 1");
-    s->addObject(obj);
+    t = new Triangle((Vertex){1.0, 1.0, 5.0});
+    s->addObject(t);
 
-    obj = new Label(250, 100, "Triangle");
-    ((Label*)obj)->setCentered(true);
-    s->addObject(obj);
 
-    obj = new CheckBox(500, 40, 25, true, "CheckBox 1");
-    s->addObject(obj);
-
-    RadioButtonGroup * grp = new RadioButtonGroup();
-    s->addObject(grp);
-
-    char buffer[255];
-    for(int i = 0; i < 5; ++i) {
-        snprintf(buffer, 255, "RadioButton %d", i);
-        obj = new RadioButton(500, 100 + i * 30, 20, false, buffer);
-        grp->addRadioButton(obj);
-        s->addObject(obj);
-    }
-
+    Label * l = new Label(20, 40, "S3D Engine test");
+    s->addObject(l);
 
     core->setActiveScene(s);
     core->run();

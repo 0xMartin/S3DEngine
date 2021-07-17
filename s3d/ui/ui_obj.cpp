@@ -3,7 +3,7 @@
 UI_obj::~UI_obj() {
 }
 
-void UI_obj::render(const Event_Render * evt, Graphics * graphics) {
+void UI_obj::render(Graphics * graphics, const Event_Render * evt) {
 }
 
 void UI_obj::resize(const Event_Resize * evt) {
@@ -15,11 +15,11 @@ void UI_obj::resize(const Event_Resize * evt) {
     }
 }
 
-void UI_obj::update(std::vector<EngineObject*> * objects,
+void UI_obj::update(std::vector<Object*> * objects,
                     const Event_Update * evt) {
 }
 
-void UI_obj::mouseMoveEvt(std::vector<EngineObject*> * objects,
+void UI_obj::mouseMoveEvt(std::vector<Object*> * objects,
                           const Event_Mouse * evt) {
     if(!UI_obj::events.enabled || !UI_obj::events.visible) return;
 
@@ -35,7 +35,7 @@ void UI_obj::mouseMoveEvt(std::vector<EngineObject*> * objects,
     UI_obj::events.hover = false;
 }
 
-void UI_obj::mouseButtonEvt(std::vector<EngineObject*> * objects,
+void UI_obj::mouseButtonEvt(std::vector<Object*> * objects,
                             const Event_Mouse * evt) {
     if(!UI_obj::events.enabled || !UI_obj::events.visible) return;
 
@@ -54,7 +54,7 @@ void UI_obj::mouseButtonEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void UI_obj::pressKeyEvt(std::vector<EngineObject*> * objects,
+void UI_obj::pressKeyEvt(std::vector<Object*> * objects,
                          const Event_Key * evt) {
     if(!UI_obj::events.enabled || !UI_obj::events.visible) return;
 
@@ -63,7 +63,7 @@ void UI_obj::pressKeyEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void UI_obj::releaseKeyEvt(std::vector<EngineObject*> * objects,
+void UI_obj::releaseKeyEvt(std::vector<Object*> * objects,
                            const Event_Key * evt) {
     if(!UI_obj::events.enabled || !UI_obj::events.visible) return;
 
@@ -72,5 +72,5 @@ void UI_obj::releaseKeyEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void UI_obj::onLoad(std::vector<EngineObject*> * objects) {
+void UI_obj::onLoad(std::vector<Object*> * objects) {
 }

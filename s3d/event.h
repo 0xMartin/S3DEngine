@@ -46,7 +46,6 @@ typedef struct {
     void * sender; /** object that triggered the event */
 } Event_Key;
 
-
 //mouse envent
 typedef struct {
     int button; /** pressed button*/
@@ -55,7 +54,6 @@ typedef struct {
     int y;  /** y position of cursore*/
     void * sender; /** object that triggered the event */
 } Event_Mouse;
-
 
 //render event
 typedef struct {
@@ -73,7 +71,6 @@ typedef struct {
     void * sender; /** object that triggered the event */
 } Event_Resize;
 
-
 //update event
 typedef struct {
     __syscall_slong_t ns_time;  /** current ns system time*/
@@ -84,12 +81,15 @@ typedef struct {
 } Event_Update;
 
 
-typedef void (*Event_action)(void * sender, const void * evt);
-
-#define UI_EVENTS_INIT (UI_Events){false, false, true, false, true, NULL, NULL, NULL, NULL, NULL, NULL}
-
 
 //UI events
+typedef void (*Event_action)(void * sender, const void * evt);
+
+#define UI_EVENTS_INIT (UI_Events){.focus=false, .hover=false,\
+    .enabled=true, .resizable=false, .visible=true, .mousePressAction=NULL,\
+    .mouseReleaseAction=NULL, .keyPressedAction=NULL, .keyReleaseAction=NULL,\
+    .mouseMovedAction=NULL, .contentChangedAction=NULL}
+
 typedef struct {
     //events
     bool focus;

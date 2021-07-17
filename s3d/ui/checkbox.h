@@ -28,9 +28,9 @@ public:
 
     Label * getLabel();
 
-    virtual void render(const Event_Render * evt, Graphics * graphics);
+    virtual void render(Graphics * graphics, const Event_Render * evt);
 
-    virtual void mouseButtonEvt(std::vector<EngineObject*> * objects,
+    virtual void mouseButtonEvt(std::vector<Object*> * objects,
                                 const Event_Mouse * evt);
 
 };

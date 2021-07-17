@@ -34,9 +34,15 @@ Graphics::Graphics(int windowHandle){
 
 void Graphics::begin(Event_Render * evt, Color * color) {
     if(Graphics::windowHandle >= 1) {
+        //set window
         if(glutGetWindow() != Graphics::windowHandle) {
             glutSetWindow(Graphics::windowHandle);
         }
+
+        //reset modelview matrix.
+        glLoadIdentity();
+
+        //clear renderer
         Graphics::clear(evt, color);
     }
 }
@@ -198,7 +204,7 @@ void Graphics::resetScissor(const Event_Render * evt) {
 }
 
 void Graphics::clear(Event_Render * evt, Color * color) {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(color != NULL) {
         glClearColor(color->red, color->green, color->blue, 1.0);
@@ -250,4 +256,33 @@ void Graphics::drawString(GLfloat x, GLfloat y, const char * const str) {
             }
         }
     }
+}
+
+void Graphics::restorePerspectiveProjection() {
+    //switch to projection mode
+    glMatrixMode(GL_PROJECTION);
+
+    //restore previous projection matrix
+    glPopMatrix();
+
+    //get back to modelview mode
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void Graphics::setOrthographicProjection(const Event_Render * evt) {
+    //switch to projection mode
+    glMatrixMode(GL_PROJECTION);
+
+    //save previous matrix which contains the
+    //settings for the perspective projection
+    glPushMatrix();
+
+    //reset matrix
+    glLoadIdentity();
+
+    //set a 2D orthographic projection
+    gluOrtho2D(0, evt->window_width, evt->window_height, 0);
+
+    //switch back to modelview mode
+    glMatrixMode(GL_MODELVIEW);
 }

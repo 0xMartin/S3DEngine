@@ -8,6 +8,8 @@
 #include <GL/gl.h>
 #endif
 
+
+#include <iostream>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
@@ -79,6 +81,12 @@ struct timespec UTIL_getSystemTime();
  * @param data  Pointer on data structure
  */
 void UTIL_simpleDestructor(void * data);
+
+
+template<typename Base, typename T>
+inline bool UTIL_instanceof(const T*) {
+   return std::is_base_of<Base, T>::value;
+}
 
 
 #endif // UTIL_H

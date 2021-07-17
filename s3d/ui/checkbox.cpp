@@ -31,7 +31,7 @@ Label * CheckBox::getLabel() {
     return CheckBox::label;
 }
 
-void CheckBox::render(const Event_Render * evt, Graphics * graphics) {
+void CheckBox::render(Graphics * graphics, const Event_Render * evt) {
     if(!CheckBox::events.visible) return;
 
     Graphics2D * g2 = (Graphics2D*)graphics;
@@ -62,14 +62,14 @@ void CheckBox::render(const Event_Render * evt, Graphics * graphics) {
         glTranslatef(CheckBox::position.x, CheckBox::position.y + center, 0);
 
         //render
-        CheckBox::label->render(evt, graphics);
+        CheckBox::label->render(graphics, evt);
 
         //shift origin back
         glTranslatef(-CheckBox::position.x, -CheckBox::position.y - center, 0);
     }
 }
 
-void CheckBox::mouseButtonEvt(std::vector<EngineObject*> * objects,
+void CheckBox::mouseButtonEvt(std::vector<Object*> * objects,
                               const Event_Mouse * evt) {
     if(!CheckBox::events.enabled || !CheckBox::events.visible) return;
 

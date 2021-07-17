@@ -19,7 +19,7 @@ protected:
 public:
     Image(int x, int y, size_t width, size_t heigth, Texture * texture);
 
-    virtual void render(const Event_Render * evt, Graphics * graphics);
+    virtual void render(Graphics * graphics, const Event_Render * evt);
 
 };
 

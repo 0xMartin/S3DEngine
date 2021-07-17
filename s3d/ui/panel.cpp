@@ -13,12 +13,12 @@ Panel::Panel(int x, int y, size_t width, size_t height) {
     Panel::width = width;
     Panel::height = height;
 
-    Panel::childs = new std::vector<EngineObject*>();
+    Panel::childs = new std::vector<Object*>();
 }
 
 Panel::~Panel() {
     if(Panel::childs) {
-        for(EngineObject * child : *Panel::childs) {
+        for(Object * child : *Panel::childs) {
             if(child) delete child;
         }
         delete Panel::childs;
@@ -29,13 +29,13 @@ void Panel::setBGColor(Color color) {
     Panel::background = color;
 }
 
-bool Panel::addObject(EngineObject * object) {
+bool Panel::addObject(Object * object) {
     if(object == NULL || Panel::childs == NULL) return false;
     Panel::childs->push_back(object);
     return true;
 }
 
-void Panel::render(const Event_Render * evt, Graphics * graphics) {
+void Panel::render(Graphics * graphics, const Event_Render * evt) {
     if(!Panel::events.visible) return;
 
     Event_Render panel_evt;
@@ -60,8 +60,8 @@ void Panel::render(const Event_Render * evt, Graphics * graphics) {
     g2->applyOffset(Panel::position.x, Panel::position.y, 0.0);
 
     if(Panel::childs) {
-        for(EngineObject * child : *Panel::childs) {
-            if(child) child->render(&panel_evt, graphics);
+        for(Object * child : *Panel::childs) {
+            if(child) child->render(graphics, &panel_evt);
         }
     }
 
@@ -82,26 +82,26 @@ void Panel::resize(const Event_Resize * evt) {
         panel_evt.sender = this;
 
         if(Panel::childs) {
-            for(EngineObject * child : *Panel::childs) {
+            for(Object * child : *Panel::childs) {
                 if(child) child->resize(&panel_evt);
             }
         }
     }
 }
 
-void Panel::update(std::vector<EngineObject*> * objects,
+void Panel::update(std::vector<Object*> * objects,
                    const Event_Update * evt) {
     Event_Update panel_evt = *evt;
     panel_evt.sender = this;
 
     if(Panel::childs) {
-        for(EngineObject * child : *Panel::childs) {
+        for(Object * child : *Panel::childs) {
             if(child) child->update(objects, &panel_evt);
         }
     }
 }
 
-void Panel::mouseMoveEvt(std::vector<EngineObject*> * objects,
+void Panel::mouseMoveEvt(std::vector<Object*> * objects,
                          const Event_Mouse * evt) {
     if(!Panel::events.enabled || !Panel::events.visible) return;
 
@@ -116,7 +116,7 @@ void Panel::mouseMoveEvt(std::vector<EngineObject*> * objects,
             panel_evt.sender = this;
 
             if(Panel::childs) {
-                for(EngineObject * child : *Panel::childs) {
+                for(Object * child : *Panel::childs) {
                     if(child) child->mouseMoveEvt(objects, &panel_evt);
                 }
             }
@@ -124,7 +124,7 @@ void Panel::mouseMoveEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void Panel::mouseButtonEvt(std::vector<EngineObject*> * objects,
+void Panel::mouseButtonEvt(std::vector<Object*> * objects,
                            const Event_Mouse * evt) {
     if(!Panel::events.enabled || !Panel::events.visible) return;
 
@@ -141,7 +141,7 @@ void Panel::mouseButtonEvt(std::vector<EngineObject*> * objects,
             panel_evt.sender = this;
 
             if(Panel::childs) {
-                for(EngineObject * child : *Panel::childs) {
+                for(Object * child : *Panel::childs) {
                     if(child) child->mouseButtonEvt(objects, &panel_evt);
                 }
             }
@@ -149,7 +149,7 @@ void Panel::mouseButtonEvt(std::vector<EngineObject*> * objects,
     }
 }
 
-void Panel::pressKeyEvt(std::vector<EngineObject*> * objects,
+void Panel::pressKeyEvt(std::vector<Object*> * objects,
                         const Event_Key * evt) {
     if(!Panel::events.enabled || !Panel::events.visible) return;
 
@@ -158,14 +158,14 @@ void Panel::pressKeyEvt(std::vector<EngineObject*> * objects,
         panel_evt.sender = this;
 
         if(Panel::childs) {
-            for(EngineObject * child : *Panel::childs) {
+            for(Object * child : *Panel::childs) {
                 if(child) child->pressKeyEvt(objects, &panel_evt);
             }
         }
     }
 }
 
-void Panel::releaseKeyEvt(std::vector<EngineObject*> * objects,
+void Panel::releaseKeyEvt(std::vector<Object*> * objects,
                           const Event_Key * evt) {
     if(!Panel::events.enabled || !Panel::events.visible) return;
 
@@ -174,16 +174,16 @@ void Panel::releaseKeyEvt(std::vector<EngineObject*> * objects,
         panel_evt.sender = this;
 
         if(Panel::childs) {
-            for(EngineObject * child : *Panel::childs) {
+            for(Object * child : *Panel::childs) {
                 if(child) child->releaseKeyEvt(objects, &panel_evt);
             }
         }
     }
 }
 
-void Panel::onLoad(std::vector<EngineObject*> * objects) {
+void Panel::onLoad(std::vector<Object*> * objects) {
     if(Panel::childs) {
-        for(EngineObject * child : *Panel::childs) {
+        for(Object * child : *Panel::childs) {
             if(child) child->onLoad(objects);
         }
     }

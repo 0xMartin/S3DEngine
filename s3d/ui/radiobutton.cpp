@@ -42,7 +42,7 @@ bool RadioButton::getValue() {
 
 }
 
-void RadioButton::render(const Event_Render * evt, Graphics * graphics) {
+void RadioButton::render(Graphics * graphics, const Event_Render * evt) {
     if(!RadioButton::events.visible) return;
 
     Point2D p = RadioButton::position;
@@ -69,14 +69,14 @@ void RadioButton::render(const Event_Render * evt, Graphics * graphics) {
         glTranslatef(RadioButton::position.x, RadioButton::position.y + center, 0);
 
         //render
-        RadioButton::label->render(evt, graphics);
+        RadioButton::label->render(graphics, evt);
 
         //shift origin back
         glTranslatef(-RadioButton::position.x, -RadioButton::position.y - center, 0);
     }
 }
 
-void RadioButton::mouseButtonEvt(std::vector<EngineObject*> * objects,
+void RadioButton::mouseButtonEvt(std::vector<Object*> * objects,
                                  const Event_Mouse * evt) {
     if(!RadioButton::events.enabled || !RadioButton::events.visible) return;
 

@@ -24,7 +24,7 @@ void Label::setCentered(bool centered) {
     Label::centered = centered;
 }
 
-void Label::render(const Event_Render * evt, Graphics * graphics) {
+void Label::render(Graphics * graphics, const Event_Render * evt) {
     if(!Label::events.visible) return;
 
     Graphics2D * g2 = (Graphics2D*)graphics;

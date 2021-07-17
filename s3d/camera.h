@@ -48,6 +48,20 @@ public:
     Vertex getPosition();
 
     /**
+     * @brief setPosition
+     * @param v
+     */
+    void setPosition(Vertex * v);
+
+    /**
+     * @brief setPosition
+     * @param x
+     * @param y
+     * @param z
+     */
+    void setPosition(GLfloat x, GLfloat y, GLfloat z);
+
+    /**
      * @brief getDirection
      * @return
      */

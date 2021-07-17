@@ -19,6 +19,14 @@ Camera::Camera() {
     Camera::limitAngleY.min = -CAMERA_DIR_Y_RANGE;
     Camera::limitAngleY.max = CAMERA_DIR_Y_RANGE;
     Camera::cosAY = 0.0f;
+
+    //compute x, y and z of directin vector
+    Camera::dir.x = cos(Camera::angleXZ);
+    Camera::dir.z = sin(Camera::angleXZ);
+
+    //compute y of directin vector
+    Camera::dir.y = -sin(Camera::angleY);
+    Camera::cosAY = cos(Camera::angleY);
 }
 
 void Camera::computePosition() {
@@ -35,15 +43,22 @@ void Camera::computePosition() {
 
     //moving in x axis
     if (Camera::deltaPos.x) {
-        Camera::pos.x += Camera::deltaPos.x * Camera::dir.z;
-        Camera::pos.z -= Camera::deltaPos.x * Camera::dir.x;
+        Camera::pos.x -= Camera::deltaPos.x * Camera::dir.z;
+        Camera::pos.z += Camera::deltaPos.x * Camera::dir.x;
     }
 }
 
 void Camera::computeDirection() {
-    if (Camera::deltaAngleXZ && Camera::deltaAngleY) {
+    if(Camera::deltaAngleXZ) {
         //compute new value of angle XZ
         Camera::angleXZ += Camera::deltaAngleXZ;
+
+        //compute x, y and z of directin vector
+        Camera::dir.x = cos(Camera::angleXZ);
+        Camera::dir.z = sin(Camera::angleXZ);
+    }
+
+    if(Camera::deltaAngleY) {
         //compute new angle of Y
         Camera::angleY += Camera::deltaAngleY;
 
@@ -51,9 +66,6 @@ void Camera::computeDirection() {
         Camera::angleY = MAX(Camera::angleY, Camera::limitAngleY.min);
         Camera::angleY = MIN(Camera::angleY, Camera::limitAngleY.max);
 
-        //compute x, y and z of directin vector
-        Camera::dir.x = cos(Camera::angleXZ);
-        Camera::dir.z = sin(Camera::angleXZ);
         //compute y of directin vector
         Camera::dir.y = -sin(Camera::angleY);
         Camera::cosAY = cos(Camera::angleY);
@@ -76,6 +88,16 @@ void Camera::viewTransformation() {
 
 Vertex Camera::getPosition() {
     return Camera::pos;
+}
+
+void Camera::setPosition(Vertex * v) {
+    Camera::pos = *v;
+}
+
+void Camera::setPosition(GLfloat x, GLfloat y, GLfloat z) {
+    Camera::pos.x = x;
+    Camera::pos.y = y;
+    Camera::pos.z = z;
 }
 
 Vertex Camera::getDirection() {

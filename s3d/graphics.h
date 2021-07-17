@@ -236,6 +236,16 @@ public:
      */
     void drawString(GLfloat x, GLfloat y,  const char * const str);
 
+    /**
+     * @brief restorePerspectiveProjection
+     */
+    void restorePerspectiveProjection();
+
+    /**
+     * @brief setOrthographicProjection
+     * @param evt
+     */
+    void setOrthographicProjection(const Event_Render * evt);
 };
 
 #endif // GRAPHICS_H

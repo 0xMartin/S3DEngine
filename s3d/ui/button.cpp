@@ -35,7 +35,7 @@ char * Button::getText() {
     return Button::text;
 }
 
-void Button::render(const Event_Render * evt, Graphics * graphics) {
+void Button::render(Graphics * graphics, const Event_Render * evt) {
     if(!Button::events.visible) return;
 
     Graphics2D * g2 = (Graphics2D*)graphics;
@@ -58,7 +58,7 @@ void Button::render(const Event_Render * evt, Graphics * graphics) {
                 Button::text);
 }
 
-void Button::mouseMoveEvt(std::vector<EngineObject*> * objects,
+void Button::mouseMoveEvt(std::vector<Object*> * objects,
                           const Event_Mouse * evt) {
     if(!Button::events.enabled || !Button::events.visible) return;
 
@@ -74,7 +74,7 @@ void Button::mouseMoveEvt(std::vector<EngineObject*> * objects,
     Button::events.hover = false;
 }
 
-void Button::mouseButtonEvt(std::vector<EngineObject*> * objects,
+void Button::mouseButtonEvt(std::vector<Object*> * objects,
                             const Event_Mouse * evt){
     if(!Button::events.enabled || !Button::events.visible) return;
 

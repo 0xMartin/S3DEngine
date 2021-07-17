@@ -1,7 +1,7 @@
 #ifndef UI_OBJ_H
 #define UI_OBJ_H
 
-#include "../engine_object.h"
+#include "../object.h"
 #include "../event.h"
 #include "../graphics2d.h"
 
@@ -36,39 +36,37 @@
 
 
 
-class UI_obj : public EngineObject
+class UI_obj : public Object2D
 {
-
-protected:
-    Point2D position;
+public:
     GLfloat width;
     GLfloat height;
 
-public:
+
     UI_Events events;
 
     virtual ~UI_obj();
 
-    virtual void render(const Event_Render * evt, Graphics * graphics);
+    virtual void render(Graphics * graphics, const Event_Render * evt);
 
     virtual void resize(const Event_Resize * evt);
 
-    virtual void update(std::vector<EngineObject*> * objects,
+    virtual void update(std::vector<Object*> * objects,
                         const Event_Update * evt);
 
-    virtual void mouseMoveEvt(std::vector<EngineObject*> * objects,
+    virtual void mouseMoveEvt(std::vector<Object*> * objects,
                               const Event_Mouse * evt);
 
-    virtual void mouseButtonEvt(std::vector<EngineObject*> * objects,
+    virtual void mouseButtonEvt(std::vector<Object*> * objects,
                                 const Event_Mouse * evt);
 
-    virtual void pressKeyEvt(std::vector<EngineObject*> * objects,
+    virtual void pressKeyEvt(std::vector<Object*> * objects,
                              const Event_Key * evt);
 
-    virtual void releaseKeyEvt(std::vector<EngineObject*> * objects,
+    virtual void releaseKeyEvt(std::vector<Object*> * objects,
                                const Event_Key * evt);
 
-    virtual void onLoad(std::vector<EngineObject*> * objects);
+    virtual void onLoad(std::vector<Object*> * objects);
 };
 
 #endif // UI_OBJ_H

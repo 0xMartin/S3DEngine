@@ -27,21 +27,21 @@ public:
 
     bool setText(const char * const txt);
 
-    virtual void render(const Event_Render * evt, Graphics * graphics);
+    virtual void render(Graphics * graphics, const Event_Render * evt);
 
-    virtual void update(std::vector<EngineObject*> * objects,
+    virtual void update(std::vector<Object*> * objects,
                         const Event_Update * evt);
 
-    virtual void mouseMoveEvt(std::vector<EngineObject*> * objects,
+    virtual void mouseMoveEvt(std::vector<Object*> * objects,
                               const Event_Mouse * evt);
 
-    virtual void mouseButtonEvt(std::vector<EngineObject*> * objects,
+    virtual void mouseButtonEvt(std::vector<Object*> * objects,
                                 const Event_Mouse * evt);
 
-    virtual void pressKeyEvt(std::vector<EngineObject*> * objects,
+    virtual void pressKeyEvt(std::vector<Object*> * objects,
                              const Event_Key * evt);
 
-    virtual void releaseKeyEvt(std::vector<EngineObject*> * objects,
+    virtual void releaseKeyEvt(std::vector<Object*> * objects,
                                const Event_Key * evt);
 };
 

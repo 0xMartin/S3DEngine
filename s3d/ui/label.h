@@ -20,7 +20,7 @@ public:
 
     void setCentered(bool centered);
 
-    virtual void render(const Event_Render * evt, Graphics * graphics);
+    virtual void render(Graphics * graphics, const Event_Render * evt);
 };
 
 #endif // LABEL_H
