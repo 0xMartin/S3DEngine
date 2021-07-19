@@ -28,7 +28,7 @@ Graphics::Graphics(int windowHandle){
     Graphics::offset_x = 0.0;
     Graphics::offset_y = 0.0;
     Graphics::offset_z = 0.0;
-    Graphics::font = E2D_BITMAP_HELVETICA_18;
+    Graphics::font = S3D_BITMAP_HELVETICA_18;
     Graphics::enableVerColor = false;
 }
 
@@ -109,23 +109,23 @@ int Graphics::getStringWidthRange(const char * str, int start, int end) {
 int Graphics::getStringHeight() {
     if(Graphics::font == NULL) return 0;
 
-    if(Graphics::font == E2D_STROKE_ROMAN) {
+    if(Graphics::font == S3D_STROKE_ROMAN) {
         return 10;
-    } else if(Graphics::font == E2D_STROKE_MONO_ROMAN) {
+    } else if(Graphics::font == S3D_STROKE_MONO_ROMAN) {
         return 10;
-    } else if(Graphics::font == E2D_BITMAP_9_BY_15) {
+    } else if(Graphics::font == S3D_BITMAP_9_BY_15) {
         return 15;
-    } else if(Graphics::font == E2D_BITMAP_8_BY_13) {
+    } else if(Graphics::font == S3D_BITMAP_8_BY_13) {
         return 13;
-    } else if(Graphics::font == E2D_BITMAP_TIMES_ROMAN_10) {
+    } else if(Graphics::font == S3D_BITMAP_TIMES_ROMAN_10) {
         return 10;
-    } else if(Graphics::font == E2D_BITMAP_TIMES_ROMAN_24) {
+    } else if(Graphics::font == S3D_BITMAP_TIMES_ROMAN_24) {
         return 24;
-    } else if(Graphics::font == E2D_BITMAP_HELVETICA_10) {
+    } else if(Graphics::font == S3D_BITMAP_HELVETICA_10) {
         return 10;
-    } else if(Graphics::font == E2D_BITMAP_HELVETICA_12) {
+    } else if(Graphics::font == S3D_BITMAP_HELVETICA_12) {
         return 12;
-    } else if(Graphics::font == E2D_BITMAP_HELVETICA_18) {
+    } else if(Graphics::font == S3D_BITMAP_HELVETICA_18) {
         return 18;
     }
 
@@ -216,7 +216,7 @@ void Graphics::clear(Event_Render * evt, Color * color) {
 
     Graphics::maxAlpha = 1.0;
     Graphics::color.red = Graphics::color.green = Graphics::color.blue = 1.0;
-    Graphics::font = E2D_BITMAP_HELVETICA_18;
+    Graphics::font = S3D_BITMAP_HELVETICA_18;
     glLineWidth(1.0);
 
     Graphics::clearOffset();
@@ -228,17 +228,21 @@ void Graphics::clear(Event_Render * evt, Color * color) {
     }
 }
 
+void Graphics::render() {
+    glutSwapBuffers();
+}
+
 void Graphics::setFont(void * font, GLint size) {
     if(font != NULL && size > 5) {
-        if(font == E2D_STROKE_ROMAN ||
-                font == E2D_STROKE_MONO_ROMAN ||
-                font == E2D_BITMAP_9_BY_15 ||
-                font == E2D_BITMAP_8_BY_13 ||
-                font == E2D_BITMAP_TIMES_ROMAN_10 ||
-                font == E2D_BITMAP_TIMES_ROMAN_24 ||
-                font == E2D_BITMAP_HELVETICA_10 ||
-                font == E2D_BITMAP_HELVETICA_12 ||
-                font == E2D_BITMAP_HELVETICA_18) {
+        if(font == S3D_STROKE_ROMAN ||
+                font == S3D_STROKE_MONO_ROMAN ||
+                font == S3D_BITMAP_9_BY_15 ||
+                font == S3D_BITMAP_8_BY_13 ||
+                font == S3D_BITMAP_TIMES_ROMAN_10 ||
+                font == S3D_BITMAP_TIMES_ROMAN_24 ||
+                font == S3D_BITMAP_HELVETICA_10 ||
+                font == S3D_BITMAP_HELVETICA_12 ||
+                font == S3D_BITMAP_HELVETICA_18) {
             Graphics::font = font;
         }
     }
@@ -247,7 +251,8 @@ void Graphics::setFont(void * font, GLint size) {
 void Graphics::drawString(GLfloat x, GLfloat y, const char * const str) {
     if(str != NULL) {
         if(strlen(str) > 0) {
-            glColor4f(Graphics::color.red, Graphics::color.green, Graphics::color.blue, MIN(Graphics::color.alpha, Graphics::maxAlpha));
+            glColor4f(Graphics::color.red, Graphics::color.green, Graphics::color.blue,
+                      MIN(Graphics::color.alpha, Graphics::maxAlpha));
             glRasterPos2f(x, y);
             const char * c  = str;
             while(*c){

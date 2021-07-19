@@ -69,7 +69,7 @@ void TextField::render(Graphics * graphics, const Event_Render * evt) {
 
     if(TextField::events.focus) {
         if(TextField::caret_time % 2 == 0) {
-            Point2D p1, p2;
+            Point p1, p2;
             p1.x = TextField::position.x + 5 + g2->getStringWidthIndex(TextField::text, TextField::caret_position + TextField::caret_offset) + 2;
             p2.x = p1.x;
             p1.y = TextField::position.y + line_start;

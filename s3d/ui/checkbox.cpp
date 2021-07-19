@@ -44,7 +44,7 @@ void CheckBox::render(Graphics * graphics, const Event_Render * evt) {
 
     if(CheckBox::value) {
         g2->setColor(&(CheckBox::foreground));
-        Point2D pts[3];
+        Point pts[3];
         pts[0].x = CheckBox::position.x + (int)CheckBox::width / 4;
         pts[0].y = CheckBox::position.y + (int)CheckBox::height / 4;
         pts[1].x = CheckBox::position.x + (int)CheckBox::width / 2;

@@ -45,7 +45,7 @@ bool RadioButton::getValue() {
 void RadioButton::render(Graphics * graphics, const Event_Render * evt) {
     if(!RadioButton::events.visible) return;
 
-    Point2D p = RadioButton::position;
+    Point p = RadioButton::position;
     p.x += RadioButton::width/2;
     p.y += RadioButton::height/2;
 

@@ -2,17 +2,11 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <cstring>
 
-bool IO_readStringFromFile(const char * path, char * buffer,
-                           size_t size) {
+bool IO_readStringFromFile(const char * path, std::vector<std::string> & lines) {
     if(path == NULL) {
         std::cerr << __FUNCTION__ << ": file path is not defined\n";
-        return false;
-    }
-    if(buffer == NULL) {
-        std::cerr << __FUNCTION__ << ": buffer is NULL\n";
         return false;
     }
 
@@ -21,29 +15,11 @@ bool IO_readStringFromFile(const char * path, char * buffer,
         std::cerr << __FUNCTION__ << ": " << std::strerror(errno) << std::endl;
         return false;
     }
-    unsigned int i = 0;
     std::string line;
     while (std::getline(file, line)) {
-        for(char c : line) {
-            if(i >= size) {
-                std::cerr << __FUNCTION__ << ": buffer overflow\n";
-                return false;
-            }
-            *(buffer + i++) = c;
-        }
-        if(i >= size) {
-            std::cerr << __FUNCTION__ << ": buffer overflow\n";
-            return false;
-        }
-        *(buffer + i++) = '\n';
+        lines.push_back(line);
     }
     file.close();
-
-    if(i >= size) {
-        std::cerr << __FUNCTION__ << ": buffer overflow\n";
-        return false;
-    }
-    *(buffer + i++) = 0;
 
     return true;
 }
@@ -54,7 +30,7 @@ bool IO_writeStringToFile(const char * path, const char * str) {
         return false;
     }
     if(str == NULL) {
-        std::cerr << __FUNCTION__ << ": string is NULL\n";
+        std::cerr << __FUNCTION__ << ": string is NULL [" << path << "]\n";
         return false;
     }
 
@@ -75,7 +51,7 @@ bool IO_appendStringToFile(const char * path, const char * str) {
         return false;
     }
     if(str == NULL) {
-        std::cerr << __FUNCTION__ << ": string is NULL\n";
+        std::cerr << __FUNCTION__ << ": string is NULL [" << path << "]\n";
         return false;
     }
 
@@ -96,7 +72,7 @@ bool IO_readDataFromFile(const char * path, char * buffer, size_t buffer_size) {
         return false;
     }
     if(buffer == NULL) {
-        std::cerr << __FUNCTION__ << ": buffer is NULL\n";
+        std::cerr << __FUNCTION__ << ": buffer is NULL [" << path << "]\n";
         return false;
     }
 
@@ -117,7 +93,7 @@ bool IO_writeDataToFile(const char * path, const char * data, size_t data_size) 
         return false;
     }
     if(data == NULL) {
-        std::cerr << __FUNCTION__ << ": data is NULL\n";
+        std::cerr << __FUNCTION__ << ": data is NULL [" << path << "]\n";
         return false;
     }
 

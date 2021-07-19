@@ -9,13 +9,14 @@
 #include "object.h"
 #include "camera.h"
 #include "io.h"
+#include "model.h"
 #include <vector>
 #include <stdbool.h>
 
 
 #define CORE_DEFAULT_CONFIG (CoreContext){0, 800, 600,\
     "S3DEngine", false, 50, 50, (Color){0.0, 0.0, 0.0, 1.0},\
-    NULL, NULL, NULL, NULL}
+    NULL, NULL, std::vector<Texture*>(), std::vector<Model*>(), std::vector<Scene*>()}
 
 
 class Scene {
@@ -24,9 +25,10 @@ protected:
 public:
     bool visibleCursor; /** is cursor visible? */
     bool mouseCamControl; /** control camera by mouse motion */
+    bool mouseCenter; /** if true => mouse cursor be always on center of window*/
     GLfloat min_renderDistance; /** minimal render distance */
     GLfloat max_renderDistance; /** maximal render distance */
-    std::vector<Object*> * objects; /** all objects of scene */
+    std::vector<Object*> objects; /** all objects of scene */
 
     Scene();
     ~Scene();
@@ -55,10 +57,11 @@ typedef struct {
     unsigned int fps;   /** Frames per second */
     unsigned int ups;   /** Updates per second */
     Color clearColor; /** Background color of window */
-    std::vector<Texture*> * textures;    /** Vector of all textures, consisting only from <Texture> util.h */
     Scene * activeScene;  /** Currently processed scene */
-    std::vector<Scene*> * scenes;  /** List of all scenes */
-    Graphics3D * graphics;
+    Graphics3D * graphics; /** Graphics renderer */
+    std::vector<Texture*> textures;    /** Vector of all textures */
+    std::vector<Model*> models;    /** Vector of all models */
+    std::vector<Scene*> scenes;  /** Vector of all scenes */
 } CoreContext;
 
 
@@ -106,6 +109,19 @@ public:
      * @return
      */
     S3D_API std::vector<Texture*> * S3D_API_ENTRY getTextures();
+
+    /**
+     * @brief loadModel
+     * @param path
+     * @return
+     */
+    S3D_API Model * S3D_API_ENTRY loadModel(const char * path);
+
+    /**
+     * @brief getModels
+     * @return
+     */
+    S3D_API std::vector<Model*> * S3D_API_ENTRY getModels();
 
     /**
      * @brief createScene

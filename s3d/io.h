@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string>
+#include <vector>
+
 
 #define DEFAULT_LOG_ERR_FILE "error.txt"
 
@@ -13,8 +16,7 @@
  * @param size
  * @return
  */
-bool IO_readStringFromFile(const char * path, char * buffer,
-                           size_t size);
+bool IO_readStringFromFile(const char * path, std::vector<std::string> & lines);
 
 /**
  * @brief IO_writeStringToFile

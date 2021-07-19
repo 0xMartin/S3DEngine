@@ -151,7 +151,7 @@ static void exitEvent();
 /**
  * @brief Destruct engine core
  */
-static bool destruct(CoreContext * cntx);
+static void destruct();
 
 
 S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
@@ -168,19 +168,6 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
      * init core
      */
     S3DCore::context = context;
-
-    S3DCore::context->scenes = new std::vector<Scene*>();
-    if(S3DCore::context->scenes == NULL) {
-        std::cerr << __FUNCTION__ << ": failed to allocate vector of scenes\n";
-        return;
-    }
-
-    S3DCore::context->textures = new std::vector<Texture*>();
-    if(S3DCore::context->textures == NULL) {
-        delete S3DCore::context->scenes;
-        std::cerr << __FUNCTION__ << ": failed to allocate vector of textures\n";
-        return;
-    }
 
     /**
      * init glut window
@@ -231,7 +218,8 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     //opengl config
     glEnable(GL_SCISSOR_TEST);
     glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_NEVER);
+    //glShadeModel(GL_FLAT);
+    glDisable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
     glEnable(GL_LINE_SMOOTH);
@@ -242,11 +230,13 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+
 S3DCore::~S3DCore() {
     if(S3DCore::context) {
-        destruct(S3DCore::context);
+        destruct();
     }
 }
+
 
 bool S3DCore::run() {
     if(S3DCore::context == NULL) {
@@ -292,38 +282,61 @@ void S3DCore::stop() {
     running = false;
 }
 
+
 Texture * S3DCore::loadTexture(const char * path, bool rgba_mode) {
     if(S3DCore::context == NULL) {
         std::cerr << __FUNCTION__ << ": context is NULL\n";
         return NULL;
     }
-    if(S3DCore::context->textures == NULL) {
-        std::cerr << __FUNCTION__ << ": vector of textures is NULL\n";
-        return NULL;
-    }
 
     Texture * tex = UTIL_loadTextureBMP(path, rgba_mode);
     if(tex == NULL) {
-        std::cerr << __FUNCTION__ << ": failed to create texture\n";
+        std::cerr << __FUNCTION__ << ": failed to create texture [" << path << "]\n";
         return NULL;
     }
-    S3DCore::context->textures->push_back(tex);
+    S3DCore::context->textures.push_back(tex);
 
     return tex;
 }
+
 
 std::vector<Texture*> * S3DCore::getTextures() {
     if(S3DCore::context == NULL) {
         std::cerr << __FUNCTION__ << ": context is NULL\n";
         return NULL;
     }
-    if(S3DCore::context->textures == NULL) {
-        std::cerr << __FUNCTION__ << ": vector of textures is NULL\n";
+
+    return &CONTEXT->textures;
+}
+
+
+Model * S3DCore::loadModel(const char * path) {
+    if(S3DCore::context == NULL) {
+        std::cerr << __FUNCTION__ << ": context is NULL\n";
         return NULL;
     }
 
-    return CONTEXT->textures;
+    Model * model = new Model(path);
+    if(model == NULL) {
+        std::cerr << __FUNCTION__ << ": failed to load model [" << path << "]\n";
+        return NULL;
+    }
+
+    S3DCore::context->models.push_back(model);
+
+    return model;
 }
+
+
+std::vector<Model*> * S3DCore::getModels() {
+    if(S3DCore::context == NULL) {
+        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        return NULL;
+    }
+
+    return &CONTEXT->models;
+}
+
 
 Scene * S3DCore::createScene() {
     if(S3DCore::context == NULL) {
@@ -336,16 +349,12 @@ Scene * S3DCore::createScene() {
         std::cerr << __FUNCTION__ << ": faild to create scene";
         return NULL;
     }
-    S3DCore::context->scenes->push_back(scene);
+    S3DCore::context->scenes.push_back(scene);
     return scene;
 }
 
+
 Scene::Scene() {
-    Scene::objects = new std::vector<Object*>();
-    if(Scene::objects == NULL) {
-        std::cerr << __FUNCTION__ << ": faild to create vector for 3D objects";
-        return;
-    }
     Scene::camera = new Camera();
     if(Scene::camera == NULL) {
         std::cerr << __FUNCTION__ << ": faild to create camera";
@@ -353,40 +362,39 @@ Scene::Scene() {
     }
     Scene::mouseCamControl = false;
     Scene::visibleCursor = true;
+    Scene::mouseCenter = false;
     Scene::min_renderDistance = 0.05f;
     Scene::max_renderDistance = 200.0f;
 }
 
+
 Scene::~Scene() {
-    if(Scene::objects) {
-        for(Object * obj : *Scene::objects) {
-            if(obj) delete obj;
-        }
-        delete Scene::objects;
+    for(Object * obj : Scene::objects) {
+        if(obj) delete obj;
     }
+
     if(Scene::camera) {
         delete Scene::camera;
     }
 }
 
+
 bool Scene::addObject(Object * object) {
-    if(Scene::objects == NULL) {
-        std::cerr << __FUNCTION__ << ": object vector in current scene is NULL\n";
-        return false;
-    }
     if(object == NULL) {
         std::cerr << __FUNCTION__ << ": new object is NULL\n";
         return false;
     }
 
-    Scene::objects->push_back(object);
+    Scene::objects.push_back(object);
 
     return true;
 }
 
+
 Camera * Scene::getCamera() {
     return Scene::camera;
 }
+
 
 bool S3DCore::setActiveScene(Scene * scene) {
     if(S3DCore::context == NULL) {
@@ -406,9 +414,9 @@ bool S3DCore::setActiveScene(Scene * scene) {
         status = switchSceneData(scene);
     }
 
-    for(Object * obj : *S3DCore::context->activeScene->objects) {
+    for(Object * obj : S3DCore::context->activeScene->objects) {
         if(obj) {
-            obj->onLoad(S3DCore::context->activeScene->objects);
+            obj->onLoad(&S3DCore::context->activeScene->objects);
         }
     }
 
@@ -422,19 +430,15 @@ bool S3DCore::setActiveScene(Scene * scene) {
     return status;
 }
 
+
 bool S3DCore::deleteScene(Scene * scene) {
     if(S3DCore::context == NULL) {
         std::cerr << __FUNCTION__ << ": context is NULL\n";
         return false;
     }
 
-    if(S3DCore::context->scenes == NULL) {
-        std::cerr << __FUNCTION__ << ": vector with scenes is NULL\n";
-        return false;
-    }
-
     int i = -1, j = 0;
-    for(Scene * s : *S3DCore::context->scenes) {
+    for(Scene * s : S3DCore::context->scenes) {
         if(s == scene) {
             i = j;
             break;
@@ -442,19 +446,20 @@ bool S3DCore::deleteScene(Scene * scene) {
         ++j;
     }
     if(i >= 0) {
-        S3DCore::context->scenes->erase(S3DCore::context->scenes->begin() + i);
+        S3DCore::context->scenes.erase(S3DCore::context->scenes.begin() + i);
         delete scene;
     }
 
     return true;
 }
 
+
 std::vector<Scene*> * S3DCore::getScenes() {
     if(S3DCore::context == NULL) {
         std::cerr << __FUNCTION__ << ": context is NULL\n";
         return NULL;
     }
-    return S3DCore::context->scenes;
+    return &S3DCore::context->scenes;
 }
 
 
@@ -476,15 +481,13 @@ static void reshape(int w, int h) {
     CONTEXT->window_width = w;
     CONTEXT->window_height = h;
 
-    if(CONTEXT->activeScene->objects != NULL) {
-        for(Object * obj : *CONTEXT->activeScene->objects) {
-            if(interrupt_resize) {
-                interrupt_resize = false;
-                break;
-            }
-            if(obj) {
-                obj->resize(&resize_event);
-            }
+    for(Object * obj : CONTEXT->activeScene->objects) {
+        if(interrupt_resize) {
+            interrupt_resize = false;
+            break;
+        }
+        if(obj) {
+            obj->resize(&resize_event);
         }
     }
 
@@ -540,13 +543,9 @@ static void renderScene() {
     graphics->begin(&render_event, &CONTEXT->clearColor);
 
     /**
-     * No active scene or arrays with objects not exists
+     * No active scene
      */
     if(CONTEXT->activeScene == NULL) {
-        glutSwapBuffers();
-        return;
-    }
-    if(CONTEXT->activeScene->objects == NULL) {
         glutSwapBuffers();
         return;
     }
@@ -560,7 +559,7 @@ static void renderScene() {
     if(cam) cam->viewTransformation();
 
     //render 3D objects first
-    for(Object * obj : *CONTEXT->activeScene->objects) {
+    for(Object * obj : CONTEXT->activeScene->objects) {
         if(interrupt_render) {
             interrupt_render = false;
             break;
@@ -583,7 +582,7 @@ static void renderScene() {
     glLoadIdentity();
 
     //render 2D objects
-    for(Object * obj : *CONTEXT->activeScene->objects) {
+    for(Object * obj : CONTEXT->activeScene->objects) {
         if(interrupt_render) {
             interrupt_render = false;
             break;
@@ -597,13 +596,21 @@ static void renderScene() {
         }
     }
 
+    //show FPS
+    static char buffer[64];
+    sprintf(buffer, "FPS: %.2f", fps);
+    graphics->setFont(S3D_BITMAP_8_BY_13, 10);
+    graphics->setColorRGB(1.0, 0.0, 0.0, 1.0);
+    ((Graphics2D*)graphics)->drawString(10, 20, buffer);
+
+    //restore perspective projection
     glPopMatrix();
     graphics->restorePerspectiveProjection();
 
     /**
-     * Swap buffers
+     * render all
      */
-    glutSwapBuffers();
+    graphics->render();
 
     /**
      * FPS
@@ -617,12 +624,11 @@ static void renderScene() {
     }
 }
 
+
 static void updateScene() {
     if(CONTEXT == NULL) return;
     if(!running) return;
     if(CONTEXT->activeScene == NULL) return;
-    if(CONTEXT->activeScene->objects == NULL) return;
-
 
     /**
      * Update camera position
@@ -632,8 +638,10 @@ static void updateScene() {
         cam->computePosition();
     }
 
+    /**
+     * compute time difference in ses and ns
+     */
     struct timespec time = UTIL_getSystemTime();
-    //diff
     __syscall_slong_t diff = time.tv_nsec - update_event.ns_time;
     if (diff < 0) {
         update_event.ns_diff = time.tv_nsec - update_event.ns_time + 1000000000UL;
@@ -642,22 +650,28 @@ static void updateScene() {
         update_event.ns_diff = diff;
         update_event.s_diff = time.tv_sec - update_event.s_time;
     }
-    //current time
+
+    /**
+     * init updat event
+     */
     update_event.ns_time = time.tv_nsec;
     update_event.s_time = time.tv_sec;
     update_event.sender = NULL;
 
-    //update all
-    for(Object * obj : *CONTEXT->activeScene->objects) {
+    /**
+     * update each object of scene
+     */
+    for(Object * obj : CONTEXT->activeScene->objects) {
         if(interrupt_update) {
             interrupt_update = false;
             break;
         }
         if(obj) {
-            obj->update(CONTEXT->activeScene->objects, &update_event);
+            obj->update(&CONTEXT->activeScene->objects, &update_event);
         }
     }
 }
+
 
 static void renderLoop(int value) {
     if(!CONTEXT) return;
@@ -665,6 +679,7 @@ static void renderLoop(int value) {
     glutPostRedisplay();
     glutTimerFunc(1000.0/CONTEXT->fps, renderLoop, 0);
 }
+
 
 static void * updateLoop(void * args) {
     while(running) {
@@ -674,17 +689,20 @@ static void * updateLoop(void * args) {
     return NULL;
 }
 
+
 static void keyboardFunc(unsigned char key, int x, int y) {
     int mod = glutGetModifiers();
     evt_pressKey(key, mod == GLUT_ACTIVE_CTRL,
                  mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT, NONE);
 }
 
+
 static void keyboardUpFunc(unsigned char key, int x, int y) {
     int mod = glutGetModifiers();
     evt_releaseKey(key, mod == GLUT_ACTIVE_CTRL,
                    mod == GLUT_ACTIVE_ALT, mod == GLUT_ACTIVE_SHIFT, NONE);
 }
+
 
 static void specialFunc(int key, int x, int y) {
     Arrow_key arrow_key = NONE;
@@ -707,6 +725,7 @@ static void specialFunc(int key, int x, int y) {
     evt_pressKey(0x0, key == 0x72, key == 0x74, key == 0x70, arrow_key);
 }
 
+
 static void specialUpFunc(int key, int x, int y) {
     Arrow_key arrow_key = NONE;
     switch(key)
@@ -728,6 +747,7 @@ static void specialUpFunc(int key, int x, int y) {
     evt_releaseKey(0x0, key == 0x72, key == 0x74, key == 0x70, arrow_key);
 }
 
+
 static void evt_pressKey(unsigned char key, bool ctrl,
                          bool alt, bool shift, Arrow_key arrow) {
     if(CONTEXT == NULL) return;
@@ -747,45 +767,46 @@ static void evt_pressKey(unsigned char key, bool ctrl,
     /**
      * Control camera of active scene
      */
-#define CAM_SPEED 0.1f
     Camera * cam;
     if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
         switch(key)
         {
         case 'w': case 'W':
-            cam->deltaPos.z = CAM_SPEED;
+            cam->deltaPos.z = cam->speed;
             break;
         case 's': case 'S':
-            cam->deltaPos.z = -CAM_SPEED;
+            cam->deltaPos.z = -cam->speed;
             break;
         case 'a': case 'A':
-            cam->deltaPos.x = -CAM_SPEED;
+            cam->deltaPos.x = -cam->speed;
             break;
         case 'd': case 'D':
-            cam->deltaPos.x = CAM_SPEED;
+            cam->deltaPos.x = cam->speed;
             break;
         case EVT_C_SPACE:
-            cam->deltaPos.y = CAM_SPEED;
+            cam->deltaPos.y = cam->speed;
             break;
         default:
             if(shift) {
-                cam->deltaPos.y = -CAM_SPEED;
+                cam->deltaPos.y = -cam->speed;
             }
         }
     }
 
-    if(CONTEXT->activeScene->objects != NULL) {
-        for(Object * obj : *CONTEXT->activeScene->objects) {
-            if(interrupt_press_key) {
-                interrupt_press_key = false;
-                break;
-            }
-            if(obj) {
-                obj->pressKeyEvt(CONTEXT->activeScene->objects, &key_event_press);
-            }
+    /**
+     * invoke event for each object of scene
+     */
+    for(Object * obj : CONTEXT->activeScene->objects) {
+        if(interrupt_press_key) {
+            interrupt_press_key = false;
+            break;
+        }
+        if(obj) {
+            obj->pressKeyEvt(&CONTEXT->activeScene->objects, &key_event_press);
         }
     }
 }
+
 
 static void evt_releaseKey(unsigned char key, bool ctrl,
                            bool alt, bool shift, Arrow_key arrow) {
@@ -793,6 +814,9 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
     if(!running) return;
     if(CONTEXT->activeScene == NULL) return;
 
+    /**
+     * init key release event
+     */
     key_event_release.key = key;
     key_event_release.ctrl = ctrl;
     key_event_release.alt = alt;
@@ -823,18 +847,20 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
         }
     }
 
-    if(CONTEXT->activeScene->objects != NULL) {
-        for(Object * obj : *CONTEXT->activeScene->objects) {
-            if(interrupt_release_key) {
-                interrupt_release_key = false;
-                break;
-            }
-            if(obj) {
-                obj->releaseKeyEvt(CONTEXT->activeScene->objects, &key_event_release);
-            }
+    /**
+     * invoke event for each object of scene
+     */
+    for(Object * obj : CONTEXT->activeScene->objects) {
+        if(interrupt_release_key) {
+            interrupt_release_key = false;
+            break;
+        }
+        if(obj) {
+            obj->releaseKeyEvt(&CONTEXT->activeScene->objects, &key_event_release);
         }
     }
 }
+
 
 static bool center_cursor = false;
 
@@ -843,39 +869,59 @@ static void evt_mouseMove(int x, int y) {
     if(!running) return;
     if(CONTEXT->activeScene == NULL) return;
 
-    Camera * cam;
-    if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
-        if(center_cursor) {
-            glutWarpPointer(CONTEXT->window_width / 2, CONTEXT->window_height / 2);
-            cam->deltaAngleY = (y - mouse_event_move.y)/1000.0f;
-            cam->deltaAngleXZ = (x - mouse_event_move.x)/1000.0f;
-            cam->computeDirection();
+    /**
+     * control camera direction by mouse moving
+     */
+    if(CONTEXT->activeScene->mouseCamControl) {
+        Camera * cam;
+        if((cam = CONTEXT->activeScene->getCamera()) != NULL) {
+            if(center_cursor) {
+                //centerize mouse cursor
+                if(CONTEXT->activeScene->mouseCenter) {
+                    glutWarpPointer(CONTEXT->window_width / 2, CONTEXT->window_height / 2);
+                }
+
+                //compute diference in y and x axis
+                cam->deltaAngleY = (y - mouse_event_move.y)/1000.0f;
+                cam->deltaAngleXZ = (x - mouse_event_move.x)/1000.0f;
+
+                //compute recompute direction of camera
+                cam->computeDirection();
+            }
+            center_cursor = !center_cursor;
         }
-        center_cursor = !center_cursor;
     }
 
+    /**
+     * init mouse move event
+     */
     mouse_event_move.x = x;
     mouse_event_move.y = y;
     mouse_event_button.sender = NULL;
 
-    if(CONTEXT->activeScene->objects != NULL) {
-        for(Object * obj : *CONTEXT->activeScene->objects) {
-            if(interrupt_mouse_move) {
-                interrupt_mouse_move = false;
-                break;
-            }
-            if(obj) {
-                obj->mouseMoveEvt(CONTEXT->activeScene->objects, &mouse_event_move);
-            }
+    /**
+     * invoke event for each object of scene
+     */
+    for(Object * obj : CONTEXT->activeScene->objects) {
+        if(interrupt_mouse_move) {
+            interrupt_mouse_move = false;
+            break;
+        }
+        if(obj) {
+            obj->mouseMoveEvt(&CONTEXT->activeScene->objects, &mouse_event_move);
         }
     }
 }
+
 
 static void evt_mouseButton(int button, int state, int x, int y) {
     if(CONTEXT == NULL) return;
     if(!running) return;
     if(CONTEXT->activeScene == NULL) return;
 
+    /**
+     * init mouse button event
+     */
     mouse_event_button.button = button;
     mouse_event_button.state = state;
     mouse_event_button.x = x;
@@ -883,18 +929,20 @@ static void evt_mouseButton(int button, int state, int x, int y) {
     mouse_event_button.y = y;
     mouse_event_button.sender = NULL;
 
-    if(CONTEXT->activeScene->objects != NULL) {
-        for(Object * obj : *CONTEXT->activeScene->objects) {
-            if(interrupt_mouse_button) {
-                interrupt_mouse_button = false;
-                break;
-            }
-            if(obj) {
-                obj->mouseButtonEvt(CONTEXT->activeScene->objects, &mouse_event_button);
-            }
+    /**
+     * invoke event for each object of scene
+     */
+    for(Object * obj : CONTEXT->activeScene->objects) {
+        if(interrupt_mouse_button) {
+            interrupt_mouse_button = false;
+            break;
+        }
+        if(obj) {
+            obj->mouseButtonEvt(&CONTEXT->activeScene->objects, &mouse_event_button);
         }
     }
 }
+
 
 static bool switchSceneData(Scene * scene) {
     if(scene == NULL) {
@@ -906,56 +954,57 @@ static bool switchSceneData(Scene * scene) {
         return false;
     }
 
-    interrupt_resize = false;
-    interrupt_render = false;
-    interrupt_update = false;
-    interrupt_press_key = false;
-    interrupt_release_key = false;
-    interrupt_mouse_move = false;
-    interrupt_mouse_button = false;
+    //interrupt everyting
+    interrupt_resize = true;
+    interrupt_render = true;
+    interrupt_update = true;
+    interrupt_press_key = true;
+    interrupt_release_key = true;
+    interrupt_mouse_move = true;
+    interrupt_mouse_button = true;
 
     CONTEXT->activeScene = scene;
 
     return true;
 }
 
+
 static void exitEvent() {
     if(CONTEXT != NULL) {
+        //stop engine
         running = false;
-        interrupt_resize = false;
-        interrupt_render = false;
-        interrupt_update = false;
-        interrupt_press_key = false;
-        interrupt_release_key = false;
-        interrupt_mouse_move = false;
-        interrupt_mouse_button = false;
+
+        //interrupt everyting
+        interrupt_resize = true;
+        interrupt_render = true;
+        interrupt_update = true;
+        interrupt_press_key = true;
+        interrupt_release_key = true;
+        interrupt_mouse_move = true;
+        interrupt_mouse_button = true;
+
+        //destruct data
         sleep(1);
-        destruct(CONTEXT);
+        destruct();
     }
 }
 
-static bool destruct(CoreContext * cntx) {
-    if(cntx == NULL) return false;
+
+static void destruct() {
+    if(CONTEXT == NULL) return;
 
     //clear scenes
-    if(cntx->scenes != NULL) {
-        for(Scene * scene : *cntx->scenes) {
-            if(scene) {
-                delete scene;
-            }
-        }
-        delete cntx->scenes;
+    for(Scene * scene : CONTEXT->scenes) {
+        if(scene) delete scene;
     }
-    cntx->scenes = NULL;
 
     //clear textures
-    if(cntx->textures != NULL) {
-        for(Texture * tex : *cntx->textures) {
-            if(tex) free(tex);
-        }
-        delete cntx->textures;
+    for(Texture * tex : CONTEXT->textures) {
+        if(tex) free(tex);
     }
-    cntx->textures = NULL;
 
-    return true;
+    //clear models
+    for(Model * model : CONTEXT->models) {
+        if(model) delete model;
+    }
 }

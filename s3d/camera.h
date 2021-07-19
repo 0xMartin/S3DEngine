@@ -9,14 +9,15 @@ class Camera
 {
 private:
     float angleXZ, angleY;  /** angle of rotation for the camera direction*/
-    Vertex dir; /** actual vector representing the camera's direction*/
-    Vertex pos; /** XYZ position of the camera*/
+    Vertex3 dir; /** actual vector representing the camera's direction*/
+    Vertex3 pos; /** XYZ position of the camera*/
     Range<float> limitAngleY; /** camera angle limit*/
     float cosAY;    /** cos(angleY) for camera direcion*/
 
 public:
     float deltaAngleXZ, deltaAngleY;    /** control angle*/
-    Vertex deltaPos;    /** control position*/
+    Vertex3 deltaPos;    /** control position*/
+    float speed;
 
     Camera();
 
@@ -45,13 +46,13 @@ public:
      * @brief getPosition
      * @return
      */
-    Vertex getPosition();
+    Vertex3 getPosition();
 
     /**
      * @brief setPosition
      * @param v
      */
-    void setPosition(Vertex * v);
+    void setPosition(Vertex3 * v);
 
     /**
      * @brief setPosition
@@ -65,7 +66,7 @@ public:
      * @brief getDirection
      * @return
      */
-    Vertex getDirection();
+    Vertex3 getDirection();
 
     /**
      * @brief setLimitOfYAngle

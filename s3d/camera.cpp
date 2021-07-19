@@ -9,13 +9,14 @@
 
 
 Camera::Camera() {
+    Camera::speed = 0.1f;
     Camera::angleXZ = 0.0f;
     Camera::angleY = 0.0f;
-    Camera::dir = (Vertex) {0.0f, 0.0f, 0.0f};
-    Camera::pos = (Vertex) {0.0f, 0.0f, 0.0f};
+    Camera::dir = (Vertex3) {0.0f, 0.0f, 0.0f};
+    Camera::pos = (Vertex3) {0.0f, 0.0f, 0.0f};
     Camera::deltaAngleXZ = 0.0f;
     Camera::deltaAngleY = 0.0f;
-    Camera::deltaPos = (Vertex) {0.0f, 0.0f, 0.0f};
+    Camera::deltaPos = (Vertex3) {0.0f, 0.0f, 0.0f};
     Camera::limitAngleY.min = -CAMERA_DIR_Y_RANGE;
     Camera::limitAngleY.max = CAMERA_DIR_Y_RANGE;
     Camera::cosAY = 0.0f;
@@ -86,11 +87,11 @@ void Camera::viewTransformation() {
                 );
 }
 
-Vertex Camera::getPosition() {
+Vertex3 Camera::getPosition() {
     return Camera::pos;
 }
 
-void Camera::setPosition(Vertex * v) {
+void Camera::setPosition(Vertex3 * v) {
     Camera::pos = *v;
 }
 
@@ -100,7 +101,7 @@ void Camera::setPosition(GLfloat x, GLfloat y, GLfloat z) {
     Camera::pos.z = z;
 }
 
-Vertex Camera::getDirection() {
+Vertex3 Camera::getDirection() {
     return Camera::dir;
 }
 

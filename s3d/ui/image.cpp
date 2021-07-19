@@ -18,7 +18,7 @@ void Image::render(Graphics * graphics, const Event_Render * evt) {
         //default size of texture
         g2->drawImage(&(Image::position), Image::texture, true);
     } else {
-        Point2D bounds[4];
+        Point bounds[4];
         bounds[0] = Image::position;
         bounds[1] = Image::position;
         bounds[2] = Image::position;

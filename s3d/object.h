@@ -98,7 +98,7 @@ public:
 class Object2D : public Object
 {
 public:
-    Point2D position;
+    Point position;
 
     Object2D();
     virtual ~Object2D();
@@ -110,7 +110,7 @@ public:
 class Object3D : public Object
 {
 public:
-    Vertex position;
+    Vertex3 position;
 
     Object3D();
     virtual ~Object3D();
