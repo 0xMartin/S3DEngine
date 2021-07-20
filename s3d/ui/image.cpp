@@ -1,3 +1,13 @@
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       image.cpp
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
+
 #include "image.h"
 
 Image::Image(int x, int y, size_t width, size_t heigth, Texture * texture) {

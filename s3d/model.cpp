@@ -1,3 +1,13 @@
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       model.cpp
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
+
 #include "model.h"
 
 #include <iostream>
@@ -8,11 +18,16 @@
 Model::Model(const char * path) {
     Model::offset = (Vertex3){0.0, 0.0, 0.0};
     Model::rotation = (Vertex3){0.0, 0.0, 0.0};
+    Model::buffer = new FloatBuffer();
     Model::loadModel(path);
 }
 
 Model::~Model() {
-
+    Model::vertices.clear();
+    Model::normals.clear();
+    Model::texture_coordinates.clear();
+    Model::triangles.clear();
+    if(Model::buffer) delete Model::buffer;
 }
 
 bool Model::loadModel(const char * path) {
@@ -156,6 +171,10 @@ bool Model::loadModel(const char * path) {
         }
     }
 
+    //convert model to float buffer
+    if(Model::buffer == NULL) return false;
+    if(Model::buffer->convertTrianglesToArray(Model::triangles)) return false;
+
     return true;
 }
 
@@ -169,7 +188,11 @@ void Model::render(Graphics * graphics) {
     glRotatef(Model::rotation.y, 0.0, 1.0, 0.0);
     glRotatef(Model::rotation.z, 0.0, 0.0, 1.0);
 
-    g3->drawTriangles(Model::triangles);
+    g3->drawFloatBuffer(Model::buffer);
 
     glPopMatrix();
+}
+
+bool Model::recomputeFloatBuffer() {
+    return Model::buffer->convertTrianglesToArray(Model::triangles);
 }

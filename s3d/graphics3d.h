@@ -1,3 +1,13 @@
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       graphics3d.h
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
+
 #ifndef GRAPHICS3D_H
 #define GRAPHICS3D_H
 
@@ -14,18 +24,48 @@ typedef struct {
     std::vector<Vertex3*> v; /** vertices */
     std::vector<Point*> vt; /** texture coordinates */
     std::vector<Vertex3*> vn; /** normals */
-    GLint textureID;
 } Face3;
 
 typedef struct {
     Vertex3 * v[3]; /** vertices */
     Point * vt[3]; /** texture coordinates */
     Vertex3 * vn[3]; /** normals */
-    GLint textureID;
 } Triangle3;
 
 
+/*------------------------------------FloatBuffer-------------------------------------------------*/
+class FloatBuffer {
+public:
+    GLfloat * vertices;
+    GLfloat * normals;
+    GLfloat * textureCoords;
+    size_t size;
+
+    FloatBuffer();
+    ~FloatBuffer();
+
+    /**
+     * @brief convertTrianglesToArray
+     * @param triangles
+     * @return
+     */
+    bool convertTrianglesToArray(std::vector<Triangle3> & triangles);
+
+    /**
+     * @brief getSizeInBytes
+     * @return
+     */
+    size_t getSizeInBytes();
+};
+/*------------------------------------------------------------------------------------------------*/
+
+
 class Graphics3D : public Graphics2D {
+private:
+    //triangles only
+    GLuint vertexBuffer; /** vertex buffer */
+    GLuint normalBuffer; /** normal buffer */
+    GLuint textureCoordBuffer; /** texture cord buffer */
 public:
     Graphics3D(int windowHandle);
 
@@ -67,11 +107,21 @@ public:
 
     /**
      * @brief drawImage
-     * @param p
+     * @param position
+     * @param rotation
      * @param texture
-     * @param defaultShape
+     * @param width
+     * @param height
      */
-    void drawImage(Vertex3 * p, Texture * texture, bool defaultShape);
+    void drawImage(Vertex3 * position, Vertex3 * rotation,
+                   Texture * texture, size_t width, size_t height);
+
+    /**
+     * @brief drawFloatBuffer
+     * @param buffer
+     */
+    void drawFloatBuffer(FloatBuffer * buffer);
 };
+
 
 #endif // GRAPHICS3D_H

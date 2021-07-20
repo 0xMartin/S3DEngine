@@ -95,6 +95,8 @@ Obj1::Obj1(Vertex3 position) : model("data/gripen.obj") {
 void Obj1::render(Graphics * graphics, const Event_Render *evt) {
     glTranslatef(Obj1::position.x, Obj1::position.y,
                  Obj1::position.z);
+    Graphics3D * g3 = ((Graphics3D*)graphics);
+    g3->setColorRGB(1.0, 0.0, 0.0, 0.4);
     model.render(graphics);
 }
 
@@ -105,6 +107,7 @@ void Obj1::render(Graphics * graphics, const Event_Render *evt) {
 class Img3D : public Object3D {
 private:
     Vertex3 position;
+    Vertex3 rotation;
     Texture * tex;
 public:
     Img3D(Vertex3 position, Texture * tex);
@@ -114,11 +117,13 @@ public:
 Img3D::Img3D(Vertex3 position, Texture * tex) {
     Img3D::position = position;
     Img3D::tex = tex;
+    rotation = (Vertex3){0.0, -90.0, 0.0};
     //Img3D::model.rotation.x = -90.0f;
 }
 
 void Img3D::render(Graphics * graphics, const Event_Render *evt) {
-    ((Graphics3D*)graphics)->drawImage(&(Img3D::position), tex, true);
+    Graphics3D * g3 = ((Graphics3D*)graphics);
+    g3->drawImage(&(Img3D::position), &(Img3D::rotation), tex, 9.0f, 9.0f);
 }
 
 
@@ -143,8 +148,10 @@ int main(int argc, char *argv[])
     s->addObject(t);
 
     //object with 3D model
-    Obj1 * o = new Obj1((Vertex3){10.0, 3.0, 2.0});
-    s->addObject(o);
+    for(int i = 0; i < 1; ++i) {
+        Obj1 * o = new Obj1((Vertex3){10.0, (GLfloat)(3.0 + i * 4.0), 2.0});
+        s->addObject(o);
+    }
 
     //2D objects (label + radiobuttons)
     Label * l = new Label(20, 70, "S3D Engine test");
@@ -158,9 +165,9 @@ int main(int argc, char *argv[])
     }
 
     //3D image
-    //Texture * tex = core->loadTexture("data/img.bmp", false);
-    //Img3D * i = new Img3D((Vertex3){10.0, 3.0, 5.0}, tex);
-    //s->addObject(i);
+    Texture * tex = core->loadTexture("data/img.bmp", false);
+    Img3D * i = new Img3D((Vertex3){20.0, 2.0, 0.0}, tex);
+    s->addObject(i);
 
     core->setActiveScene(s);
     core->run();

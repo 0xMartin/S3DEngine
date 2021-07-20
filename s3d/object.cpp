@@ -1,3 +1,13 @@
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       object.cpp
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
+
 #include "object.h"
 
 Object::Object(ObjType t) : type(t){}

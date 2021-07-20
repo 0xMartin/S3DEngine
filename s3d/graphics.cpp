@@ -1,13 +1,12 @@
-/**
- * <------------------------------------------------------------------>
- * @name    2D Engine
- * @author  Martin Krcma
- * @date    8. 3. 2021
- * <------------------------------------------------------------------>
- * @file    util.c
- * @brief   Implementation of render.h
- * <------------------------------------------------------------------>
- */
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       graphics.cpp
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
 
 #include "graphics.h"
 
@@ -139,6 +138,8 @@ void Graphics::setColorRGB(GLfloat red, GLfloat green, GLfloat blue, GLfloat alp
         Graphics::color.green = green;
         Graphics::color.blue = blue;
         Graphics::color.alpha = alpha;
+        glColor4f(Graphics::color.red, Graphics::color.green, Graphics::color.blue,
+                  MIN(Graphics::color.alpha, Graphics::maxAlpha));
     }
 }
 
@@ -149,6 +150,8 @@ void Graphics::setColor(Color * color) {
                 IN_RANGE(color->blue, 0.0, 1.0) &&
                 IN_RANGE(color->alpha, 0.0, 1.0)) {
             Graphics::color = *color;
+            glColor4f(Graphics::color.red, Graphics::color.green, Graphics::color.blue,
+                      MIN(Graphics::color.alpha, Graphics::maxAlpha));
         }
     }
 }
@@ -156,6 +159,8 @@ void Graphics::setColor(Color * color) {
 void Graphics::setAlpha(GLfloat alpha) {
     if(IN_RANGE(alpha, 0.0, 1.0)) {
         Graphics::color.alpha = alpha;
+        glColor4f(Graphics::color.red, Graphics::color.green, Graphics::color.blue,
+                  MIN(Graphics::color.alpha, Graphics::maxAlpha));
     }
 }
 

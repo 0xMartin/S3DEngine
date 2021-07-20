@@ -1,3 +1,13 @@
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       util.h
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
+
 #ifndef UTIL_H
 #define UTIL_H
 
@@ -13,6 +23,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
+#include <vector>
 
 
 #define MAX(a, b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
@@ -87,6 +98,5 @@ template<typename Base, typename T>
 inline bool UTIL_instanceof(const T*) {
    return std::is_base_of<Base, T>::value;
 }
-
 
 #endif // UTIL_H

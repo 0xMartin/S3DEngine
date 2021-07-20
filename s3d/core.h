@@ -1,3 +1,13 @@
+/******************************************************************************
+ * S3D Engine
+ *
+ * @file       core.h
+ * @brief      XXXX Function
+ *
+ * @author     Martin Krcma
+ * @date       2021/07/20
+ *****************************************************************************/
+
 #ifndef CORE_H
 #define CORE_H
 
@@ -14,6 +24,9 @@
 #include <stdbool.h>
 
 
+/**
+ * initials values for CoreContext
+ */
 #define CORE_DEFAULT_CONFIG (CoreContext){0, 800, 600,\
     "S3DEngine", false, 50, 50, (Color){0.0, 0.0, 0.0, 1.0},\
     NULL, NULL, std::vector<Texture*>(), std::vector<Model*>(), std::vector<Scene*>()}
