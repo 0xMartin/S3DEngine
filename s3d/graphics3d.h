@@ -12,8 +12,16 @@
 #define GRAPHICS3D_H
 
 #include "graphics2d.h"
+#include "shader.h"
+#include <glm/glm.hpp>
 
 
+/*---------------------------------------Shaders--------------------------------------------------*/
+#define MODEL_VIEW_PROJECTION_UNIFORM ("MVP")
+/*------------------------------------------------------------------------------------------------*/
+
+
+/*---------------------------------------3D-Objects-----------------------------------------------*/
 typedef struct {
     GLfloat x; /** X position*/
     GLfloat y; /** Y position*/
@@ -31,25 +39,29 @@ typedef struct {
     Point * vt[3]; /** texture coordinates */
     Vertex3 * vn[3]; /** normals */
 } Triangle3;
+/*------------------------------------------------------------------------------------------------*/
 
 
-/*------------------------------------FloatBuffer-------------------------------------------------*/
-class FloatBuffer {
+/*-------------------------------------DataBuffer-------------------------------------------------*/
+#define MDB_Vertex          (1 << 0)
+#define MDB_Normals         (1 << 1)
+#define MDB_TextureCoords   (1 << 2)
+
+
+class VertexDataBuffer {
 public:
-    GLfloat * vertices;
-    GLfloat * normals;
-    GLfloat * textureCoords;
-    size_t size;
+    GLfloat * data; /** array with data */
+    size_t size; /** number of vertices */
 
-    FloatBuffer();
-    ~FloatBuffer();
+    VertexDataBuffer();
+    ~VertexDataBuffer();
 
     /**
-     * @brief convertTrianglesToArray
+     * @brief buildVertexData
      * @param triangles
      * @return
      */
-    bool convertTrianglesToArray(std::vector<Triangle3> & triangles);
+    bool buildVertexData(std::vector<Triangle3> & triangles, int options);
 
     /**
      * @brief getSizeInBytes
@@ -60,14 +72,30 @@ public:
 /*------------------------------------------------------------------------------------------------*/
 
 
+/**
+ * @brief The Graphics3D class
+ */
 class Graphics3D : public Graphics2D {
 private:
     //triangles only
     GLuint vertexBuffer; /** vertex buffer */
-    GLuint normalBuffer; /** normal buffer */
-    GLuint textureCoordBuffer; /** texture cord buffer */
+
+    ShaderProgram * shaderProgram;
+
+    glm::mat4 projection;
 public:
     Graphics3D(int windowHandle);
+    ~Graphics3D();
+
+    /**
+     * @brief computeProjectionMatrix
+     * @param FOV
+     * @param aspect
+     * @param zNear
+     * @param zFar
+     */
+    void computeProjectionMatrix(GLdouble FOV, GLdouble aspect,
+                                 GLdouble zNear, GLdouble zFar);
 
     /**
      * @brief drawTriangle
@@ -117,10 +145,16 @@ public:
                    Texture * texture, size_t width, size_t height);
 
     /**
-     * @brief drawFloatBuffer
+     * @brief drawDataBuffer
      * @param buffer
      */
-    void drawFloatBuffer(FloatBuffer * buffer);
+    void drawVertexDataBuffer(VertexDataBuffer * buffer);
+
+    /**
+     * @brief setShaderProgram
+     * @param shaderProgram
+     */
+    void setShaderProgram(ShaderProgram * shaderProgram);
 };
 
 

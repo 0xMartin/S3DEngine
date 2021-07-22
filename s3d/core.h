@@ -24,14 +24,6 @@
 #include <stdbool.h>
 
 
-/**
- * initials values for CoreContext
- */
-#define CORE_DEFAULT_CONFIG (CoreContext){0, 800, 600,\
-    "S3DEngine", false, 50, 50, (Color){0.0, 0.0, 0.0, 1.0},\
-    NULL, NULL, std::vector<Texture*>(), std::vector<Model*>(), std::vector<Scene*>()}
-
-
 class Scene {
 protected:
     Camera * camera;
@@ -61,6 +53,17 @@ public:
 };
 
 
+
+/*---------------------------------CoreContext----------------------------------------------------*/
+
+/**
+ * initials values for CoreContext
+ */
+#define CORE_DEFAULT_CONFIG (CoreContext){0, 800, 600,\
+    "S3DEngine", false, 50, 50, (Color){0.0, 0.0, 0.0, 1.0},\
+    NULL, NULL, std::vector<Texture*>(), std::vector<Model*>(), std::vector<Scene*>()}
+
+
 typedef struct {
     int windowHandle;   /** GLUT window width */
     unsigned int window_width;  /** Window width */
@@ -76,6 +79,7 @@ typedef struct {
     std::vector<Model*> models;    /** Vector of all models */
     std::vector<Scene*> scenes;  /** Vector of all scenes */
 } CoreContext;
+/*------------------------------------------------------------------------------------------------*/
 
 
 /**
@@ -83,9 +87,7 @@ typedef struct {
  */
 class S3DCore
 {
-
 public:
-
     CoreContext * context;
 
     /**

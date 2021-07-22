@@ -11,79 +11,94 @@
 #include "graphics3d.h"
 
 
+#include <string.h>
+#include <cstdarg>
 #include <GLES3/gl3.h>
+#include <glm/gtc/type_ptr.hpp>
 
 
-/*------------------------------------FloatBuffer-------------------------------------------------*/
-FloatBuffer::FloatBuffer() {
-    FloatBuffer::size = 0;
-    FloatBuffer::vertices = NULL;
-    FloatBuffer::normals = NULL;
-    FloatBuffer::textureCoords = NULL;
+/*--------------------------------Default-Shaders-------------------------------------------------*/
+
+static const char * vertex_src = R"glsl(
+    #version 330 core
+
+    layout(location = 0) in vec3 aPos;
+    layout(location = 1) in vec2 texCoord;
+
+    out vec2 TexCoord;
+
+    uniform mat4 MVP;
+
+    void main(){
+        gl_Position = MVP * vec4(aPos, 1.0);
+        TexCoord = texCoord;
+    }
+)glsl";
+
+static const char * fragment_src = R"glsl(
+    #version 330 core
+
+    in vec2 TexCoord;
+
+    out vec4 FragColor;
+
+    uniform sampler2D ourTexture;
+
+    void main(){
+        FragColor = texture(ourTexture, TexCoord);
+        //FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+)glsl";
+
+/*------------------------------------------------------------------------------------------------*/
+
+
+/*--------------------------------ModelDataBuffer-------------------------------------------------*/
+VertexDataBuffer::VertexDataBuffer() {
+    VertexDataBuffer::size = 0;
+    VertexDataBuffer::data = NULL;
 }
 
-FloatBuffer::~FloatBuffer() {
-    if(FloatBuffer::vertices) free(FloatBuffer::vertices);
-    if(FloatBuffer::normals) free(FloatBuffer::normals);
-    if(FloatBuffer::textureCoords) free(FloatBuffer::textureCoords);
+VertexDataBuffer::~VertexDataBuffer() {
+    if(VertexDataBuffer::data) free(VertexDataBuffer::data);
 }
 
-bool FloatBuffer::convertTrianglesToArray(std::vector<Triangle3> & triangles) {
-    FloatBuffer::size = 0;
+bool VertexDataBuffer::buildVertexData(std::vector<Triangle3> & triangles, int options) {
+    size_t size = sizeof(GLfloat) * triangles.size() * 3 * 5;
 
-    //vertex array
-    if(FloatBuffer::vertices == NULL) {
-        FloatBuffer::vertices = (GLfloat*) malloc(sizeof(GLfloat) * 9 * triangles.size());
-    } else {
-        FloatBuffer::vertices = (GLfloat*) realloc(FloatBuffer::vertices,
-                                                   sizeof(GLfloat) * 9 * triangles.size());
+    //allocate data array
+    if(VertexDataBuffer::data == NULL) {
+        VertexDataBuffer::data = (GLfloat*) malloc(size);
+    } else if(VertexDataBuffer::size < size ||
+              VertexDataBuffer::size/2 > size) {
+        //realloc only if is not enought space or new size is 2 times lower
+        VertexDataBuffer::data = (GLfloat*) realloc(VertexDataBuffer::data, size);
     }
-    if(FloatBuffer::vertices == NULL) {
-        return false;
-    }
+    if(VertexDataBuffer::data == NULL) return false;
 
-    //normal array
-    if(FloatBuffer::normals == NULL) {
-        FloatBuffer::normals = (GLfloat*) malloc(sizeof(GLfloat) * 9 * triangles.size());
-    } else {
-        FloatBuffer::normals = (GLfloat*) realloc(FloatBuffer::normals,
-                                                  sizeof(GLfloat) * 9 * triangles.size());
-    }
-    if(FloatBuffer::normals == NULL) {
-        return false;
-    }
-
-    //texture coords array
-    if(FloatBuffer::textureCoords == NULL) {
-        FloatBuffer::textureCoords = (GLfloat*) malloc(sizeof(GLfloat) * 6 * triangles.size());
-    } else {
-        FloatBuffer::textureCoords = (GLfloat*) realloc(FloatBuffer::textureCoords,
-                                                        sizeof(GLfloat) * 6 * triangles.size());
-    }
-    if(FloatBuffer::textureCoords == NULL) {
-        return false;
-    }
-
+    //load all data to buffer
+    unsigned int offset = 0;
     unsigned int i;
-    unsigned int size3 = 0;
-    unsigned int size2 = 0;
     for(Triangle3 t : triangles) {
         for(i = 0; i < 3; ++i) {
-            FloatBuffer::vertices[size3] = t.v[i]->x;
-            FloatBuffer::vertices[size3 + 1] = t.v[i]->y;
-            FloatBuffer::vertices[size3 + 2] = t.v[i]->z;
+            //position
+            VertexDataBuffer::data[offset] = t.v[i]->x;
+            VertexDataBuffer::data[offset + 1] = t.v[i]->y;
+            VertexDataBuffer::data[offset + 2] = t.v[i]->z;
 
-            FloatBuffer::normals[size3] = t.vn[i]->x;
-            FloatBuffer::normals[size3 + 1] = t.vn[i]->y;
-            FloatBuffer::normals[size3 + 2] = t.vn[i]->z;
+            //texture coord
+            VertexDataBuffer::data[offset + 3] = t.vt[i]->x;
+            VertexDataBuffer::data[offset + 4] = t.vt[i]->y;
 
-            FloatBuffer::textureCoords[size2] = t.vt[i]->x;
-            FloatBuffer::textureCoords[size2 + 1] = t.vt[i]->y;
-
-            ++FloatBuffer::size;
-            size3 += 3;
-            size2 += 2;
+            offset += 5;
         }
+    }
+
+    //set size (number of vertices)
+    if(options == 0) {
+        VertexDataBuffer::size = 0;;
+    } else {
+        VertexDataBuffer::size = triangles.size() * 3;
     }
 
     return true;
@@ -91,24 +106,43 @@ bool FloatBuffer::convertTrianglesToArray(std::vector<Triangle3> & triangles) {
 /*------------------------------------------------------------------------------------------------*/
 
 
+
 Graphics3D::Graphics3D(int windowHandle) : Graphics2D(windowHandle) {   
     //vertex buffer
     glGenBuffers(1, &(Graphics3D::vertexBuffer));
+
     glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::vertexBuffer);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, NULL);
 
-    //normal buffer
-    glGenBuffers(1, &(Graphics3D::normalBuffer));
-    glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::normalBuffer);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glNormalPointer(GL_FLOAT, 0, NULL);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat),
+                          (GLvoid*)0);
 
-    //texture coord
-    glGenBuffers(1, &(Graphics3D::textureCoordBuffer));
-    glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::textureCoordBuffer);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat),
+                          (GLvoid*)(3 * sizeof(GLfloat)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    //default shader program
+    Graphics3D::shaderProgram = new ShaderProgram();
+    Graphics3D::shaderProgram->addShader(vertex_src, GL_VERTEX_SHADER);
+    Graphics3D::shaderProgram->addShader(fragment_src, GL_FRAGMENT_SHADER);
+    Graphics3D::shaderProgram->link();
+
+    Graphics3D::computeProjectionMatrix(45.0, 2.0, 0.1, 100.0);
+}
+
+Graphics3D::~Graphics3D() {
+    glDeleteBuffers(1, &(Graphics3D::vertexBuffer));
+}
+
+void Graphics3D::computeProjectionMatrix(GLdouble FOV, GLdouble aspect,
+                                         GLdouble zNear, GLdouble zFar) {
+    gluPerspective(FOV, aspect, zNear, zFar);
+
+    GLfloat buffer[16];
+    glGetFloatv(GL_PROJECTION_MATRIX, buffer);
+    Graphics3D::projection = glm::make_mat4(buffer);
 }
 
 void Graphics3D::drawTriangle(Triangle3 * t) {
@@ -226,22 +260,44 @@ void Graphics3D::drawImage(Vertex3 * position, Vertex3 * rotation,
     }
 }
 
-void Graphics3D::drawFloatBuffer(FloatBuffer * buffer) {
-    if(buffer->size == 0) return;
+void Graphics3D::drawVertexDataBuffer(VertexDataBuffer * buffer) {
+    if(buffer == NULL) return;
+    if(buffer->size == 0 || buffer->data == NULL) return;
 
-    /**
-     * draw vertices
-     */
-    if(buffer->vertices != NULL) {
-        //bind vertex buffer
-        glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::vertexBuffer);
+    //use shader program
+    if(Graphics3D::shaderProgram != NULL) {
+        Graphics3D::shaderProgram->use();
 
-        //upload vertex data to the video device
-        glBufferData(GL_ARRAY_BUFFER, buffer->size * sizeof(GLfloat) * 3,
-                     buffer->vertices, GL_DYNAMIC_DRAW);
+        glm::mat4 modelView;
+        glGetFloatv(GL_MODELVIEW_MATRIX, glm::value_ptr(modelView));
 
-        //actually draw the triangle, giving the number of vertices provided
-        glDrawArrays(GL_TRIANGLES, 0, buffer->size);
+        /**
+         * modelViewProjection = multiplication of model view matrix,
+         * projection matrix and model transformation matrix
+         */
+        glm::mat4 MVP =  Graphics3D::projection * modelView;
+
+        //send MVP transformation to the currently bound shader, in the "MVP" uniform
+        Graphics3D::shaderProgram->setMatrix4(MODEL_VIEW_PROJECTION_UNIFORM, glm::value_ptr(MVP));
     }
 
+    //bind vertex buffer
+    glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::vertexBuffer);
+
+    //upload vertex data to the video device
+    glBufferData(GL_ARRAY_BUFFER, buffer->size * sizeof(GLfloat) * 5,
+                 buffer->data, GL_DYNAMIC_DRAW);
+
+    //actually draw the triangle, giving the number of vertices provided
+    glDrawArrays(GL_TRIANGLES, 0, buffer->size);
+
+    //unbind current vertex buffer
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    //stop using current shader program
+    glUseProgram(0);
+}
+
+void Graphics3D::setShaderProgram(ShaderProgram * shaderProgram) {
+    Graphics3D::shaderProgram = shaderProgram;
 }

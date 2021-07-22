@@ -17,8 +17,8 @@
 class Model
 {
 protected:
-    //float buffer with model data (use for rendering)
-    FloatBuffer * buffer; /** buffer with vertices */
+    //data model buffer with model data (use for rendering)
+    VertexDataBuffer * buffer; /** buffer with vertices */
 
     Texture * texture; /** texture of model */
 
@@ -39,6 +39,12 @@ public:
      * @return
      */
     bool loadModel(const char * path);
+
+    /**
+     * @brief setTexture
+     * @param texture
+     */
+    void setTexture(Texture * texture);
 
     /**
      * @brief render

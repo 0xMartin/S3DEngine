@@ -18,7 +18,8 @@
 Model::Model(const char * path) {
     Model::offset = (Vertex3){0.0, 0.0, 0.0};
     Model::rotation = (Vertex3){0.0, 0.0, 0.0};
-    Model::buffer = new FloatBuffer();
+    Model::buffer = new VertexDataBuffer();
+    Model::texture = NULL;
     Model::loadModel(path);
 }
 
@@ -173,9 +174,14 @@ bool Model::loadModel(const char * path) {
 
     //convert model to float buffer
     if(Model::buffer == NULL) return false;
-    if(Model::buffer->convertTrianglesToArray(Model::triangles)) return false;
+    if(Model::buffer->buildVertexData(Model::triangles, MDB_Vertex | MDB_TextureCoords)) return false;
 
     return true;
+}
+
+void Model::setTexture(Texture * texture) {
+    if(texture == NULL) return;
+    Model::texture = texture;
 }
 
 void Model::render(Graphics * graphics) {
@@ -188,11 +194,22 @@ void Model::render(Graphics * graphics) {
     glRotatef(Model::rotation.y, 0.0, 1.0, 0.0);
     glRotatef(Model::rotation.z, 0.0, 0.0, 1.0);
 
-    g3->drawFloatBuffer(Model::buffer);
+    if(texture != NULL) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texture->textureID);
+        g3->setColorRGB(1.0, 1.0, 1.0, 1.0);
+    }
+
+    g3->drawVertexDataBuffer(Model::buffer);
+
+    if(texture != NULL) {
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
 
     glPopMatrix();
 }
 
 bool Model::recomputeFloatBuffer() {
-    return Model::buffer->convertTrianglesToArray(Model::triangles);
+    return Model::buffer->buildVertexData(Model::triangles, MDB_Vertex);
 }

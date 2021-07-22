@@ -86,7 +86,7 @@ void RadioButton::render(Graphics * graphics, const Event_Render * evt) {
     }
 }
 
-void RadioButton::mouseButtonEvt(std::vector<Object*> * objects,
+void RadioButton::mouseButtonEvt(std::vector<Object*> & objects,
                                  const Event_Mouse * evt) {
     if(!RadioButton::events.enabled || !RadioButton::events.visible) return;
 

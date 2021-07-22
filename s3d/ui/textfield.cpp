@@ -92,12 +92,12 @@ void TextField::render(Graphics * graphics, const Event_Render * evt) {
     g2->resetScissor(evt);
 }
 
-void TextField::update(std::vector<Object*> * objects,
+void TextField::update(std::vector<Object*> & objects,
                        const Event_Update * evt) {
     TextField::caret_time = evt->ns_time/4e8;
 }
 
-void TextField::mouseMoveEvt(std::vector<Object*> * objects,
+void TextField::mouseMoveEvt(std::vector<Object*> & objects,
                              const Event_Mouse * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 
@@ -113,7 +113,7 @@ void TextField::mouseMoveEvt(std::vector<Object*> * objects,
     TextField::events.hover = false;
 }
 
-void TextField::mouseButtonEvt(std::vector<Object*> * objects,
+void TextField::mouseButtonEvt(std::vector<Object*> & objects,
                                const Event_Mouse * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 
@@ -147,7 +147,7 @@ void TextField::mouseButtonEvt(std::vector<Object*> * objects,
     }
 }
 
-void TextField::pressKeyEvt(std::vector<Object*> * objects,
+void TextField::pressKeyEvt(std::vector<Object*> & objects,
                             const Event_Key * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 
@@ -197,7 +197,7 @@ void TextField::pressKeyEvt(std::vector<Object*> * objects,
     }
 }
 
-void TextField::releaseKeyEvt(std::vector<Object*> * objects,
+void TextField::releaseKeyEvt(std::vector<Object*> & objects,
                               const Event_Key * evt) {
     if(!TextField::events.enabled || !TextField::events.visible) return;
 

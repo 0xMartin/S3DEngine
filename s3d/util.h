@@ -99,4 +99,5 @@ inline bool UTIL_instanceof(const T*) {
    return std::is_base_of<Base, T>::value;
 }
 
+
 #endif // UTIL_H

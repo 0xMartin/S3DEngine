@@ -68,7 +68,7 @@ void Button::render(Graphics * graphics, const Event_Render * evt) {
                 Button::text);
 }
 
-void Button::mouseMoveEvt(std::vector<Object*> * objects,
+void Button::mouseMoveEvt(std::vector<Object*> & objects,
                           const Event_Mouse * evt) {
     if(!Button::events.enabled || !Button::events.visible) return;
 
@@ -84,7 +84,7 @@ void Button::mouseMoveEvt(std::vector<Object*> * objects,
     Button::events.hover = false;
 }
 
-void Button::mouseButtonEvt(std::vector<Object*> * objects,
+void Button::mouseButtonEvt(std::vector<Object*> & objects,
                             const Event_Mouse * evt){
     if(!Button::events.enabled || !Button::events.visible) return;
 

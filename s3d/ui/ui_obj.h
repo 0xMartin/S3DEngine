@@ -49,10 +49,12 @@
 class UI_obj : public Object2D
 {
 public:
-    GLfloat width;
-    GLfloat height;
+    GLfloat width; /** width of UI object */
+    GLfloat height; /** height of UI object */
 
-
+    /**
+     * @brief events
+     */
     UI_Events events;
 
     virtual ~UI_obj();
@@ -61,22 +63,22 @@ public:
 
     virtual void resize(const Event_Resize * evt);
 
-    virtual void update(std::vector<Object*> * objects,
+    virtual void update(std::vector<Object*> & objects,
                         const Event_Update * evt);
 
-    virtual void mouseMoveEvt(std::vector<Object*> * objects,
+    virtual void mouseMoveEvt(std::vector<Object*> & objects,
                               const Event_Mouse * evt);
 
-    virtual void mouseButtonEvt(std::vector<Object*> * objects,
+    virtual void mouseButtonEvt(std::vector<Object*> & objects,
                                 const Event_Mouse * evt);
 
-    virtual void pressKeyEvt(std::vector<Object*> * objects,
+    virtual void pressKeyEvt(std::vector<Object*> & objects,
                              const Event_Key * evt);
 
-    virtual void releaseKeyEvt(std::vector<Object*> * objects,
+    virtual void releaseKeyEvt(std::vector<Object*> & objects,
                                const Event_Key * evt);
 
-    virtual void onLoad(std::vector<Object*> * objects);
+    virtual void onLoad(std::vector<Object*> & objects);
 };
 
 #endif // UI_OBJ_H

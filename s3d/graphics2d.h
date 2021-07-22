@@ -14,6 +14,7 @@
 #include "graphics.h"
 
 
+/*---------------------------------------2D-Objects-----------------------------------------------*/
 typedef struct {
     GLfloat x; /** X position of point*/
     GLfloat y; /** Y position of point*/
@@ -29,7 +30,12 @@ typedef struct {
     std::vector<Point*> points;
     GLint textureID;
 } Face2;
+/*------------------------------------------------------------------------------------------------*/
 
+
+/**
+ * @brief The Graphics2D class
+ */
 class Graphics2D : public Graphics {
 public:
     Graphics2D(int windowHandle);

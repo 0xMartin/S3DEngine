@@ -31,7 +31,7 @@
 #include <vector>
 
 
-//colors
+/*------------------------------------Colors------------------------------------------------------*/
 #define COLOR_BLACK     (Color){0.0,   0.0,    0.0,    1.0}
 #define COLOR_BLUE      (Color){0.0,   0.0,    1.0,    1.0}
 #define COLOR_CYAN      (Color){0.0,   1.0,    1.0,    1.0}
@@ -55,8 +55,16 @@
 
 #define COLOR_CHANGE_OPACITY(c, opacity) ((Color){.red=c.red, .green=c.green, .blue=c.blue, .alpha=opacity})
 
+typedef struct {
+    GLfloat red; /** red color*/
+    GLfloat green; /** green color*/
+    GLfloat blue; /** blue color*/
+    GLfloat alpha; /** alpha*/
+} Color;
+/*------------------------------------------------------------------------------------------------*/
 
-//fonts
+
+/*-------------------------------------Fonts------------------------------------------------------*/
 #define S3D_STROKE_ROMAN            GLUT_STROKE_ROMAN
 #define S3D_STROKE_MONO_ROMAN       GLUT_STROKE_MONO_ROMAN
 #define S3D_BITMAP_9_BY_15          GLUT_BITMAP_9_BY_15
@@ -66,19 +74,14 @@
 #define S3D_BITMAP_HELVETICA_10     GLUT_BITMAP_HELVETICA_10
 #define S3D_BITMAP_HELVETICA_12     GLUT_BITMAP_HELVETICA_12
 #define S3D_BITMAP_HELVETICA_18     GLUT_BITMAP_HELVETICA_18
+/*------------------------------------------------------------------------------------------------*/
 
 #define DEFAULT_LINE_WIDTH 1
 
 
-//RGB color
-typedef struct {
-    GLfloat red; /** red color*/
-    GLfloat green; /** green color*/
-    GLfloat blue; /** blue color*/
-    GLfloat alpha; /** alpha*/
-} Color;
-
-
+/**
+ * @brief The Graphics class
+ */
 class Graphics {
 protected:
     int windowHandle;

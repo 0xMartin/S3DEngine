@@ -79,7 +79,7 @@ void CheckBox::render(Graphics * graphics, const Event_Render * evt) {
     }
 }
 
-void CheckBox::mouseButtonEvt(std::vector<Object*> * objects,
+void CheckBox::mouseButtonEvt(std::vector<Object*> & objects,
                               const Event_Mouse * evt) {
     if(!CheckBox::events.enabled || !CheckBox::events.visible) return;
 

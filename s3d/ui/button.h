@@ -35,10 +35,10 @@ public:
 
     virtual void render(Graphics * graphics, const Event_Render * evt);
 
-    virtual void mouseMoveEvt(std::vector<Object*> * objects,
+    virtual void mouseMoveEvt(std::vector<Object*> & objects,
                               const Event_Mouse * evt);
 
-    virtual void mouseButtonEvt(std::vector<Object*> * objects,
+    virtual void mouseButtonEvt(std::vector<Object*> & objects,
                                 const Event_Mouse * evt);
 
 };

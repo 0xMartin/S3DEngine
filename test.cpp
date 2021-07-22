@@ -22,7 +22,7 @@ public:
     float angle;
     Triangle(Vertex3 position);
     void render(Graphics * graphics, const Event_Render *evt);
-    void update(std::vector<Object *> * objects, const Event_Update *evt);
+    void update(std::vector<Object *> & objects, const Event_Update *evt);
 };
 
 Triangle::Triangle(Vertex3 position) {
@@ -70,7 +70,7 @@ void Triangle::render(Graphics * graphics, const Event_Render *evt) {
     glEnd();   // Done drawing the pyramid
 }
 
-void Triangle::update(std::vector<Object*> * objects,
+void Triangle::update(std::vector<Object*> & objects,
                       const Event_Update * evt) {
     Triangle::angle += 1.0f;
 }
@@ -101,7 +101,25 @@ void Obj1::render(Graphics * graphics, const Event_Render *evt) {
 }
 
 
+class Obj2 : public Object3D {
+private:
+    Model model;
+    Vertex3 position;
+public:
+    Obj2(Texture * t, Vertex3 position);
+    void render(Graphics * graphics, const Event_Render *evt);
+};
 
+Obj2::Obj2(Texture * t, Vertex3 position) : model("data/cube.obj") {
+    Obj2::position = position;
+    model.setTexture(t);
+}
+
+void Obj2::render(Graphics * graphics, const Event_Render *evt) {
+    glTranslatef(Obj2::position.x, Obj2::position.y,
+                 Obj2::position.z);
+    model.render(graphics);
+}
 
 
 class Img3D : public Object3D {
@@ -130,6 +148,7 @@ void Img3D::render(Graphics * graphics, const Event_Render *evt) {
 
 
 
+
 int main(int argc, char *argv[])
 {
     CoreContext context = CORE_DEFAULT_CONFIG;
@@ -152,6 +171,10 @@ int main(int argc, char *argv[])
         Obj1 * o = new Obj1((Vertex3){10.0, (GLfloat)(3.0 + i * 4.0), 2.0});
         s->addObject(o);
     }
+
+    Texture * td = core->loadTexture("data/stone.bmp", false);
+    Obj2 * o = new Obj2(td, (Vertex3){0.0, -4.0, 2.0});
+    s->addObject(o);
 
     //2D objects (label + radiobuttons)
     Label * l = new Label(20, 70, "S3D Engine test");

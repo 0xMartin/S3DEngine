@@ -59,7 +59,7 @@ public:
      * @param objects All objects on scene
      * @param evt Event_Update
      */
-    virtual void update(std::vector<Object*> * objects,
+    virtual void update(std::vector<Object*> & objects,
                         const Event_Update * evt);
 
     /**
@@ -67,7 +67,7 @@ public:
      * @param objects All objects on scene
      * @param evt Event_Mouse
      */
-    virtual void mouseMoveEvt(std::vector<Object*> * objects,
+    virtual void mouseMoveEvt(std::vector<Object*> & objects,
                               const Event_Mouse * evt);
 
     /**
@@ -75,7 +75,7 @@ public:
      * @param objects All objects on scene
      * @param evt Event_Mouse
      */
-    virtual void mouseButtonEvt(std::vector<Object*> * objects,
+    virtual void mouseButtonEvt(std::vector<Object*> & objects,
                                 const Event_Mouse * evt);
 
     /**
@@ -83,7 +83,7 @@ public:
      * @param objects All objects on scene
      * @param evt Event_Key
      */
-    virtual void pressKeyEvt(std::vector<Object*> * objects,
+    virtual void pressKeyEvt(std::vector<Object*> & objects,
                              const Event_Key * evt);
 
     /**
@@ -91,16 +91,17 @@ public:
      * @param objects All objects on scene
      * @param evt Event_Key
      */
-    virtual void releaseKeyEvt(std::vector<Object*> * objects,
+    virtual void releaseKeyEvt(std::vector<Object*> & objects,
                                const Event_Key * evt);
 
     /**
      * @brief On scene load core event
      * @param objects All objects on scene
      */
-    virtual void onLoad(std::vector<Object*> * objects);
+    virtual void onLoad(std::vector<Object*> & objects);
 
 };
+
 
 /**
  * @brief The Object2D class [ABSTRACT]
@@ -113,6 +114,7 @@ public:
     Object2D();
     virtual ~Object2D();
 };
+
 
 /**
  * @brief The Object3D class [ABSTRACT]

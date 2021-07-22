@@ -228,7 +228,6 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     //opengl config
     glEnable(GL_SCISSOR_TEST);
     glEnable(GL_DEPTH_TEST);
-    //glShadeModel(GL_FLAT);
     glDisable(GL_CULL_FACE);
     glEnable(GL_MULTISAMPLE);
     glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
@@ -426,7 +425,7 @@ bool S3DCore::setActiveScene(Scene * scene) {
 
     for(Object * obj : S3DCore::context->activeScene->objects) {
         if(obj) {
-            obj->onLoad(&S3DCore::context->activeScene->objects);
+            obj->onLoad(S3DCore::context->activeScene->objects);
         }
     }
 
@@ -510,11 +509,12 @@ static void reshape(int w, int h) {
     //set the viewport to be the entire window
     glViewport(0, 0, w, h);
 
-    //set the correct perspective
+    //set perspective
     if (h == 0) h = 1;
     float ratio =  w * 1.0 / h;
-    gluPerspective(45.0f, ratio, CONTEXT->activeScene->min_renderDistance,
-                   CONTEXT->activeScene->max_renderDistance);
+    ((Graphics3D*)CONTEXT->graphics)->computeProjectionMatrix(
+                45.0, ratio, CONTEXT->activeScene->min_renderDistance,
+                CONTEXT->activeScene->max_renderDistance);
 
     //get Back to the Modelview
     glMatrixMode(GL_MODELVIEW);
@@ -677,7 +677,7 @@ static void updateScene() {
             break;
         }
         if(obj) {
-            obj->update(&CONTEXT->activeScene->objects, &update_event);
+            obj->update(CONTEXT->activeScene->objects, &update_event);
         }
     }
 }
@@ -812,7 +812,7 @@ static void evt_pressKey(unsigned char key, bool ctrl,
             break;
         }
         if(obj) {
-            obj->pressKeyEvt(&CONTEXT->activeScene->objects, &key_event_press);
+            obj->pressKeyEvt(CONTEXT->activeScene->objects, &key_event_press);
         }
     }
 }
@@ -866,7 +866,7 @@ static void evt_releaseKey(unsigned char key, bool ctrl,
             break;
         }
         if(obj) {
-            obj->releaseKeyEvt(&CONTEXT->activeScene->objects, &key_event_release);
+            obj->releaseKeyEvt(CONTEXT->activeScene->objects, &key_event_release);
         }
     }
 }
@@ -918,7 +918,7 @@ static void evt_mouseMove(int x, int y) {
             break;
         }
         if(obj) {
-            obj->mouseMoveEvt(&CONTEXT->activeScene->objects, &mouse_event_move);
+            obj->mouseMoveEvt(CONTEXT->activeScene->objects, &mouse_event_move);
         }
     }
 }
@@ -948,7 +948,7 @@ static void evt_mouseButton(int button, int state, int x, int y) {
             break;
         }
         if(obj) {
-            obj->mouseButtonEvt(&CONTEXT->activeScene->objects, &mouse_event_button);
+            obj->mouseButtonEvt(CONTEXT->activeScene->objects, &mouse_event_button);
         }
     }
 }

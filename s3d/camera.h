@@ -15,6 +15,9 @@
 #include <stdbool.h>
 
 
+/**
+ * @brief The Camera class
+ */
 class Camera
 {
 private:

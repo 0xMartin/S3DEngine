@@ -37,6 +37,8 @@
 #define EVT_M_UP GLUT_UP
 
 
+
+/*------------------------------------CoreEvents--------------------------------------------------*/
 typedef enum {
     NONE,
     LEFT,
@@ -89,10 +91,10 @@ typedef struct {
     __time_t s_diff;    /** s difference*/
     void * sender; /** object that triggered the event */
 } Event_Update;
+/*------------------------------------------------------------------------------------------------*/
 
 
-
-//UI events
+/*------------------------------------UI-events---------------------------------------------------*/
 typedef void (*Event_action)(void * sender, const void * evt);
 
 #define UI_EVENTS_INIT (UI_Events){.focus=false, .hover=false,\
@@ -114,6 +116,7 @@ typedef struct {
     Event_action mouseMovedAction;
     Event_action contentChangedAction;
 } UI_Events;
+/*------------------------------------------------------------------------------------------------*/
 
 
 #endif // EVENT_H
