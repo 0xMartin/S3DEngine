@@ -9,8 +9,6 @@
 
 class ShaderProgram
 {
-protected:
-    std::vector<GLuint> shaders;
 public:
     GLuint ID; /** program ID */
 
@@ -60,6 +58,15 @@ public:
      * @param value
      */
     void setMatrix4(const std::string &name, const GLfloat * value);
+
+    /**
+     * @brief setVec3
+     * @param name
+     * @param x
+     * @param y
+     * @param z
+     */
+    void setVec3(const std::string &name, GLfloat x, GLfloat y, GLfloat z);
 };
 
 #endif // SHADER_H

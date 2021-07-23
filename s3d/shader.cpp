@@ -1,5 +1,7 @@
 #include "shader.h"
 
+#include "graphics3d.h"
+
 
 ShaderProgram::ShaderProgram() {
     ShaderProgram::ID = glCreateProgram();
@@ -60,7 +62,6 @@ void ShaderProgram::addShader(const GLchar * source, GLenum type) {
     };
 
     //attach shader to shader program
-    ShaderProgram::shaders.push_back(shader_ID);
     glAttachShader(ShaderProgram::ID, shader_ID);
 
     glDeleteShader(shader_ID);
@@ -84,4 +85,9 @@ void ShaderProgram::setFloat(const std::string &name, GLfloat value) {
 void ShaderProgram::setMatrix4(const std::string &name, const GLfloat * value) {
     glUniformMatrix4fv(glGetUniformLocation(
                            ShaderProgram::ID, name.c_str()), 1, GL_FALSE, value);
+}
+
+void ShaderProgram::setVec3(const std::string &name, GLfloat x, GLfloat y, GLfloat z) {
+    glUniform3f(glGetUniformLocation(
+                           ShaderProgram::ID, name.c_str()), x, y, z);
 }

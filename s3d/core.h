@@ -34,6 +34,7 @@ public:
     GLfloat min_renderDistance; /** minimal render distance */
     GLfloat max_renderDistance; /** maximal render distance */
     std::vector<Object*> objects; /** all objects of scene */
+    std::vector<Light*> lights; /** all lights of scene */
 
     Scene();
     ~Scene();
@@ -50,6 +51,14 @@ public:
      * @return
      */
     Camera * getCamera();
+
+    /**
+     * @brief addLight
+     * @param position
+     * @param color
+     * @return
+     */
+    Light * addLight(Vertex3 position, Color color);
 };
 
 

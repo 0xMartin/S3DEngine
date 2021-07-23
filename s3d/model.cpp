@@ -115,6 +115,7 @@ bool Model::loadModel(const char * path) {
                 triangle.vn[0] = &Model::normals[normalIndex[0] - 1];
                 triangle.vn[1] = &Model::normals[normalIndex[1] - 1];
                 triangle.vn[2] = &Model::normals[normalIndex[2] - 1];
+
                 Model::triangles.push_back(triangle);
             } else {
 
@@ -128,9 +129,14 @@ bool Model::loadModel(const char * path) {
                     triangle.v[1] = &Model::vertices[vertexIndex[1] - 1];
                     triangle.v[2] = &Model::vertices[vertexIndex[2] - 1];
 
+                    triangle.vt[0] = 0;
+                    triangle.vt[1] = 0;
+                    triangle.vt[2] = 0;
+
                     triangle.vn[0] = &Model::normals[normalIndex[0] - 1];
                     triangle.vn[1] = &Model::normals[normalIndex[1] - 1];
                     triangle.vn[2] = &Model::normals[normalIndex[2] - 1];
+
                     Model::triangles.push_back(triangle);
                 } else {
 
@@ -148,6 +154,11 @@ bool Model::loadModel(const char * path) {
                         triangle.vt[0] = &Model::texture_coordinates[vtIndex[0] - 1];
                         triangle.vt[1] = &Model::texture_coordinates[vtIndex[1] - 1];
                         triangle.vt[2] = &Model::texture_coordinates[vtIndex[2] - 1];
+
+                        triangle.vn[0] = 0;
+                        triangle.vn[1] = 0;
+                        triangle.vn[2] = 0;
+
                         Model::triangles.push_back(triangle);
                     } else {
 
@@ -161,6 +172,14 @@ bool Model::loadModel(const char * path) {
                             triangle.v[0] = &Model::vertices[vertexIndex[0] - 1];
                             triangle.v[1] = &Model::vertices[vertexIndex[1] - 1];
                             triangle.v[2] = &Model::vertices[vertexIndex[2] - 1];
+
+                            triangle.vt[0] = 0;
+                            triangle.vt[1] = 0;
+                            triangle.vt[2] = 0;
+
+                            triangle.vn[0] = 0;
+                            triangle.vn[1] = 0;
+                            triangle.vn[2] = 0;
                             Model::triangles.push_back(triangle);
                         } else {
                             std::cerr << __FUNCTION__ << ": file can't be read [" << path << "]" << std::endl;
@@ -174,7 +193,7 @@ bool Model::loadModel(const char * path) {
 
     //convert model to float buffer
     if(Model::buffer == NULL) return false;
-    if(Model::buffer->buildVertexData(Model::triangles, MDB_Vertex | MDB_TextureCoords)) return false;
+    if(Model::buffer->buildVertexData(Model::triangles)) return false;
 
     return true;
 }
@@ -211,5 +230,5 @@ void Model::render(Graphics * graphics) {
 }
 
 bool Model::recomputeFloatBuffer() {
-    return Model::buffer->buildVertexData(Model::triangles, MDB_Vertex);
+    return Model::buffer->buildVertexData(Model::triangles);
 }

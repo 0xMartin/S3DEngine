@@ -14,7 +14,9 @@ using namespace std;
 
 
 
-
+/**
+ * @brief The Triangle class
+ */
 class Triangle : public Object3D {
 private:
     Vertex3 position;
@@ -76,52 +78,60 @@ void Triangle::update(std::vector<Object*> & objects,
 }
 
 
-
-
-class Obj1 : public Object3D {
+/**
+ * @brief The Gripen class
+ */
+class Gripen : public Object3D {
 private:
     Model model;
     Vertex3 position;
 public:
-    Obj1(Vertex3 position);
+    Gripen(Texture * t, Vertex3 position);
     void render(Graphics * graphics, const Event_Render *evt);
 };
 
-Obj1::Obj1(Vertex3 position) : model("data/gripen.obj") {
-    Obj1::position = position;
+Gripen::Gripen(Texture * t, Vertex3 position) : model("data/gripen2.obj") {
+    Gripen::position = position;
+    model.setTexture(t);
     //Obj1::model.rotation.x = -90.0f;
 }
 
-void Obj1::render(Graphics * graphics, const Event_Render *evt) {
-    glTranslatef(Obj1::position.x, Obj1::position.y,
-                 Obj1::position.z);
+void Gripen::render(Graphics * graphics, const Event_Render *evt) {
+    glTranslatef(Gripen::position.x, Gripen::position.y,
+                 Gripen::position.z);
     Graphics3D * g3 = ((Graphics3D*)graphics);
     g3->setColorRGB(1.0, 0.0, 0.0, 0.4);
     model.render(graphics);
 }
 
 
-class Obj2 : public Object3D {
+/**
+ * @brief The Cube class
+ */
+class Cube : public Object3D {
 private:
     Model model;
     Vertex3 position;
 public:
-    Obj2(Texture * t, Vertex3 position);
+    Cube(Texture * t, Vertex3 position);
     void render(Graphics * graphics, const Event_Render *evt);
 };
 
-Obj2::Obj2(Texture * t, Vertex3 position) : model("data/cube.obj") {
-    Obj2::position = position;
+Cube::Cube(Texture * t, Vertex3 position) : model("data/cube.obj") {
+    Cube::position = position;
     model.setTexture(t);
 }
 
-void Obj2::render(Graphics * graphics, const Event_Render *evt) {
-    glTranslatef(Obj2::position.x, Obj2::position.y,
-                 Obj2::position.z);
+void Cube::render(Graphics * graphics, const Event_Render *evt) {
+    glTranslatef(Cube::position.x, Cube::position.y,
+                 Cube::position.z);
     model.render(graphics);
 }
 
 
+/**
+ * @brief The Img3D class
+ */
 class Img3D : public Object3D {
 private:
     Vertex3 position;
@@ -146,7 +156,51 @@ void Img3D::render(Graphics * graphics, const Event_Render *evt) {
 
 
 
+/**
+ * @brief The DynamicLight class
+ */
+class DynamicLight : public Object3D {
+private:
+    Light * light;
+    Vertex3 defPos;
+    float time = 0;
+public:
+    DynamicLight(Light * light);
+    void render(Graphics * graphics, const Event_Render *evt);
+    void update(std::vector<Object *> & objects, const Event_Update *evt);
+};
 
+DynamicLight::DynamicLight(Light * light) {
+    DynamicLight::defPos = light->position;
+    DynamicLight::light = light;
+}
+
+void DynamicLight::render(Graphics * graphics, const Event_Render *evt) {
+    Vertex3 p = light->position;
+    float size = 0.5;
+    glColor3f(1.0, 1.0, 0.0);
+    glBegin(GL_LINES);
+    for(unsigned int i = 0; i < 3; ++i) {
+        glVertex3f(p.x - size * (i == 0),
+                   p.y - size * (i == 1),
+                   p.z - size * (i == 2));
+        glVertex3f(p.x + size * (i == 0),
+                   p.y + size * (i == 1),
+                   p.z + size * (i == 2));
+    }
+    glEnd();
+}
+
+void DynamicLight::update(std::vector<Object *> & objects, const Event_Update *evt) {
+    DynamicLight::time += 0.03f;
+    Vertex3 p = DynamicLight::defPos;
+    GLfloat radius = 10.0;
+    Vertex3 v = (Vertex3){
+            cos(DynamicLight::time) * radius + p.x,
+            (GLfloat)(0.0 + p.y),
+            sin(DynamicLight::time) * radius + p.z};
+    light->position = v;
+}
 
 
 int main(int argc, char *argv[])
@@ -160,21 +214,25 @@ int main(int argc, char *argv[])
     s->visibleCursor = false;
     s->getCamera()->setPosition(-4.0, 2.0, 0.0);
 
+
     //triangle animation
     Triangle * t = new Triangle((Vertex3){0.0, 1.0, 0.0});
     s->addObject(t);
     t = new Triangle((Vertex3){1.0, 1.0, 5.0});
     s->addObject(t);
 
-    //object with 3D model
+
+    //objects with 3D model
+    Texture * tex = core->loadTexture("data/gripen_texture.bmp", false);
     for(int i = 0; i < 1; ++i) {
-        Obj1 * o = new Obj1((Vertex3){10.0, (GLfloat)(3.0 + i * 4.0), 2.0});
+        Gripen * o = new Gripen(tex, (Vertex3){10.0, 4.0, 2.0});
         s->addObject(o);
     }
 
-    Texture * td = core->loadTexture("data/stone.bmp", false);
-    Obj2 * o = new Obj2(td, (Vertex3){0.0, -4.0, 2.0});
+    tex = core->loadTexture("data/stone.bmp", false);
+    Cube * o = new Cube(tex, (Vertex3){0.0, -4.0, 2.0});
     s->addObject(o);
+
 
     //2D objects (label + radiobuttons)
     Label * l = new Label(20, 70, "S3D Engine test");
@@ -187,10 +245,18 @@ int main(int argc, char *argv[])
         s->addObject(btn);
     }
 
+
     //3D image
-    Texture * tex = core->loadTexture("data/img.bmp", false);
+    tex = core->loadTexture("data/img.bmp", false);
     Img3D * i = new Img3D((Vertex3){20.0, 2.0, 0.0}, tex);
     s->addObject(i);
+
+
+    //lights
+    Light * light = s->addLight((Vertex3){0.0, 12.0, 0.0}, (Color){1.0, 1.0, 1.0, 1.0});
+    DynamicLight * dl = new DynamicLight(light);
+    s->addObject(dl);
+
 
     core->setActiveScene(s);
     core->run();

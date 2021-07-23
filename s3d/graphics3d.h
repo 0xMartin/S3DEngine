@@ -16,8 +16,10 @@
 #include <glm/glm.hpp>
 
 
-/*---------------------------------------Shaders--------------------------------------------------*/
+/*---------------------------------------Shader-Uniforms------------------------------------------*/
 #define MODEL_VIEW_PROJECTION_UNIFORM ("MVP")
+#define LIGHT_POSITION_UNIFORM ("lightPos")
+#define LIGHT_COLOR_UNIFORM ("lightColor")
 /*------------------------------------------------------------------------------------------------*/
 
 
@@ -43,10 +45,6 @@ typedef struct {
 
 
 /*-------------------------------------DataBuffer-------------------------------------------------*/
-#define MDB_Vertex          (1 << 0)
-#define MDB_Normals         (1 << 1)
-#define MDB_TextureCoords   (1 << 2)
-
 
 class VertexDataBuffer {
 public:
@@ -61,7 +59,7 @@ public:
      * @param triangles
      * @return
      */
-    bool buildVertexData(std::vector<Triangle3> & triangles, int options);
+    bool buildVertexData(std::vector<Triangle3> & triangles);
 
     /**
      * @brief getSizeInBytes
@@ -70,6 +68,12 @@ public:
     size_t getSizeInBytes();
 };
 /*------------------------------------------------------------------------------------------------*/
+
+
+typedef struct {
+    Vertex3 position;
+    Color color;
+} Light;
 
 
 /**
@@ -83,7 +87,10 @@ private:
     ShaderProgram * shaderProgram;
 
     glm::mat4 projection;
+
+    std::vector<Light*> * lights;
 public:
+
     Graphics3D(int windowHandle);
     ~Graphics3D();
 
@@ -96,6 +103,12 @@ public:
      */
     void computeProjectionMatrix(GLdouble FOV, GLdouble aspect,
                                  GLdouble zNear, GLdouble zFar);
+
+    /**
+     * @brief bindLightVector
+     * @param lights
+     */
+    void bindLightVector(std::vector<Light*> * lights);
 
     /**
      * @brief drawTriangle

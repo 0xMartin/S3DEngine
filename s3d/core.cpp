@@ -166,11 +166,11 @@ static void destruct();
 
 S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     if(context == NULL) {
-        std::cerr << __FUNCTION__ << ": core context if NULL\n";
+        std::cerr << __FUNCTION__ << ": core context if NULL" << std::endl;
         return;
     }
     if(argc < 0 || argv == NULL) {
-        std::cerr << __FUNCTION__ << ": args error\n";
+        std::cerr << __FUNCTION__ << ": args error" << std::endl;
         return;
     }
 
@@ -191,13 +191,13 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
     S3DCore::context->windowHandle = glutCreateWindow(S3DCore::context->window_title);
 
     if(S3DCore::context->windowHandle < 1) {
-        std::cerr << __FUNCTION__ << ": failed to create window\n";
+        std::cerr << __FUNCTION__ << ": failed to create window" << std::endl;
         return;
     }
 
     S3DCore::context->graphics = new Graphics3D(S3DCore::context->windowHandle);
     if(S3DCore::context->graphics == NULL) {
-        std::cerr << __FUNCTION__ << ": failed to init renderer\n";
+        std::cerr << __FUNCTION__ << ": failed to init renderer" << std::endl;
         return;
     }
 
@@ -294,13 +294,13 @@ void S3DCore::stop() {
 
 Texture * S3DCore::loadTexture(const char * path, bool rgba_mode) {
     if(S3DCore::context == NULL) {
-        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        std::cerr << __FUNCTION__ << ": context is NULL" << std::endl;
         return NULL;
     }
 
     Texture * tex = UTIL_loadTextureBMP(path, rgba_mode);
     if(tex == NULL) {
-        std::cerr << __FUNCTION__ << ": failed to create texture [" << path << "]\n";
+        std::cerr << __FUNCTION__ << ": failed to create texture [" << path << "]" << std::endl;
         return NULL;
     }
     S3DCore::context->textures.push_back(tex);
@@ -311,7 +311,7 @@ Texture * S3DCore::loadTexture(const char * path, bool rgba_mode) {
 
 std::vector<Texture*> * S3DCore::getTextures() {
     if(S3DCore::context == NULL) {
-        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        std::cerr << __FUNCTION__ << ": context is NULL" << std::endl;
         return NULL;
     }
 
@@ -321,13 +321,13 @@ std::vector<Texture*> * S3DCore::getTextures() {
 
 Model * S3DCore::loadModel(const char * path) {
     if(S3DCore::context == NULL) {
-        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        std::cerr << __FUNCTION__ << ": context is NULL" << std::endl;
         return NULL;
     }
 
     Model * model = new Model(path);
     if(model == NULL) {
-        std::cerr << __FUNCTION__ << ": failed to load model [" << path << "]\n";
+        std::cerr << __FUNCTION__ << ": failed to load model [" << path << "]" << std::endl;
         return NULL;
     }
 
@@ -339,7 +339,7 @@ Model * S3DCore::loadModel(const char * path) {
 
 std::vector<Model*> * S3DCore::getModels() {
     if(S3DCore::context == NULL) {
-        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        std::cerr << __FUNCTION__ << ": context is NULL" << std::endl;
         return NULL;
     }
 
@@ -349,13 +349,13 @@ std::vector<Model*> * S3DCore::getModels() {
 
 Scene * S3DCore::createScene() {
     if(S3DCore::context == NULL) {
-        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        std::cerr << __FUNCTION__ << ": context is NULL" << std::endl;
         return NULL;
     }
 
     Scene * scene = new Scene();
     if(scene == NULL) {
-        std::cerr << __FUNCTION__ << ": faild to create scene";
+        std::cerr << __FUNCTION__ << ": faild to create scene" << std::endl;
         return NULL;
     }
     S3DCore::context->scenes.push_back(scene);
@@ -366,7 +366,7 @@ Scene * S3DCore::createScene() {
 Scene::Scene() {
     Scene::camera = new Camera();
     if(Scene::camera == NULL) {
-        std::cerr << __FUNCTION__ << ": faild to create camera";
+        std::cerr << __FUNCTION__ << ": faild to create camera" << std::endl;
         return;
     }
     Scene::mouseCamControl = false;
@@ -390,7 +390,7 @@ Scene::~Scene() {
 
 bool Scene::addObject(Object * object) {
     if(object == NULL) {
-        std::cerr << __FUNCTION__ << ": new object is NULL\n";
+        std::cerr << __FUNCTION__ << ": new object is NULL" << std::endl;
         return false;
     }
 
@@ -404,17 +404,31 @@ Camera * Scene::getCamera() {
     return Scene::camera;
 }
 
+Light * Scene::addLight(Vertex3 position, Color color) {
+    Light * l = (Light*) malloc(sizeof(Light));
+    if(l == NULL) {
+        std::cerr << __FUNCTION__ << ": failed to allocate memory" << std::endl;
+        return NULL;
+    }
+
+    l->position = position;
+    l->color = color;
+    Scene::lights.push_back(l);
+
+    return l;
+}
 
 bool S3DCore::setActiveScene(Scene * scene) {
     if(S3DCore::context == NULL) {
-        std::cerr << __FUNCTION__ << ": context is NULL\n";
+        std::cerr << __FUNCTION__ << ": context is NULL" << std::endl;
         return false;
     }
     if(scene == NULL) {
-        std::cerr << __FUNCTION__ << ": the scene to be set as active is NULL\n";
+        std::cerr << __FUNCTION__ << ": the scene to be set as active is NULL" << std::endl;
         return false;
     }
 
+    //set active scene in core context
     bool status = false;
     if(S3DCore::context->activeScene == NULL) {
         S3DCore::context->activeScene = scene;
@@ -423,6 +437,10 @@ bool S3DCore::setActiveScene(Scene * scene) {
         status = switchSceneData(scene);
     }
 
+    //bing light buffer for Graphics3D
+    ((Graphics3D*)S3DCore::context->graphics)->bindLightVector(&(scene->lights));
+
+    //call onload event for all objects
     for(Object * obj : S3DCore::context->activeScene->objects) {
         if(obj) {
             obj->onLoad(S3DCore::context->activeScene->objects);
