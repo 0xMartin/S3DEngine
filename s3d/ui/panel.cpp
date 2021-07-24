@@ -49,7 +49,6 @@ void Panel::render(Graphics * graphics, const Event_Render * evt) {
     Graphics2D * g2 = (Graphics2D*)graphics;
 
     //draw panel
-    g2->disableVertexColor();
     g2->setColor(&(Panel::background));
     g2->fillRectangle(&(Panel::position), Panel::width, Panel::height);
     Color border_color = COLOR_LIGHTER(Panel::background, 0.1);

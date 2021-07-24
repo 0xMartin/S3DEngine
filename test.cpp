@@ -93,12 +93,11 @@ public:
 Gripen::Gripen(Texture * t, Vertex3 position) : model("data/gripen2.obj") {
     Gripen::position = position;
     model.setTexture(t);
-    //Obj1::model.rotation.x = -90.0f;
+    Gripen::model.setOffset(position);
+    //Gripen::model.setRotation((Vertex3){0.0, 90, 0.0});
 }
 
 void Gripen::render(Graphics * graphics, const Event_Render *evt) {
-    glTranslatef(Gripen::position.x, Gripen::position.y,
-                 Gripen::position.z);
     Graphics3D * g3 = ((Graphics3D*)graphics);
     g3->setColorRGB(1.0, 0.0, 0.0, 0.4);
     model.render(graphics);
@@ -224,14 +223,12 @@ int main(int argc, char *argv[])
 
     //objects with 3D model
     Texture * tex = core->loadTexture("data/gripen_texture.bmp", false);
-    for(int i = 0; i < 1; ++i) {
-        Gripen * o = new Gripen(tex, (Vertex3){10.0, 4.0, 2.0});
-        s->addObject(o);
-    }
+    Gripen * o = new Gripen(tex, (Vertex3){10.0, 4.0, 2.0});
+    s->addObject(o);
 
     tex = core->loadTexture("data/stone.bmp", false);
-    Cube * o = new Cube(tex, (Vertex3){0.0, -4.0, 2.0});
-    s->addObject(o);
+    Cube * c = new Cube(tex, (Vertex3){0.0, -4.0, 2.0});
+    s->addObject(c);
 
 
     //2D objects (label + radiobuttons)
@@ -253,7 +250,7 @@ int main(int argc, char *argv[])
 
 
     //lights
-    Light * light = s->addLight((Vertex3){0.0, 12.0, 0.0}, (Color){1.0, 1.0, 1.0, 1.0});
+    Light * light = s->addLight((Vertex3){10.0, 7.0, 2.0}, (Color){1.0, 1.0, 1.0, 1.0});
     DynamicLight * dl = new DynamicLight(light);
     s->addObject(dl);
 

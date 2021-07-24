@@ -18,16 +18,16 @@
 Model::Model(const char * path) {
     Model::offset = (Vertex3){0.0, 0.0, 0.0};
     Model::rotation = (Vertex3){0.0, 0.0, 0.0};
-    Model::buffer = new VertexDataBuffer();
+    Model::buffer = new VertexDataBuffer(VBO_Color);
     Model::texture = NULL;
     Model::loadModel(path);
+
+    Model::setOffset((Vertex3){0.0, 0.0, 0.0});
+    Model::setScale((Vertex3){1.0, 1.0, 1.0});
+    Model::setRotation((Vertex3){0.0, 0.0, 0.0});
 }
 
 Model::~Model() {
-    Model::vertices.clear();
-    Model::normals.clear();
-    Model::texture_coordinates.clear();
-    Model::triangles.clear();
     if(Model::buffer) delete Model::buffer;
 }
 
@@ -46,6 +46,11 @@ bool Model::loadModel(const char * path) {
         return false;
     }
 
+    std::vector<Vertex3> vertices;
+    std::vector<Point> texture_coordinates;
+    std::vector<Vertex3> normals;
+    std::vector<Triangle3> triangles;
+
     /**
      * first load all vertices, texture coordinates and normals
      */
@@ -62,7 +67,7 @@ bool Model::loadModel(const char * path) {
         if (strcmp(lineHeader, "v") == 0 ){
             Vertex3 vertex;
             sscanf(c_data, "v %f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
-            Model::vertices.push_back(vertex);
+            vertices.push_back(vertex);
 
             /**
              *  texture coordinates
@@ -70,7 +75,7 @@ bool Model::loadModel(const char * path) {
         } else if (strcmp(lineHeader, "vt") == 0 ) {
             Point vt;
             sscanf(c_data, "vt %f %f\n", &vt.x, &vt.y );
-            Model::texture_coordinates.push_back(vt);
+            texture_coordinates.push_back(vt);
 
             /**
              *  vertex normals
@@ -78,7 +83,7 @@ bool Model::loadModel(const char * path) {
         } else if (strcmp(lineHeader, "vn") == 0 ) {
             Vertex3 vn;
             sscanf(c_data, "vn %f %f %f\n", &vn.x, &vn.y, &vn.z );
-            Model::normals.push_back(vn);
+            normals.push_back(vn);
         }
     }
 
@@ -104,19 +109,19 @@ bool Model::loadModel(const char * path) {
                     &vertexIndex[2], &vtIndex[2], &normalIndex[2]);
             if(matches == 9) {
                 //add new triangle
-                triangle.v[0] = &Model::vertices[vertexIndex[0] - 1];
-                triangle.v[1] = &Model::vertices[vertexIndex[1] - 1];
-                triangle.v[2] = &Model::vertices[vertexIndex[2] - 1];
+                triangle.v[0] = &vertices[vertexIndex[0] - 1];
+                triangle.v[1] = &vertices[vertexIndex[1] - 1];
+                triangle.v[2] = &vertices[vertexIndex[2] - 1];
 
-                triangle.vt[0] = &Model::texture_coordinates[vtIndex[0] - 1];
-                triangle.vt[1] = &Model::texture_coordinates[vtIndex[1] - 1];
-                triangle.vt[2] = &Model::texture_coordinates[vtIndex[2] - 1];
+                triangle.vt[0] = &texture_coordinates[vtIndex[0] - 1];
+                triangle.vt[1] = &texture_coordinates[vtIndex[1] - 1];
+                triangle.vt[2] = &texture_coordinates[vtIndex[2] - 1];
 
-                triangle.vn[0] = &Model::normals[normalIndex[0] - 1];
-                triangle.vn[1] = &Model::normals[normalIndex[1] - 1];
-                triangle.vn[2] = &Model::normals[normalIndex[2] - 1];
+                triangle.vn[0] = &normals[normalIndex[0] - 1];
+                triangle.vn[1] = &normals[normalIndex[1] - 1];
+                triangle.vn[2] = &normals[normalIndex[2] - 1];
 
-                Model::triangles.push_back(triangle);
+                triangles.push_back(triangle);
             } else {
 
                 //format: v1//vn1 v2//vn2 v3//vn3
@@ -125,19 +130,19 @@ bool Model::loadModel(const char * path) {
                         &vertexIndex[2], &normalIndex[2]);
                 if(matches == 6) {
                     //add new triangle
-                    triangle.v[0] = &Model::vertices[vertexIndex[0] - 1];
-                    triangle.v[1] = &Model::vertices[vertexIndex[1] - 1];
-                    triangle.v[2] = &Model::vertices[vertexIndex[2] - 1];
+                    triangle.v[0] = &vertices[vertexIndex[0] - 1];
+                    triangle.v[1] = &vertices[vertexIndex[1] - 1];
+                    triangle.v[2] = &vertices[vertexIndex[2] - 1];
 
                     triangle.vt[0] = 0;
                     triangle.vt[1] = 0;
                     triangle.vt[2] = 0;
 
-                    triangle.vn[0] = &Model::normals[normalIndex[0] - 1];
-                    triangle.vn[1] = &Model::normals[normalIndex[1] - 1];
-                    triangle.vn[2] = &Model::normals[normalIndex[2] - 1];
+                    triangle.vn[0] = &normals[normalIndex[0] - 1];
+                    triangle.vn[1] = &normals[normalIndex[1] - 1];
+                    triangle.vn[2] = &normals[normalIndex[2] - 1];
 
-                    Model::triangles.push_back(triangle);
+                    triangles.push_back(triangle);
                 } else {
 
                     //format: v1/vt1 v2/vt2 v3/vt3
@@ -147,19 +152,19 @@ bool Model::loadModel(const char * path) {
                             &vertexIndex[2], &vtIndex[2]);
                     if(matches == 6) {
                         //add new triangle
-                        triangle.v[0] = &Model::vertices[vertexIndex[0] - 1];
-                        triangle.v[1] = &Model::vertices[vertexIndex[1] - 1];
-                        triangle.v[2] = &Model::vertices[vertexIndex[2] - 1];
+                        triangle.v[0] = &vertices[vertexIndex[0] - 1];
+                        triangle.v[1] = &vertices[vertexIndex[1] - 1];
+                        triangle.v[2] = &vertices[vertexIndex[2] - 1];
 
-                        triangle.vt[0] = &Model::texture_coordinates[vtIndex[0] - 1];
-                        triangle.vt[1] = &Model::texture_coordinates[vtIndex[1] - 1];
-                        triangle.vt[2] = &Model::texture_coordinates[vtIndex[2] - 1];
+                        triangle.vt[0] = &texture_coordinates[vtIndex[0] - 1];
+                        triangle.vt[1] = &texture_coordinates[vtIndex[1] - 1];
+                        triangle.vt[2] = &texture_coordinates[vtIndex[2] - 1];
 
                         triangle.vn[0] = 0;
                         triangle.vn[1] = 0;
                         triangle.vn[2] = 0;
 
-                        Model::triangles.push_back(triangle);
+                        triangles.push_back(triangle);
                     } else {
 
                         //format: v1 v2 v3
@@ -169,9 +174,9 @@ bool Model::loadModel(const char * path) {
                                 &vertexIndex[2]);
                         if(matches == 3) {
                             //add new triangle
-                            triangle.v[0] = &Model::vertices[vertexIndex[0] - 1];
-                            triangle.v[1] = &Model::vertices[vertexIndex[1] - 1];
-                            triangle.v[2] = &Model::vertices[vertexIndex[2] - 1];
+                            triangle.v[0] = &vertices[vertexIndex[0] - 1];
+                            triangle.v[1] = &vertices[vertexIndex[1] - 1];
+                            triangle.v[2] = &vertices[vertexIndex[2] - 1];
 
                             triangle.vt[0] = 0;
                             triangle.vt[1] = 0;
@@ -180,7 +185,8 @@ bool Model::loadModel(const char * path) {
                             triangle.vn[0] = 0;
                             triangle.vn[1] = 0;
                             triangle.vn[2] = 0;
-                            Model::triangles.push_back(triangle);
+
+                            triangles.push_back(triangle);
                         } else {
                             std::cerr << __FUNCTION__ << ": file can't be read [" << path << "]" << std::endl;
                             return false;
@@ -193,7 +199,7 @@ bool Model::loadModel(const char * path) {
 
     //convert model to float buffer
     if(Model::buffer == NULL) return false;
-    if(Model::buffer->buildVertexData(Model::triangles)) return false;
+    if(Model::buffer->buildVertexData(triangles, Model::buffer->type)) return false;
 
     return true;
 }
@@ -201,26 +207,36 @@ bool Model::loadModel(const char * path) {
 void Model::setTexture(Texture * texture) {
     if(texture == NULL) return;
     Model::texture = texture;
+    Model::buffer->type = (Model::texture == NULL) ? VBO_Color : VBO_Texture;
 }
 
 void Model::render(Graphics * graphics) {
     Graphics3D * g3 = (Graphics3D *) graphics;
 
     glPushMatrix();
+
+    //model offset
     glTranslatef(Model::offset.x, Model::offset.y,
                  Model::offset.z);
+
+    //rotate model
     glRotatef(Model::rotation.x, 1.0, 0.0, 0.0);
     glRotatef(Model::rotation.y, 0.0, 1.0, 0.0);
     glRotatef(Model::rotation.z, 0.0, 0.0, 1.0);
 
+    glScalef(Model::scale.x, Model::scale.y, Model::scale.z);
+
+    //bind texture if exists
     if(texture != NULL) {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, texture->textureID);
         g3->setColorRGB(1.0, 1.0, 1.0, 1.0);
     }
 
-    g3->drawVertexDataBuffer(Model::buffer);
+    //draw model
+    g3->drawVertexDataBuffer(Model::buffer, glm::value_ptr(Model::modelTransformationMatrix));
 
+    //unbind texture
     if(texture != NULL) {
         glDisable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -229,6 +245,31 @@ void Model::render(Graphics * graphics) {
     glPopMatrix();
 }
 
-bool Model::recomputeFloatBuffer() {
-    return Model::buffer->buildVertexData(Model::triangles);
+void Model::setOffset(Vertex3 pos) {
+    Model::offset = pos;
+    Model::translateMatrix = glm::translate(glm::mat4(1.0), glm::vec3(pos.x, pos.y, pos.z));
+    Model::computeTransformationModelMatrix();
+}
+
+void Model::setRotation(Vertex3 rotation) {
+    Model::rotation = rotation;
+    Model::rotateMatrix = glm::rotate(glm::mat4(1.0), rotation.x, glm::vec3(1.0, 0.0, 0.0));
+    Model::rotateMatrix = glm::rotate(Model::rotateMatrix, rotation.y, glm::vec3(0.0, 1.0, 0.0));
+    Model::rotateMatrix = glm::rotate(Model::rotateMatrix, rotation.z, glm::vec3(0.0, 0.0, 1.0));
+    Model::computeTransformationModelMatrix();
+}
+
+void Model::setScale(Vertex3 scale) {
+    Model::scale = scale;
+    Model::scaleMatrix = glm::scale(glm::mat4(1.0), glm::vec3(scale.x, scale.y, scale.z));
+    Model::computeTransformationModelMatrix();
+}
+
+GLfloat * Model::getModelTranformationMatrix() {
+    return glm::value_ptr(Model::modelTransformationMatrix);
+}
+#include <glm/gtx/string_cast.hpp>
+void Model::computeTransformationModelMatrix() {
+    Model::modelTransformationMatrix = Model::translateMatrix * Model::rotateMatrix * Model::scaleMatrix;
+    //std::cout<<glm::to_string(Model::translateMatrix)<<std::endl;
 }

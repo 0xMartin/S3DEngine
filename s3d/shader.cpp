@@ -7,6 +7,14 @@ ShaderProgram::ShaderProgram() {
     ShaderProgram::ID = glCreateProgram();
 }
 
+ShaderProgram::~ShaderProgram() {
+    glDeleteProgram(ShaderProgram::ID);
+}
+
+GLuint ShaderProgram::getID() {
+    return ShaderProgram::ID;
+}
+
 void ShaderProgram::use() {
     glUseProgram(ID);
 }

@@ -61,7 +61,6 @@ void RadioButton::render(Graphics * graphics, const Event_Render * evt) {
 
     Graphics2D * g2 = (Graphics2D*)graphics;
 
-    g2->disableVertexColor();
     g2->setColor(&(RadioButton::background));
     g2->setColor(&(RadioButton::borderColor));
     g2->lineWidth(2);

@@ -14,7 +14,6 @@
 #include <string.h>
 #include <cstdarg>
 #include <GLES3/gl3.h>
-#include <glm/gtc/type_ptr.hpp>
 
 
 /*--------------------------------Default-Shaders-------------------------------------------------*/
@@ -31,12 +30,13 @@ static const char * vertex_src = R"glsl(
     out vec3 FragPos;
 
     uniform mat4 MVP;
+    uniform mat4 M;
 
     void main(){
         gl_Position = MVP * vec4(aPosition, 1.0);
         UV = aUV;
         Normal = aNormal;
-        FragPos = aPosition;
+        FragPos = vec3(M * vec4(aPosition, 1.0));
     }
 )glsl";
 
@@ -49,22 +49,32 @@ static const char * fragment_src = R"glsl(
 
     out vec4 FragColor;
 
+    //lights
     uniform vec3 lightPos;
     uniform vec3 lightColor;
+    uniform vec3 viewPos;
 
+    //object surface (texture or color)
+    uniform vec3 Color;
     uniform sampler2D objTexture;
 
     void main(){
-        vec3 objectColor = texture(objTexture, UV).rgb;
+        vec3 objectColor = Color;
+        objectColor += texture(objTexture, UV).rgb;
 
         vec3 norm = normalize(Normal);
         vec3 lightDir = normalize(lightPos - FragPos);
 
+        vec3 viewDir = normalize(viewPos - FragPos);
+        vec3 reflectDir = reflect(-lightDir, norm);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        vec3 specular = 0.5 * spec * lightColor;
+
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = diff * lightColor;
 
-        vec3 ambient = 0.1 * lightColor;
-        vec3 result = (ambient + diffuse) * objectColor;
+        vec3 ambient = 0.01 * lightColor;
+        vec3 result = (ambient + diffuse + specular) * objectColor;
         FragColor = vec4(result, 1.0);
     }
 )glsl";
@@ -73,7 +83,8 @@ static const char * fragment_src = R"glsl(
 
 
 /*--------------------------------ModelDataBuffer-------------------------------------------------*/
-VertexDataBuffer::VertexDataBuffer() {
+VertexDataBuffer::VertexDataBuffer(VBOType type) {
+    VertexDataBuffer::type = type;
     VertexDataBuffer::size = 0;
     VertexDataBuffer::data = NULL;
 }
@@ -82,7 +93,12 @@ VertexDataBuffer::~VertexDataBuffer() {
     if(VertexDataBuffer::data) free(VertexDataBuffer::data);
 }
 
-bool VertexDataBuffer::buildVertexData(std::vector<Triangle3> & triangles) {
+bool VertexDataBuffer::buildVertexData(std::vector<Triangle3> & triangles, VBOType type) {
+
+    //set type of  buffer
+    VertexDataBuffer::type = type;
+
+    //size
     size_t size = sizeof(GLfloat) * triangles.size() * 3 * 8;
 
     //allocate data array
@@ -128,7 +144,7 @@ bool VertexDataBuffer::buildVertexData(std::vector<Triangle3> & triangles) {
 
 
 Graphics3D::Graphics3D(int windowHandle) : Graphics2D(windowHandle) {   
-    //vertex buffer
+    //vertex buffer (for texture)
     glGenBuffers(1, &(Graphics3D::vertexBuffer));
 
     glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::vertexBuffer);
@@ -147,17 +163,23 @@ Graphics3D::Graphics3D(int windowHandle) : Graphics2D(windowHandle) {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+
     //default shader program
-    Graphics3D::shaderProgram = new ShaderProgram();
-    Graphics3D::shaderProgram->addShader(vertex_src, GL_VERTEX_SHADER);
-    Graphics3D::shaderProgram->addShader(fragment_src, GL_FRAGMENT_SHADER);
-    Graphics3D::shaderProgram->link();
+    Graphics3D::defaultShader = new ShaderProgram();
+    Graphics3D::defaultShader->addShader(vertex_src, GL_VERTEX_SHADER);
+    Graphics3D::defaultShader->addShader(fragment_src, GL_FRAGMENT_SHADER);
+    Graphics3D::defaultShader->link();
+
+    //set shader program
+    Graphics3D::setDefaultShaderProgram();
 
     Graphics3D::computeProjectionMatrix(45.0, 2.0, 0.1, 100.0);
 }
 
 Graphics3D::~Graphics3D() {
     glDeleteBuffers(1, &(Graphics3D::vertexBuffer));
+
+    delete Graphics3D::defaultShader;
 }
 
 void Graphics3D::computeProjectionMatrix(GLdouble FOV, GLdouble aspect,
@@ -288,61 +310,95 @@ void Graphics3D::drawImage(Vertex3 * position, Vertex3 * rotation,
     }
 }
 
-void Graphics3D::drawVertexDataBuffer(VertexDataBuffer * buffer) {
+void Graphics3D::drawVertexDataBuffer(VertexDataBuffer * buffer, GLfloat * modelTransformMatrix) {
     if(buffer == NULL) return;
     if(buffer->size == 0 || buffer->data == NULL) return;
 
-    //use shader program
+    /**
+     * use shader program and set all variables
+     */
     if(Graphics3D::shaderProgram != NULL) {
+        //use
         Graphics3D::shaderProgram->use();
 
+        //<--------------Vertex-Shader--------------------------------------------------------------->
         glm::mat4 modelView;
         glGetFloatv(GL_MODELVIEW_MATRIX, glm::value_ptr(modelView));
+        glm::mat4 MVP = Graphics3D::projection * modelView;
 
         /**
-         * modelViewProjection = multiplication of model view matrix,
-         * projection matrix and model transformation matrix
+         * model view projection matrix
          */
-        glm::mat4 MVP =  Graphics3D::projection * modelView;
-
-        /**
-         * send MVP transformation to the currently bound shader,
-         * in the "MVP" uniform
-         */
-        Graphics3D::shaderProgram->setMatrix4(MODEL_VIEW_PROJECTION_UNIFORM,
+        Graphics3D::shaderProgram->setMatrix4(MODEL_VIEW_PROJECTION_MATRIX_UNIFORM,
                                               glm::value_ptr(MVP));
 
-        //set position of light
+        /**
+         * model matrix
+         */
+        if(modelTransformMatrix != NULL) {
+            Graphics3D::shaderProgram->setMatrix4(MODEL_MATRIX_UNIFORM,
+                                                  modelTransformMatrix);
+        }
+        //<------------------------------------------------------------------------------------------->
+
+        //<---------------Fragment-Shader------------------------------------------------------------->
+        //default color
+        switch (buffer->type) {
+        case VBO_Color:
+            Graphics3D::shaderProgram->setVec3(
+                        COLOR_UNIFORM,
+                        Graphics::color.red,
+                        Graphics::color.green,
+                        Graphics::color.blue);
+            break;
+        case VBO_Texture:
+            Graphics3D::shaderProgram->setVec3(
+                        COLOR_UNIFORM,
+                        0.0, 0.0 ,0.0);
+            break;
+        }
+
+        //lights
         if(lights != NULL) {
             if(lights->size() > 0) {
                 Light * l = (*lights)[0];
                 if(l != NULL) {
+                    //set position of light
                     Graphics3D::shaderProgram->setVec3(
                                 LIGHT_POSITION_UNIFORM, l->position.x, l->position.y, l->position.z);
+                    //set color of light
                     Graphics3D::shaderProgram->setVec3(
                                 LIGHT_COLOR_UNIFORM, l->color.red, l->color.green, l->color.blue);
+                    //set position of camera
+                    Graphics3D::shaderProgram->setVec3(
+                                VIEW_POSITION_UNIFORM,
+                                Graphics::currentRenderEvt.x,
+                                Graphics::currentRenderEvt.y,
+                                Graphics::currentRenderEvt.z);
                 }
             }
         }
+        //<------------------------------------------------------------------------------------------->
     }
 
     //bind vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, Graphics3D::vertexBuffer);
-
     //upload vertex data to the video device
     glBufferData(GL_ARRAY_BUFFER, buffer->size * sizeof(GLfloat) * 8,
                  buffer->data, GL_DYNAMIC_DRAW);
-
     //actually draw the triangle, giving the number of vertices provided
     glDrawArrays(GL_TRIANGLES, 0, buffer->size);
 
     //unbind current vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
     //stop using current shader program
     glUseProgram(0);
 }
 
 void Graphics3D::setShaderProgram(ShaderProgram * shaderProgram) {
     Graphics3D::shaderProgram = shaderProgram;
+}
+
+void Graphics3D::setDefaultShaderProgram() {
+    Graphics3D::shaderProgram = defaultShader;
 }

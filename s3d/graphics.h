@@ -94,8 +94,8 @@ protected:
     GLfloat offset_y;
     GLfloat offset_z;
     void * font;
-    bool enableVerColor;
 
+    Event_Render currentRenderEvt;
 public:
     Graphics(int windowHandle);
 
@@ -174,18 +174,6 @@ public:
      * @param alpha
      */
     void setAlpha(GLfloat alpha);
-
-    /**
-     * @brief setColor
-     * @param color
-     */
-    void enableVertexColor();
-
-    /**
-     * @brief setColor
-     * @param color
-     */
-    void disableVertexColor();
 
     /**
      * @brief applyOffset

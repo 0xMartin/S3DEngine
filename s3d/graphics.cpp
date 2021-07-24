@@ -28,10 +28,12 @@ Graphics::Graphics(int windowHandle){
     Graphics::offset_y = 0.0;
     Graphics::offset_z = 0.0;
     Graphics::font = S3D_BITMAP_HELVETICA_18;
-    Graphics::enableVerColor = false;
 }
 
 void Graphics::begin(Event_Render * evt, Color * color) {
+    if(evt != NULL) {
+        Graphics::currentRenderEvt = *evt;
+    }
     if(Graphics::windowHandle >= 1) {
         //set window
         if(glutGetWindow() != Graphics::windowHandle) {
@@ -162,14 +164,6 @@ void Graphics::setAlpha(GLfloat alpha) {
         glColor4f(Graphics::color.red, Graphics::color.green, Graphics::color.blue,
                   MIN(Graphics::color.alpha, Graphics::maxAlpha));
     }
-}
-
-void Graphics::enableVertexColor() {
-    Graphics::enableVerColor = true;
-}
-
-void Graphics::disableVertexColor() {
-    Graphics::enableVerColor = false;
 }
 
 void Graphics::applyOffset(GLfloat x, GLfloat y, GLfloat z) {

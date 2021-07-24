@@ -9,10 +9,19 @@
 
 class ShaderProgram
 {
-public:
+private:
     GLuint ID; /** program ID */
 
+public:
     ShaderProgram();
+
+    ~ShaderProgram();
+
+    /**
+     * @brief getID
+     * @return
+     */
+    GLuint getID();
 
     /**
      * @brief use

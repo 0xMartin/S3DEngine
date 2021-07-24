@@ -11,15 +11,20 @@
 #ifndef GRAPHICS3D_H
 #define GRAPHICS3D_H
 
+
 #include "graphics2d.h"
 #include "shader.h"
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 /*---------------------------------------Shader-Uniforms------------------------------------------*/
-#define MODEL_VIEW_PROJECTION_UNIFORM ("MVP")
+#define MODEL_VIEW_PROJECTION_MATRIX_UNIFORM ("MVP")
+#define MODEL_MATRIX_UNIFORM ("M")
 #define LIGHT_POSITION_UNIFORM ("lightPos")
 #define LIGHT_COLOR_UNIFORM ("lightColor")
+#define VIEW_POSITION_UNIFORM ("viewPos")
+#define COLOR_UNIFORM ("Color")
 /*------------------------------------------------------------------------------------------------*/
 
 
@@ -46,20 +51,27 @@ typedef struct {
 
 /*-------------------------------------DataBuffer-------------------------------------------------*/
 
+typedef enum {
+    VBO_Texture, /** format: v.x, v.y, v.z, n.x, n.y, n.z, vt.x, vt. */
+    VBO_Color /** format: v.x, v.y, v.z, n.x, n.y, n.z*/
+} VBOType;
+
 class VertexDataBuffer {
-public:
+public: 
+    VBOType type; /** type of buffer */
     GLfloat * data; /** array with data */
     size_t size; /** number of vertices */
 
-    VertexDataBuffer();
+    VertexDataBuffer(VBOType type);
     ~VertexDataBuffer();
 
     /**
      * @brief buildVertexData
      * @param triangles
+     * @param type
      * @return
      */
-    bool buildVertexData(std::vector<Triangle3> & triangles);
+    bool buildVertexData(std::vector<Triangle3> & triangles, VBOType type);
 
     /**
      * @brief getSizeInBytes
@@ -80,15 +92,16 @@ typedef struct {
  * @brief The Graphics3D class
  */
 class Graphics3D : public Graphics2D {
-private:
+protected:
     //triangles only
     GLuint vertexBuffer; /** vertex buffer */
 
-    ShaderProgram * shaderProgram;
+    ShaderProgram * defaultShader;
+    ShaderProgram * shaderProgram; /** active shader program */
 
-    glm::mat4 projection;
+    glm::mat4 projection; /** scene projection matrix */
 
-    std::vector<Light*> * lights;
+    std::vector<Light*> * lights; /** vector with lights */
 public:
 
     Graphics3D(int windowHandle);
@@ -158,16 +171,22 @@ public:
                    Texture * texture, size_t width, size_t height);
 
     /**
-     * @brief drawDataBuffer
+     * @brief drawVertexDataBuffer
      * @param buffer
+     * @param modelMatrix
      */
-    void drawVertexDataBuffer(VertexDataBuffer * buffer);
+    void drawVertexDataBuffer(VertexDataBuffer * buffer, GLfloat * modelTransformMatrix);
 
     /**
      * @brief setShaderProgram
      * @param shaderProgram
      */
     void setShaderProgram(ShaderProgram * shaderProgram);
+
+    /**
+     * @brief setDefaultShaderProgram
+     */
+    void setDefaultShaderProgram();
 };
 
 

@@ -16,20 +16,28 @@
 
 class Model
 {
+private:
+    void computeTransformationModelMatrix();
+
 protected:
     //data model buffer with model data (use for rendering)
     VertexDataBuffer * buffer; /** buffer with vertices */
 
     Texture * texture; /** texture of model */
 
-    std::vector<Vertex3> vertices;  /** vertices */
-    std::vector<Point> texture_coordinates; /** texture coordinates */
-    std::vector<Vertex3> normals; /** normals */
-    std::vector<Triangle3> triangles;
-public:
+    //model transformation atributes
     Vertex3 offset;
     Vertex3 rotation;
+    Vertex3 scale;
 
+    //transformation matrix
+    glm::mat4 translateMatrix;
+    glm::mat4 rotateMatrix;
+    glm::mat4 scaleMatrix;
+
+    glm::mat4 modelTransformationMatrix;
+
+public:
     Model(const char * path);
     ~Model();
 
@@ -53,10 +61,28 @@ public:
     void render(Graphics * graphics);
 
     /**
-     * @brief recomputeFloatBuffer
+     * @brief setOffset
+     * @param pos
+     */
+    void setOffset(Vertex3 pos);
+
+    /**
+     * @brief setRotation
+     * @param pos
+     */
+    void setRotation(Vertex3 rotation);
+
+    /**
+     * @brief setScale
+     * @param pos
+     */
+    void setScale(Vertex3 scale);
+
+    /**
+     * @brief getModelTranformationMatrix
      * @return
      */
-    bool recomputeFloatBuffer();
+    GLfloat * getModelTranformationMatrix();
 };
 
 #endif // MODEL_H

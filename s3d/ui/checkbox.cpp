@@ -46,7 +46,6 @@ void CheckBox::render(Graphics * graphics, const Event_Render * evt) {
 
     Graphics2D * g2 = (Graphics2D*)graphics;
 
-    g2->disableVertexColor();
     g2->setColor(&(CheckBox::background));
     g2->fillRectangle(&(CheckBox::position), CheckBox::width, CheckBox::height);
     g2->setColor(&(CheckBox::borderColor));

@@ -71,6 +71,9 @@ typedef struct {
 typedef struct {
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
+    GLfloat x; /** camera position X */
+    GLfloat y; /** camera position Y */
+    GLfloat z; /** camera position Z */
     void * sender; /** object that triggered the event */
 } Event_Render;
 

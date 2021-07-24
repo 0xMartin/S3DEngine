@@ -53,7 +53,6 @@ void TextField::render(Graphics * graphics, const Event_Render * evt) {
     Graphics2D * g2 = (Graphics2D*)graphics;
     TextField::graphics = graphics;
 
-    g2->disableVertexColor();
     if(TextField::events.focus) {
         Color darker_bg = COLOR_DARKER(TextField::background, 0.4);
         g2->setColor(&darker_bg);
