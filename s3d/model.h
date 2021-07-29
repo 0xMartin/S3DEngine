@@ -21,7 +21,7 @@ private:
 
 protected:
     //data model buffer with model data (use for rendering)
-    VertexDataBuffer * buffer; /** buffer with vertices */
+    VertexDataBuffer buffer; /** buffer with vertices */
 
     Texture * texture; /** texture of model */
 

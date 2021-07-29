@@ -12,6 +12,7 @@
 #define GRAPHICS2D_H
 
 #include "graphics.h"
+#include "texture.h"
 
 
 /*---------------------------------------2D-Objects-----------------------------------------------*/

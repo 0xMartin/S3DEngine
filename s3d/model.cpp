@@ -18,7 +18,6 @@
 Model::Model(const char * path) {
     Model::offset = (Vertex3){0.0, 0.0, 0.0};
     Model::rotation = (Vertex3){0.0, 0.0, 0.0};
-    Model::buffer = new VertexDataBuffer(VBO_Color);
     Model::texture = NULL;
     Model::loadModel(path);
 
@@ -28,7 +27,6 @@ Model::Model(const char * path) {
 }
 
 Model::~Model() {
-    if(Model::buffer) delete Model::buffer;
 }
 
 bool Model::loadModel(const char * path) {
@@ -49,7 +47,6 @@ bool Model::loadModel(const char * path) {
     std::vector<Vertex3> vertices;
     std::vector<Point> texture_coordinates;
     std::vector<Vertex3> normals;
-    std::vector<Triangle3> triangles;
 
     /**
      * first load all vertices, texture coordinates and normals
@@ -92,6 +89,7 @@ bool Model::loadModel(const char * path) {
      *  build model faces from (v, vt, vn)
      */
 
+    std::vector<Triangle3> triangles;
     Triangle3 triangle;
     int matches;
     unsigned int vertexIndex[3], vtIndex[3], normalIndex[3];
@@ -198,8 +196,7 @@ bool Model::loadModel(const char * path) {
     }
 
     //convert model to float buffer
-    if(Model::buffer == NULL) return false;
-    if(Model::buffer->buildVertexData(triangles, Model::buffer->type)) return false;
+    if(Model::buffer.buildVertexData(triangles)) return false;
 
     return true;
 }
@@ -207,7 +204,6 @@ bool Model::loadModel(const char * path) {
 void Model::setTexture(Texture * texture) {
     if(texture == NULL) return;
     Model::texture = texture;
-    Model::buffer->type = (Model::texture == NULL) ? VBO_Color : VBO_Texture;
 }
 
 void Model::render(Graphics * graphics) {
@@ -224,22 +220,20 @@ void Model::render(Graphics * graphics) {
     glRotatef(Model::rotation.y, 0.0, 1.0, 0.0);
     glRotatef(Model::rotation.z, 0.0, 0.0, 1.0);
 
+    //scale
     glScalef(Model::scale.x, Model::scale.y, Model::scale.z);
 
     //bind texture if exists
     if(texture != NULL) {
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, texture->textureID);
-        g3->setColorRGB(1.0, 1.0, 1.0, 1.0);
+        g3->setTexture(Model::texture);
     }
 
     //draw model
-    g3->drawVertexDataBuffer(Model::buffer, glm::value_ptr(Model::modelTransformationMatrix));
+    g3->drawVertexDataBuffer(&(Model::buffer), glm::value_ptr(Model::modelTransformationMatrix));
 
     //unbind texture
     if(texture != NULL) {
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        g3->setTexture(NULL);
     }
 
     glPopMatrix();
@@ -268,8 +262,7 @@ void Model::setScale(Vertex3 scale) {
 GLfloat * Model::getModelTranformationMatrix() {
     return glm::value_ptr(Model::modelTransformationMatrix);
 }
-#include <glm/gtx/string_cast.hpp>
+
 void Model::computeTransformationModelMatrix() {
     Model::modelTransformationMatrix = Model::translateMatrix * Model::rotateMatrix * Model::scaleMatrix;
-    //std::cout<<glm::to_string(Model::translateMatrix)<<std::endl;
 }

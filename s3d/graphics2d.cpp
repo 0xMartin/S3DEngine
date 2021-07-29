@@ -199,22 +199,21 @@ void Graphics2D::fillRectangle(Point * p, size_t width, size_t height) {
 void Graphics2D::drawImage(Point * p, Texture * texture, bool defaultShape) {
     if(p != NULL) {
         glColor4f(1.0, 1.0, 1.0, Graphics::color.alpha);
-        glBindTexture(GL_TEXTURE_2D, texture->textureID);
-        glEnable(GL_TEXTURE_2D);
+        texture->bindTexture();
         glBegin(GL_QUADS);
 
         if(defaultShape) {
             glTexCoord2i(0, 0);
-            glVertex2f(p->x, p->y + texture->height);
+            glVertex2f(p->x, p->y + texture->getHeight());
 
             glTexCoord2i(0, 1);
             glVertex2f(p->x, p->y);
 
             glTexCoord2i(1, 1);
-            glVertex2f(p->x + texture->width, p->y);
+            glVertex2f(p->x + texture->getWidth(), p->y);
 
             glTexCoord2i(1, 0);
-            glVertex2f(p->x + texture->width, p->y + texture->height);
+            glVertex2f(p->x + texture->getWidth(), p->y + texture->getHeight());
         } else {
             for(unsigned int i = 0; i < 4; ++i) {
                 glTexCoord2i(i > 1, i > 0 && i < 3);
@@ -223,8 +222,7 @@ void Graphics2D::drawImage(Point * p, Texture * texture, bool defaultShape) {
         }
 
         glEnd();
-        glDisable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        texture->unbindTexture();
     }
 }
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
-file(GLOB S3D_sources "*.cpp" "ui/*.cpp")
-file(GLOB S3D_headers "*.h" "ui/*.h")
+file(GLOB S3D_sources "*.cpp" "ui/*.cpp" "objects/*.cpp")
+file(GLOB S3D_headers "*.h" "ui/*.h" "objects/*.h")
 
 add_library(s3d
     ${S3D_headers}

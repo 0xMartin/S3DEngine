@@ -19,6 +19,16 @@
 
 
 /*---------------------------------------Shader-Uniforms------------------------------------------*/
+typedef enum {
+    OBJECT_SHADER,
+    SKYBOX_SHADER,
+    GRASS_SHADER,
+    WATTER_SHADER,
+    GLASS_SHADER,
+    ALL
+} ShaderType;
+
+
 #define MODEL_VIEW_PROJECTION_MATRIX_UNIFORM ("MVP")
 #define MODEL_MATRIX_UNIFORM ("M")
 #define LIGHT_POSITION_UNIFORM ("lightPos")
@@ -36,12 +46,6 @@ typedef struct {
 } Vertex3;
 
 typedef struct {
-    std::vector<Vertex3*> v; /** vertices */
-    std::vector<Point*> vt; /** texture coordinates */
-    std::vector<Vertex3*> vn; /** normals */
-} Face3;
-
-typedef struct {
     Vertex3 * v[3]; /** vertices */
     Point * vt[3]; /** texture coordinates */
     Vertex3 * vn[3]; /** normals */
@@ -51,19 +55,14 @@ typedef struct {
 
 /*-------------------------------------DataBuffer-------------------------------------------------*/
 
-typedef enum {
-    VBO_Texture, /** format: v.x, v.y, v.z, n.x, n.y, n.z, vt.x, vt. */
-    VBO_Color /** format: v.x, v.y, v.z, n.x, n.y, n.z*/
-} VBOType;
-
 class VertexDataBuffer {
 public: 
-    VBOType type; /** type of buffer */
-    GLfloat * data; /** array with data */
-    size_t size; /** number of vertices */
+    std::vector<GLfloat> positionBuffer; /** buffer with positions */
+    std::vector<GLfloat> normalsBuffer; /** buffer with positions */
+    std::vector<GLfloat> UVBuffer; /** buffer with positions */
+    size_t vertexCount; /** number of vertices */
 
-    VertexDataBuffer(VBOType type);
-    ~VertexDataBuffer();
+    VertexDataBuffer();
 
     /**
      * @brief buildVertexData
@@ -71,13 +70,56 @@ public:
      * @param type
      * @return
      */
-    bool buildVertexData(std::vector<Triangle3> & triangles, VBOType type);
+    bool buildVertexData(Triangle3 & triangle);
 
     /**
-     * @brief getSizeInBytes
+     * @brief buildVertexData
+     * @param triangles
+     * @param type
      * @return
      */
-    size_t getSizeInBytes();
+    bool buildVertexData(std::vector<Triangle3> & triangles);
+
+    /**
+     * @brief getPositionData
+     * @return
+     */
+    GLfloat * getPositionData();
+
+    /**
+     * @brief getPositionData
+     * @return
+     */
+    GLfloat * getNormalData();
+
+    /**
+     * @brief getPositionData
+     * @return
+     */
+    GLfloat * getUVData();
+
+    /**
+     * @brief clear
+     */
+    void clear();
+
+    /**
+     * @brief pushPositionVertex
+     * @param v
+     */
+    void pushPositionVertex(Vertex3 v);
+
+    /**
+     * @brief pushPositionVertex
+     * @param v
+     */
+    void pushNormalVertex(Vertex3 v);
+
+    /**
+     * @brief pushPositionVertex
+     * @param v
+     */
+    void pushUVVertex(Point v);
 };
 /*------------------------------------------------------------------------------------------------*/
 
@@ -93,15 +135,24 @@ typedef struct {
  */
 class Graphics3D : public Graphics2D {
 protected:
-    //triangles only
-    GLuint vertexBuffer; /** vertex buffer */
+    GLuint VBO_position;
+    GLuint VBO_normal;
+    GLuint VBO_UV;
 
-    ShaderProgram * defaultShader;
-    ShaderProgram * shaderProgram; /** active shader program */
+    GLuint VAO_object;
+    GLuint VAO_skybox;
 
-    glm::mat4 projection; /** scene projection matrix */
+
+    //shader programs
+    ShaderProgram * objectShader;
+    ShaderProgram * skyboxShader;
+
+    glm::mat4 projectionMatrix; /** scene projection matrix */
 
     std::vector<Light*> * lights; /** vector with lights */
+
+    Texture * texture; /** current texture */
+
 public:
 
     Graphics3D(int windowHandle);
@@ -124,53 +175,6 @@ public:
     void bindLightVector(std::vector<Light*> * lights);
 
     /**
-     * @brief drawTriangle
-     * @param t
-     */
-    void drawTriangle(Triangle3 * t);
-
-    /**
-     * @brief drawTriangles
-     * @param triangles
-     */
-    void drawTriangles(std::vector<Triangle3> & triangles);
-
-    /**
-     * @brief fillTriangle
-     * @param t
-     */
-    void fillTriangle(Triangle3 * t);
-
-    /**
-     * @brief fillTriangles
-     * @param triangles
-     */
-    void fillTriangles(std::vector<Triangle3> & triangles);
-
-    /**
-     * @brief drawFaces
-     * @param faces
-     */
-    void drawFaces(std::vector<Face3> & faces);
-
-    /**
-     * @brief fillFaces
-     * @param faces
-     */
-    void fillFaces(std::vector<Face3> & faces);
-
-    /**
-     * @brief drawImage
-     * @param position
-     * @param rotation
-     * @param texture
-     * @param width
-     * @param height
-     */
-    void drawImage(Vertex3 * position, Vertex3 * rotation,
-                   Texture * texture, size_t width, size_t height);
-
-    /**
      * @brief drawVertexDataBuffer
      * @param buffer
      * @param modelMatrix
@@ -181,12 +185,102 @@ public:
      * @brief setShaderProgram
      * @param shaderProgram
      */
-    void setShaderProgram(ShaderProgram * shaderProgram);
+    void setShaderProgram(ShaderProgram * shaderProgram, ShaderType type);
 
     /**
      * @brief setDefaultShaderProgram
      */
-    void setDefaultShaderProgram();
+    void setDefaultShaderProgram(ShaderType type);
+
+    /**
+     * @brief drawSkyBox
+     * @param tex
+     * @param scale
+     */
+    ShaderProgram * getShaderProgram(int type);
+
+    /**
+     * @brief setTexture
+     * @param texture
+     */
+    void setTexture(Texture * texture);
+
+    /**
+     * @brief drawLine
+     * @param v1
+     * @param v2
+     */
+    void drawLine(Vertex3 v1, Vertex3 v2);
+
+    /**
+     * @brief drawLines
+     * @param vertices
+     */
+    void drawLines(std::vector<Vertex3> vertices);
+
+    /**
+     * @brief drawTriangle
+     * @param t
+     */
+    void drawTriangle(Triangle3 t);
+
+    /**
+     * @brief drawTriangles
+     * @param triangles
+     */
+    void drawTriangles(std::vector<Triangle3> & triangles);
+
+    /**
+     * @brief drawTriangle
+     * @param t
+     */
+    void drawCube(Vertex3 position, Vertex3 rotation, GLfloat size);
+
+    /**
+     * @brief fillTriangle
+     * @param t
+     */
+    void fillTriangle(Triangle3 triangle);
+
+    /**
+     * @brief fillTriangles
+     * @param triangles
+     */
+    void fillTriangles(std::vector<Triangle3> & triangles);
+
+    /**
+     * @brief fillTriangles
+     * @param triangles
+     */
+    void fillPlane(Vertex3 position, Vertex3 rotation, size_t width, size_t height);
+
+    /**
+     * @brief drawCube
+     * @param position
+     * @param rotation
+     * @param size
+     */
+    void fillCube(Vertex3 position, Vertex3 rotation, GLfloat size);
+
+    /**
+     * @brief drawImage
+     * @param position
+     * @param rotation
+     * @param texture
+     * @param width
+     * @param height
+     */
+    void drawImage(Vertex3 position, Vertex3 rotation,
+                   Texture * texture, size_t width, size_t height);
+
+
+    /**
+     * @brief drawSkybox
+     * @param origin
+     * @param textureID
+     */
+    void drawSkybox(Vertex3 origin, GLfloat scale, GLint textureID);
+
 };
 
 

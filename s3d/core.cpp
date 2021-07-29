@@ -195,6 +195,16 @@ S3DCore::S3DCore(int argc, char **argv, CoreContext * context) {
         return;
     }
 
+    /**
+     * full screen
+     */
+    if(S3DCore::context->window_fullScreen) {
+        glutFullScreen();
+    }
+
+    /**
+     * create graphics renderer
+     */
     S3DCore::context->graphics = new Graphics3D(S3DCore::context->windowHandle);
     if(S3DCore::context->graphics == NULL) {
         std::cerr << __FUNCTION__ << ": failed to init renderer" << std::endl;
@@ -298,7 +308,7 @@ Texture * S3DCore::loadTexture(const char * path, bool rgba_mode) {
         return NULL;
     }
 
-    Texture * tex = UTIL_loadTextureBMP(path, rgba_mode);
+    Texture * tex = new Texture(path, rgba_mode);
     if(tex == NULL) {
         std::cerr << __FUNCTION__ << ": failed to create texture [" << path << "]" << std::endl;
         return NULL;
@@ -1028,7 +1038,7 @@ static void destruct() {
 
     //clear textures
     for(Texture * tex : CONTEXT->textures) {
-        if(tex) free(tex);
+        if(tex) delete tex;
     }
 
     //clear models

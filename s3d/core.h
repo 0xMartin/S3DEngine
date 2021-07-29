@@ -68,7 +68,7 @@ public:
 /**
  * initials values for CoreContext
  */
-#define CORE_DEFAULT_CONFIG (CoreContext){0, 800, 600,\
+#define CORE_DEFAULT_CONFIG (CoreContext){0, 1280, 720,\
     "S3DEngine", false, 50, 50, (Color){0.0, 0.0, 0.0, 1.0},\
     NULL, NULL, std::vector<Texture*>(), std::vector<Model*>(), std::vector<Scene*>()}
 

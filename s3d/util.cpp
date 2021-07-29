@@ -13,11 +13,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 
-Texture * UTIL_loadTextureBMP(const char * path, bool rgba_mode) {
+
+unsigned char * UTIL_loadBMP_RGB(const char * path, unsigned int * width, unsigned int * height,
+                                 unsigned int * imageSize, bool rgba_mode) {
+    if(width == NULL || height == NULL || imageSize == NULL) {
+        std::cerr << __FUNCTION__ << ": args error (NULL) [ "<< path << "]" << std::endl;
+        return NULL;
+    }
+
     if(strlen(path) == 0) {
-        std::cerr << __FUNCTION__ << ": file path is not defined\n";
+        std::cerr << __FUNCTION__ << ": file path is not defined [ "<< path << "]" << std::endl;
         return NULL;
     }
 
@@ -26,113 +34,44 @@ Texture * UTIL_loadTextureBMP(const char * path, bool rgba_mode) {
     //rgb data
     unsigned char * data;
 
-    // Open the file
+    //open file
     FILE * file = fopen(path,"rb");
     if (!file){
-        std::cerr << __FUNCTION__ << ": image could not be opened\n";
+        std::cerr << __FUNCTION__ << ": image could not be opened [ "<< path << "]" << std::endl;
         return NULL;
     }
     if (fread(header, 1, sizeof(header), file) != 54){
-        std::cerr << __FUNCTION__ << ": not a correct BMP file\n";
+        std::cerr << __FUNCTION__ << ": not a correct BMP file [ "<< path << "]" << std::endl;
         return NULL;
     }
     if (header[0] != 'B' || header[1] != 'M'){
-        std::cerr << __FUNCTION__ << ": not a correct BMP file\n";
+        std::cerr << __FUNCTION__ << ": not a correct BMP file [ "<< path << "]" << std::endl;
         return NULL;
     }
 
-    Texture * texture = (Texture*) malloc(sizeof(Texture));
-    if(texture == NULL) return NULL;
+    //read ints from the byte array
+    *imageSize = *(int*)&(header[0x22]);
+    *width = *(int*)&(header[0x12]);
+    *height = *(int*)&(header[0x16]);
 
-    // Read ints from the byte array
-    texture->imageSize = *(int*)&(header[0x22]);
-    texture->width = *(int*)&(header[0x12]);
-    texture->height = *(int*)&(header[0x16]);
+    //some BMP files are misformatted, guess missing information
+    if (*imageSize == 0) *imageSize = (*width) * (*height) * (rgba_mode ? 4 : 3);
 
-    // Some BMP files are misformatted, guess missing information
-    if (texture->imageSize == 0) texture->imageSize = texture->width * texture->height * (rgba_mode ? 4 : 3);
-
-    // Create a buffer
-    data = (unsigned char *) malloc(sizeof(unsigned char) * texture->imageSize);
+    //create a rgb buffer
+    data = (unsigned char *) malloc(sizeof(unsigned char) * (*imageSize));
     if(data == NULL) {
-        std::cerr << __FUNCTION__ << ": failed to allocate BMP data buffer\n";
-        free(texture);
+        std::cerr << __FUNCTION__ << ": failed to allocate BMP data buffer [ "<< path << "]" << std::endl;
         return NULL;
     }
 
     //read the actual data from the file into the buffer
-    fread(data, 1, texture->imageSize, file);
-    //everything is in memory now, the file can be closed
+    fread(data, 1, *imageSize, file);
+    //close file
     fclose(file);
 
-    //create one OpenGL texture
-    glGenTextures(1, &texture->textureID);
-    //"bind" the newly created texture : all future texture functions will modify this texture
-    glBindTexture(GL_TEXTURE_2D, texture->textureID);
-    //give the image to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, rgba_mode ? GL_RGBA : GL_RGB, texture->width,
-                 texture->height, 0, rgba_mode ? GL_BGRA : GL_BGR, GL_UNSIGNED_BYTE, data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    return texture;
+    return data;
 }
 
-typedef struct {
-    unsigned char chunk_length[4];
-    unsigned char chunk_type[4];
-    unsigned char * data;
-    unsigned char crc[4];
-} PNG_CHUNK;
-
-Texture * UTIL_loadTexturePNG(const char * path) {
-    if(strlen(path) == 0) return NULL;
-
-    //header of the PNG file (8B)
-    unsigned char signature[8];
-
-    //open file
-    FILE * file = fopen(path,"rb");
-    if (!file){
-        printf("Image could not be opened\n");
-        return NULL;
-    }
-
-    //read header from file
-    if (fread(signature, 1, sizeof(signature), file) != 54){
-        printf("Not a correct PNG file\n");
-        return NULL;
-    }
-
-    //check 8 bit png signature
-    if (signature[0] != 0x89 ||
-            signature[1] != 0x50 ||
-            signature[2] != 0x4E ||
-            signature[3] != 0x47 ||
-            signature[4] != 0x0D ||
-            signature[5] != 0x0A ||
-            signature[6] != 0x1A ||
-            signature[7] != 0x0A){
-        printf("Not a correct PNG file\n");
-        return NULL;
-    }
-
-    Texture * texture = (Texture*) malloc(sizeof(Texture));
-
-
-    /*
-    //create one OpenGL texture
-    glGenTextures(1, &texture->textureID);
-    //"bind" the newly created texture : all future texture functions will modify this texture
-    glBindTexture(GL_TEXTURE_2D, texture->textureID);
-    //give the image to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width,
-                 texture->height, 0, GL_BGRA, GL_UNSIGNED_BYTE, data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    */
-    return texture;
-}
 
 int UTIL_randInt(int n) {
     if ((n - 1) == RAND_MAX) {
@@ -146,11 +85,13 @@ int UTIL_randInt(int n) {
     }
 }
 
+
 __syscall_slong_t UTIL_getSystemNanoTime() {
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
     return ts.tv_nsec;
 }
+
 
 __time_t UTIL_getSystemSeconds() {
     struct timespec ts;
@@ -158,14 +99,66 @@ __time_t UTIL_getSystemSeconds() {
     return ts.tv_sec;
 }
 
+
 struct timespec UTIL_getSystemTime() {
     struct timespec ts;
     timespec_get(&ts, TIME_UTC);
     return ts;
 }
 
+
 void UTIL_simpleDestructor(void * data) {
     if(data != NULL) {
         free(data);
     }
+}
+
+
+glm::mat4 UTIL_computeModelTranformMatrix(GLfloat x, GLfloat y, GLfloat z,
+                                          GLfloat rX, GLfloat rY, GLfloat rZ,
+                                          GLfloat sX, GLfloat sY, GLfloat sZ) {
+
+    glm::mat4 m1 = glm::translate(glm::mat4(1.0), glm::vec3(x, y, z));
+
+    glm::mat4 m2 = glm::rotate(glm::mat4(1.0), rX, glm::vec3(1.0, 0.0, 0.0));
+    m2 = glm::rotate(m2, rY, glm::vec3(0.0, 1.0, 0.0));
+    m2 = glm::rotate(m2, rZ, glm::vec3(0.0, 0.0, 1.0));
+
+    glm::mat4 m3 = glm::scale(glm::mat4(1.0), glm::vec3(sX, sY, sZ));
+
+    return m1 * m2 * m3;
+}
+
+
+bool UTIL_flipImg(unsigned char * img_data, size_t width, size_t height,
+                  size_t bytes_per_pixel, bool flip_vertical) {
+    if(img_data == NULL || width == 0 ||
+            height == 0 || bytes_per_pixel == 0) return false;
+
+    unsigned char tmp;
+    int x, y, i;
+    unsigned char *v1, *v2;
+
+    for(x = 0; x < (int) (flip_vertical ? width : width/2); ++x) {
+        for(y = 0; y < (int) (flip_vertical ? height/2 : height); ++y) {
+
+            v1 = &img_data[(x + y * width) * bytes_per_pixel];
+
+            if(flip_vertical) {
+                v2 = &img_data[(x + (height - 1 - y) * width - 1) * bytes_per_pixel];
+            } else {
+                v2 = &img_data[(width - 1 - x + y * width - 1) * bytes_per_pixel];
+            }
+
+            for(i = 0; i < (int) bytes_per_pixel; ++i) {
+                tmp = *v1;
+                *v1 = *v2;
+                *v2 = tmp;
+                ++v1;
+                ++v2;
+            }
+        }
+    }
+
+    return true;
 }

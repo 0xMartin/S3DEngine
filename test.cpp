@@ -8,74 +8,10 @@
 #include "s3d/ui/panel.h"
 #include "s3d/ui/textfield.h"
 #include "s3d/model.h"
+#include "s3d/objects/skybox.h"
 
 
 using namespace std;
-
-
-
-/**
- * @brief The Triangle class
- */
-class Triangle : public Object3D {
-private:
-    Vertex3 position;
-public:
-    float angle;
-    Triangle(Vertex3 position);
-    void render(Graphics * graphics, const Event_Render *evt);
-    void update(std::vector<Object *> & objects, const Event_Update *evt);
-};
-
-Triangle::Triangle(Vertex3 position) {
-    Triangle::position = position;
-    Triangle::angle = 0.0f;
-}
-
-void Triangle::render(Graphics * graphics, const Event_Render *evt) {
-    glTranslatef(Triangle::position.x, Triangle::position.y,
-                 Triangle::position.z);
-    glRotatef(Triangle::angle, 0.0, 1.0, 0.0);
-    glBegin(GL_TRIANGLES);           // Begin drawing the pyramid with 4 triangles
-
-    // Front
-    glColor3f(1.0f, 0.0f, 0.0f);     // Red
-    glVertex3f( 0.0f, 1.0f, 0.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);     // Green
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glColor3f(0.0f, 0.0f, 1.0f);     // Blue
-    glVertex3f(1.0f, -1.0f, 1.0f);
-
-    // Right
-    glColor3f(1.0f, 0.0f, 0.0f);     // Red
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glColor3f(0.0f, 0.0f, 1.0f);     // Blue
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);     // Green
-    glVertex3f(1.0f, -1.0f, -1.0f);
-
-    // Back
-    glColor3f(1.0f, 0.0f, 0.0f);     // Red
-    glVertex3f(0.0f, 1.0f, 0.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);     // Green
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glColor3f(0.0f, 0.0f, 1.0f);     // Blue
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-
-    // Left
-    glColor3f(1.0f,0.0f,0.0f);       // Red
-    glVertex3f( 0.0f, 1.0f, 0.0f);
-    glColor3f(0.0f,0.0f,1.0f);       // Blue
-    glVertex3f(-1.0f,-1.0f,-1.0f);
-    glColor3f(0.0f,1.0f,0.0f);       // Green
-    glVertex3f(-1.0f,-1.0f, 1.0f);
-    glEnd();   // Done drawing the pyramid
-}
-
-void Triangle::update(std::vector<Object*> & objects,
-                      const Event_Update * evt) {
-    Triangle::angle += 1.0f;
-}
 
 
 /**
@@ -94,7 +30,6 @@ Gripen::Gripen(Texture * t, Vertex3 position) : model("data/gripen2.obj") {
     Gripen::position = position;
     model.setTexture(t);
     Gripen::model.setOffset(position);
-    //Gripen::model.setRotation((Vertex3){0.0, 90, 0.0});
 }
 
 void Gripen::render(Graphics * graphics, const Event_Render *evt) {
@@ -107,25 +42,27 @@ void Gripen::render(Graphics * graphics, const Event_Render *evt) {
 /**
  * @brief The Cube class
  */
-class Cube : public Object3D {
+class Test : public Object3D {
 private:
-    Model model;
     Vertex3 position;
 public:
-    Cube(Texture * t, Vertex3 position);
+    Test(Vertex3 position);
     void render(Graphics * graphics, const Event_Render *evt);
 };
 
-Cube::Cube(Texture * t, Vertex3 position) : model("data/cube.obj") {
-    Cube::position = position;
-    model.setTexture(t);
+Test::Test(Vertex3 position){
+    Test::position = position;
 }
 
-void Cube::render(Graphics * graphics, const Event_Render *evt) {
-    glTranslatef(Cube::position.x, Cube::position.y,
-                 Cube::position.z);
-    model.render(graphics);
+void Test::render(Graphics * graphics, const Event_Render *evt) {
+    glTranslatef(Test::position.x, Test::position.y,
+                 Test::position.z);
+
+    Vertex3 p = (Vertex3){0.0, 10.0, 0.0};
+    Vertex3 r = (Vertex3){0.0, 40.0, 0.0};
+    ((Graphics3D*)graphics)->fillCube(p, r, 2.0);
 }
+
 
 
 /**
@@ -150,7 +87,7 @@ Img3D::Img3D(Vertex3 position, Texture * tex) {
 
 void Img3D::render(Graphics * graphics, const Event_Render *evt) {
     Graphics3D * g3 = ((Graphics3D*)graphics);
-    g3->drawImage(&(Img3D::position), &(Img3D::rotation), tex, 9.0f, 9.0f);
+    g3->drawImage(Img3D::position, Img3D::rotation, tex, 9.0f, 9.0f);
 }
 
 
@@ -213,22 +150,13 @@ int main(int argc, char *argv[])
     s->visibleCursor = false;
     s->getCamera()->setPosition(-4.0, 2.0, 0.0);
 
-
-    //triangle animation
-    Triangle * t = new Triangle((Vertex3){0.0, 1.0, 0.0});
-    s->addObject(t);
-    t = new Triangle((Vertex3){1.0, 1.0, 5.0});
-    s->addObject(t);
-
-
     //objects with 3D model
     Texture * tex = core->loadTexture("data/gripen_texture.bmp", false);
     Gripen * o = new Gripen(tex, (Vertex3){10.0, 4.0, 2.0});
     s->addObject(o);
 
-    tex = core->loadTexture("data/stone.bmp", false);
-    Cube * c = new Cube(tex, (Vertex3){0.0, -4.0, 2.0});
-    s->addObject(c);
+    //Test * c = new Test((Vertex3){0.0, -4.0, 2.0});
+    //s->addObject(c);
 
 
     //2D objects (label + radiobuttons)
@@ -244,7 +172,7 @@ int main(int argc, char *argv[])
 
 
     //3D image
-    tex = core->loadTexture("data/img.bmp", false);
+    tex = core->loadTexture("data/img.png", true);
     Img3D * i = new Img3D((Vertex3){20.0, 2.0, 0.0}, tex);
     s->addObject(i);
 
@@ -254,6 +182,9 @@ int main(int argc, char *argv[])
     DynamicLight * dl = new DynamicLight(light);
     s->addObject(dl);
 
+    //skybox
+    SkyBox * sky = new SkyBox(s, "data/skybox", "jpg", false);
+    s->addObject(sky);
 
     core->setActiveScene(s);
     core->run();

@@ -40,14 +40,14 @@ void Image::render(Graphics * graphics, const Event_Render * evt) {
             bounds[3].y += Image::height;
         } else if(Image::width != IMAGE_SIZE_AUTO) {
             //auto height
-            int height = ((float)Image::width / Image::texture->width) * Image::texture->height;
+            int height = ((float)Image::width / Image::texture->getWidth()) * Image::texture->getHeight();
             bounds[0].y += height;
             bounds[2].x += Image::width;
             bounds[3].x += Image::width;
             bounds[3].y += height;
         } else if(Image::height != IMAGE_SIZE_AUTO) {
             //auto width
-            int width = ((float)Image::height / Image::texture->height) * Image::texture->width;
+            int width = ((float)Image::height / Image::texture->getHeight()) * Image::texture->getHeight();
             bounds[0].y += Image::height;
             bounds[2].x += width;
             bounds[3].x += width;
