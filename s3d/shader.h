@@ -76,6 +76,16 @@ public:
      * @param z
      */
     void setVec3(const std::string &name, GLfloat x, GLfloat y, GLfloat z);
+
+    /**
+     * @brief setVec4
+     * @param name
+     * @param a1
+     * @param a2
+     * @param a3
+     * @param a4
+     */
+    void setVec4(const std::string &name, GLfloat a1, GLfloat a2, GLfloat a3, GLfloat a4);
 };
 
 #endif // SHADER_H

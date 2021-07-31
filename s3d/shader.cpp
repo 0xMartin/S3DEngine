@@ -95,7 +95,12 @@ void ShaderProgram::setMatrix4(const std::string &name, const GLfloat * value) {
                            ShaderProgram::ID, name.c_str()), 1, GL_FALSE, value);
 }
 
-void ShaderProgram::setVec3(const std::string &name, GLfloat x, GLfloat y, GLfloat z) {
+void ShaderProgram::setVec3(const std::string &name, GLfloat a1, GLfloat a2, GLfloat a3) {
     glUniform3f(glGetUniformLocation(
-                           ShaderProgram::ID, name.c_str()), x, y, z);
+                           ShaderProgram::ID, name.c_str()), a1, a2, a3);
+}
+
+void ShaderProgram::setVec4(const std::string &name, GLfloat a1, GLfloat a2, GLfloat a3, GLfloat a4) {
+    glUniform4f(glGetUniformLocation(
+                           ShaderProgram::ID, name.c_str()), a1, a2, a3, a4);
 }

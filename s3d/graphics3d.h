@@ -22,6 +22,7 @@
 typedef enum {
     OBJECT_SHADER,
     SKYBOX_SHADER,
+    IMG_SHADER,
     GRASS_SHADER,
     WATTER_SHADER,
     GLASS_SHADER,
@@ -146,6 +147,7 @@ protected:
     //shader programs
     ShaderProgram * objectShader;
     ShaderProgram * skyboxShader;
+    ShaderProgram * imageShader;
 
     glm::mat4 projectionMatrix; /** scene projection matrix */
 

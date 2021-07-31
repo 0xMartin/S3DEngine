@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "s3d/core.h"
 #include "s3d/ui/button.h"
 #include "s3d/ui/label.h"
@@ -9,6 +10,7 @@
 #include "s3d/ui/textfield.h"
 #include "s3d/model.h"
 #include "s3d/objects/skybox.h"
+#include "s3d/objects/terrain.h"
 
 
 using namespace std;
@@ -173,7 +175,7 @@ int main(int argc, char *argv[])
 
     //3D image
     tex = core->loadTexture("data/img.png", true);
-    Img3D * i = new Img3D((Vertex3){20.0, 2.0, 0.0}, tex);
+    Img3D * i = new Img3D((Vertex3){-2.0, 0.0, 0.0}, tex);
     s->addObject(i);
 
 
@@ -185,6 +187,12 @@ int main(int argc, char *argv[])
     //skybox
     SkyBox * sky = new SkyBox(s, "data/skybox", "jpg", false);
     s->addObject(sky);
+
+    //terrain
+    Terrain * t = new Terrain("data/map.jpg", false, "data/map.obj");
+    t->setOffset((Vertex3){0.0, -10.0, 0.0});
+    s->addObject(t);
+
 
     core->setActiveScene(s);
     core->run();

@@ -51,12 +51,14 @@ static const char * SHADER_OBJ_FRAGMENT = R"glsl(
     uniform vec3 viewPos;
 
     //object surface (texture or color)
-    uniform vec3 Color;
+    uniform vec4 Color;
     uniform sampler2D objTexture;
 
     void main(){
-        vec3 objectColor = Color;
-        objectColor += texture(objTexture, UV).rgb;
+        vec4 objectColor = Color;
+        objectColor += texture(objTexture, UV);
+        if(objectColor.a < 0.1)
+            discard;
 
         vec3 norm = normalize(Normal);
         vec3 lightDir = normalize(lightPos - FragPos);
@@ -70,7 +72,7 @@ static const char * SHADER_OBJ_FRAGMENT = R"glsl(
         vec3 diffuse = diff * lightColor;
 
         vec3 ambient = 0.01 * lightColor;
-        vec3 result = (ambient + diffuse + specular) * objectColor;
+        vec3 result = (ambient + diffuse + specular) * objectColor.rgb;
         FragColor = vec4(result, 1.0);
     }
 )glsl";
@@ -109,6 +111,42 @@ static const char * SHADER_SKY_FRAGMENT = R"glsl(
 )glsl";
 /*------------------------------------------------------------------------------------------------*/
 
+
+
+/*---------------------------Image----------------------------------------------------------------*/
+static const char * SHADER_IMG_VERTEX = R"glsl(
+    #version 330 core
+    layout (location = 0) in vec3 aPos;
+    layout (location = 1) in vec2 aUV;
+
+    out vec2 UV;
+
+    uniform mat4 MVP;
+
+    void main()
+    {
+        UV = aUV;
+        gl_Position = MVP * vec4(aPos, 1.0);
+    }
+)glsl";
+
+static const char * SHADER_IMG_FRAGMENT = R"glsl(
+    #version 330 core
+    out vec4 FragColor;
+
+    in vec2 UV;
+
+    uniform sampler2D texture1;
+
+    void main()
+    {
+        vec4 texColor = texture(texture1, UV);
+        if(texColor.a < 0.1)
+            discard;
+        FragColor = texColor;
+    }
+)glsl";
+/*------------------------------------------------------------------------------------------------*/
 
 
 #endif // DEFAULT_SHADERS_H

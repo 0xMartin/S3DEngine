@@ -220,15 +220,16 @@ void Graphics3D::drawVertexDataBuffer(VertexDataBuffer * buffer, GLfloat * model
         //<---------------Fragment-Shader------------------------------------------------------------->
         //default color of surface
         if(Graphics3D::texture == NULL) {
-            Graphics3D::objectShader->setVec3(
+            Graphics3D::objectShader->setVec4(
                         COLOR_UNIFORM,
                         Graphics::color.red,
                         Graphics::color.green,
-                        Graphics::color.blue);
+                        Graphics::color.blue,
+                        MIN(Graphics::color.alpha, Graphics::maxAlpha));
         } else {
-            Graphics3D::objectShader->setVec3(
+            Graphics3D::objectShader->setVec4(
                         COLOR_UNIFORM,
-                        0.0, 0.0 ,0.0);
+                        0.0, 0.0 ,0.0, 0.0);
         }
 
         //lights
@@ -290,6 +291,10 @@ void Graphics3D::setShaderProgram(ShaderProgram * shaderProgram, ShaderType type
         if(Graphics3D::skyboxShader) delete Graphics3D::skyboxShader;
         Graphics3D::skyboxShader = shaderProgram;
         break;
+    case IMG_SHADER:
+        if(Graphics3D::imageShader) delete Graphics3D::imageShader;
+        Graphics3D::imageShader = shaderProgram;
+        break;
     }
 }
 
@@ -308,6 +313,13 @@ void Graphics3D::setDefaultShaderProgram(ShaderType type) {
         Graphics3D::skyboxShader->addShader(SHADER_SKY_FRAGMENT, GL_FRAGMENT_SHADER);
         Graphics3D::skyboxShader->link();
     }
+
+    if(type == ShaderType::IMG_SHADER || type == ShaderType::ALL) {
+        Graphics3D::imageShader = new ShaderProgram();
+        Graphics3D::imageShader->addShader(SHADER_IMG_VERTEX, GL_VERTEX_SHADER);
+        Graphics3D::imageShader->addShader(SHADER_IMG_FRAGMENT, GL_FRAGMENT_SHADER);
+        Graphics3D::imageShader->link();
+    }
 }
 
 
@@ -318,6 +330,9 @@ ShaderProgram * Graphics3D::getShaderProgram(int type) {
         break;
     case SKYBOX_SHADER:
         return Graphics3D::skyboxShader;
+        break;
+    case IMG_SHADER:
+        return Graphics3D::imageShader;
         break;
     default:
         return NULL;
@@ -561,7 +576,6 @@ void Graphics3D::drawImage(Vertex3 position, Vertex3 rotation,
 
 
 static float skyboxVertices[] = {
-    // positions
     -1.0f,  1.0f, -1.0f,
     -1.0f, -1.0f, -1.0f,
     1.0f, -1.0f, -1.0f,
