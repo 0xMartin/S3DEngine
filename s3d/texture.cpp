@@ -27,12 +27,13 @@
 Texture::Texture(const char * path, bool rgba_mode) {
     int comp;
     unsigned char * data = stbi_load(path, &(Texture::width), &(Texture::height), &comp, 0);
-    UTIL_flipImg(data, Texture::width, Texture::height, rgba_mode ? 4 : 3, true);
 
     if(data == NULL) {
         std::cerr << __FUNCTION__ << ": texture failed to load [" << path << "]" << std::endl;
         return;
     }
+
+    UTIL_flipImg(data, Texture::width, Texture::height, rgba_mode ? 4 : 3, true);
 
     //create one OpenGL texture
     glGenTextures(1, &(Texture::textureID));
