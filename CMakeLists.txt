@@ -17,6 +17,7 @@ add_compile_options(-Wall -Wextra -std=c11)
 
 add_executable(S3DEngine test.cpp)
 
+
 add_subdirectory(s3d)
 target_link_libraries(${PROJECT_NAME} PRIVATE s3d)
 
