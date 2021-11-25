@@ -11,6 +11,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include "api.h"
 
 #if __APPLE__
 #include <OpenGL/gl.h>
@@ -82,7 +83,7 @@ typedef struct {
 /**
  * @brief The Graphics class
  */
-class Graphics {
+class S3D_EXPORT Graphics {
 protected:
     int windowHandle;
     Color color;

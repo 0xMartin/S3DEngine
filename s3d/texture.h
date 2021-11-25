@@ -11,11 +11,12 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include "api.h"
 
 /**
  * @brief The Texture class
  */
-class Texture
+class S3D_EXPORT Texture
 {
 protected:
     int width;

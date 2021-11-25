@@ -16,18 +16,18 @@
 
 
 /*---------------------------------------2D-Objects-----------------------------------------------*/
-typedef struct {
+typedef S3D_EXPORT struct {
     GLfloat x; /** X position of point*/
     GLfloat y; /** Y position of point*/
 } Point;
 
-typedef struct {
+typedef S3D_EXPORT struct {
     Point position; /** Position */
     size_t width; /** Width */
     size_t height; /** Height */
 } Bounds;
 
-typedef struct {
+typedef S3D_EXPORT struct {
     std::vector<Point*> points;
     GLint textureID;
 } Face2;
@@ -37,7 +37,7 @@ typedef struct {
 /**
  * @brief The Graphics2D class
  */
-class Graphics2D : public Graphics {
+class S3D_EXPORT Graphics2D : public Graphics {
 public:
     Graphics2D(int windowHandle);
 

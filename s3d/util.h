@@ -11,6 +11,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "api.h"
 
 #if __APPLE__
 #include <OpenGL/gl.h>
@@ -34,7 +35,7 @@
 
 
 template <typename T>
-class Range {
+class S3D_EXPORT Range {
 public:
     T min;
     T max;
@@ -51,43 +52,43 @@ public:
  * @param rgba_mode
  * @return
  */
-unsigned char * UTIL_loadBMP_RGB(const char * path, unsigned int * width, unsigned int * height,
-                                 unsigned int * imageSize, bool rgba_mode);
+unsigned char * S3D_EXPORT UTIL_loadBMP_RGB(const char * path, unsigned int * width, unsigned int * height,
+                                            unsigned int * imageSize, bool rgba_mode);
 
 /**
  * @brief Generate random number in range from 0 to n
  * @param n The highest possible number
  * @return Random int
  */
-int UTIL_randInt(int n);
+int S3D_EXPORT UTIL_randInt(int n);
 
 /**
  * @brief Get current system time
  * @return Nanoseconds
  */
-__syscall_slong_t UTIL_getSystemNanoTime();
+__syscall_slong_t S3D_EXPORT UTIL_getSystemNanoTime();
 
 /**
  * @brief Get current system time
  * @return Seconds
  */
-__time_t UTIL_getSystemSeconds();
+__time_t S3D_EXPORT UTIL_getSystemSeconds();
 
 /**
  * @brief Get current system time
  * @return timespec
  */
-struct timespec UTIL_getSystemTime();
+struct timespec S3D_EXPORT UTIL_getSystemTime();
 
 /**
  * @brief Destruct simple data structure
  * @param data  Pointer on data structure
  */
-void UTIL_simpleDestructor(void * data);
+void S3D_EXPORT UTIL_simpleDestructor(void * data);
 
 
 template<typename Base, typename T>
-inline bool UTIL_instanceof(const T*) {
+inline S3D_EXPORT bool UTIL_instanceof(const T*) {
     return std::is_base_of<Base, T>::value;
 }
 
@@ -104,13 +105,13 @@ inline bool UTIL_instanceof(const T*) {
  * @param sZ
  * @return
  */
-glm::mat4 UTIL_computeModelTranformMatrix(GLfloat x, GLfloat y, GLfloat z,
-                                          GLfloat rX, GLfloat rY, GLfloat rZ,
-                                          GLfloat sX, GLfloat sY, GLfloat sZ);
+glm::mat4 S3D_EXPORT UTIL_computeModelTranformMatrix(GLfloat x, GLfloat y, GLfloat z,
+                                                     GLfloat rX, GLfloat rY, GLfloat rZ,
+                                                     GLfloat sX, GLfloat sY, GLfloat sZ);
 
 
 template <typename T>
-void UTIL_reverseArray(T * array, int start, int end) {
+void S3D_EXPORT UTIL_reverseArray(T * array, int start, int end) {
     while (start < end) {
         int temp = array[start];
         array[start] = array[end];
@@ -127,7 +128,7 @@ void UTIL_reverseArray(T * array, int start, int end) {
  * @param bytes_per_pixel
  * @return
  */
-bool UTIL_flipImg(unsigned char * img_data, size_t width, size_t height,
-                  size_t bytes_per_pixel, bool flip_vertical);
+bool S3D_EXPORT UTIL_flipImg(unsigned char * img_data, size_t width, size_t height,
+                             size_t bytes_per_pixel, bool flip_vertical);
 
 #endif // UTIL_H

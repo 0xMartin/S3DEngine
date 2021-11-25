@@ -24,7 +24,7 @@
 #include <stdbool.h>
 
 
-class Scene {
+class S3D_EXPORT Scene {
 protected:
     Camera * camera;
 public:
@@ -73,7 +73,7 @@ public:
     NULL, NULL, std::vector<Texture*>(), std::vector<Model*>(), std::vector<Scene*>()}
 
 
-typedef struct {
+typedef S3D_EXPORT struct {
     int windowHandle;   /** GLUT window width */
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
@@ -94,7 +94,7 @@ typedef struct {
 /**
  * @brief The S3DCore class
  */
-class S3DCore
+class S3D_EXPORT S3DCore
 {
 public:
     CoreContext * context;
@@ -105,20 +105,20 @@ public:
      * @param argv
      * @param config
      */
-    S3D_API S3DCore(int argc, char *argv[], CoreContext * config);
+    S3DCore(int argc, char *argv[], CoreContext * config);
 
-    S3D_API ~S3DCore();
+    ~S3DCore();
 
     /**
      * @brief run
      * @return
      */
-    S3D_API bool S3D_API_ENTRY run();
+    bool run();
 
     /**
      * @brief stop
      */
-    S3D_API void S3D_API_ENTRY stop();
+    void stop();
 
     /**
      * @brief loadTexture
@@ -126,55 +126,55 @@ public:
      * @param rgba_mode
      * @return
      */
-    S3D_API Texture * S3D_API_ENTRY loadTexture(const char * path, bool rgba_mode);
+    Texture * loadTexture(const char * path, bool rgba_mode);
 
     /**
      * @brief getTextures
      * @return
      */
-    S3D_API std::vector<Texture*> * S3D_API_ENTRY getTextures();
+    std::vector<Texture*> * getTextures();
 
     /**
      * @brief loadModel
      * @param path
      * @return
      */
-    S3D_API Model * S3D_API_ENTRY loadModel(const char * path);
+    Model * loadModel(const char * path);
 
     /**
      * @brief getModels
      * @return
      */
-    S3D_API std::vector<Model*> * S3D_API_ENTRY getModels();
+    std::vector<Model*> * getModels();
 
     /**
      * @brief createScene
      * @return
      */
-    S3D_API Scene * S3D_API_ENTRY createScene();
+    Scene * createScene();
 
     /**
      * @brief setActiveScene
      * @param scene
      * @return
      */
-    S3D_API bool S3D_API_ENTRY setActiveScene(Scene * scene);
+    bool setActiveScene(Scene * scene);
 
     /**
      * @brief deleteScene
      * @param scene
      * @return
      */
-    S3D_API bool S3D_API_ENTRY deleteScene(Scene * scene);
+    bool deleteScene(Scene * scene);
 
     /**
      * @brief getScenes
      * @return
      */
-    S3D_API std::vector<Scene*> * S3D_API_ENTRY getScenes();
+    std::vector<Scene*> * getScenes();
 
 };
 
-float CORE_getFPS();
+S3D_EXPORT float CORE_getFPS();
 
 #endif // CORE_H

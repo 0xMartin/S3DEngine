@@ -11,13 +11,13 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-
+#include "api.h"
 #include "graphics3d.h"
 #include "event.h"
 #include <vector>
 
 
-typedef enum {
+typedef S3D_EXPORT enum {
     None,
     Obj3D,
     Obj2D
@@ -27,7 +27,7 @@ typedef enum {
 /**
  * @brief The Object class [ABSTRACT]
  */
-class Object
+class S3D_EXPORT Object
 {
 public:
     /**
@@ -106,7 +106,7 @@ public:
 /**
  * @brief The Object2D class [ABSTRACT]
  */
-class Object2D : public Object
+class S3D_EXPORT Object2D : public Object
 {
 public:
     Point position;
@@ -119,7 +119,7 @@ public:
 /**
  * @brief The Object3D class [ABSTRACT]
  */
-class Object3D : public Object
+class S3D_EXPORT Object3D : public Object
 {
 public:
     Vertex3 position;

@@ -2,12 +2,13 @@
 #define SHADER_H
 
 
+#include "api.h"
 #include "graphics.h"
 #include <GLES3/gl3.h>
 #include <vector>
 
 
-class ShaderProgram
+class S3D_EXPORT ShaderProgram
 {
 private:
     GLuint ID; /** program ID */

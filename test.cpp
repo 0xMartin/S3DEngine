@@ -174,9 +174,9 @@ int main(int argc, char *argv[])
 
 
     //3D image
-    tex = core->loadTexture("data/eli.png", true);
+    tex = core->loadTexture("data/stone.bmp", false);
     Img3D * i = new Img3D((Vertex3){-2.0, 0.0, 0.0}, tex);
-    //s->addObject(i);
+    s->addObject(i);
 
 
     //lights

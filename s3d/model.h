@@ -11,10 +11,12 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include "api.h"
+
 #include <vector>
 #include "graphics3d.h"
 
-class Model
+class S3D_EXPORT Model
 {
 private:
     void computeTransformationModelMatrix();

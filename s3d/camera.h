@@ -11,6 +11,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "api.h"
 #include "graphics3d.h"
 #include <stdbool.h>
 
@@ -18,7 +19,7 @@
 /**
  * @brief The Camera class
  */
-class Camera
+class S3D_EXPORT Camera
 {
 private:
     float angleXZ, angleY;  /** angle of rotation for the camera direction*/

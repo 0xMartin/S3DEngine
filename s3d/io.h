@@ -11,6 +11,8 @@
 #ifndef IO_H
 #define IO_H
 
+#include "api.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string>
@@ -26,7 +28,7 @@
  * @param size
  * @return
  */
-bool IO_readStringFromFile(const char * path, std::vector<std::string> & lines);
+bool S3D_EXPORT IO_readStringFromFile(const char * path, std::vector<std::string> & lines);
 
 /**
  * @brief IO_writeStringToFile
@@ -34,7 +36,7 @@ bool IO_readStringFromFile(const char * path, std::vector<std::string> & lines);
  * @param buffer
  * @return
  */
-bool IO_writeStringToFile(const char * path, const char * str);
+bool S3D_EXPORT IO_writeStringToFile(const char * path, const char * str);
 
 /**
  * @brief IO_appendStringToFile
@@ -42,7 +44,7 @@ bool IO_writeStringToFile(const char * path, const char * str);
  * @param buffer
  * @return
  */
-bool IO_appendStringToFile(const char * path, const char * str);
+bool S3D_EXPORT IO_appendStringToFile(const char * path, const char * str);
 
 /**
  * @brief IO_readDataFromFile
@@ -51,7 +53,7 @@ bool IO_appendStringToFile(const char * path, const char * str);
  * @param buffer_size
  * @return
  */
-bool IO_readDataFromFile(const char * path, char * data, size_t buffer_size);
+bool S3D_EXPORT IO_readDataFromFile(const char * path, char * data, size_t buffer_size);
 
 /**
  * @brief IO_writeDataToFile
@@ -60,7 +62,7 @@ bool IO_readDataFromFile(const char * path, char * data, size_t buffer_size);
  * @param buffer_size
  * @return
  */
-bool IO_writeDataToFile(const char * path, const char * data, size_t data_size);
+bool S3D_EXPORT IO_writeDataToFile(const char * path, const char * data, size_t data_size);
 
 /**
  * @brief IO_writeDataToFile
@@ -68,7 +70,7 @@ bool IO_writeDataToFile(const char * path, const char * data, size_t data_size);
  * @param data
  * @return
  */
-bool IO_logError(const char * str);
+bool S3D_EXPORT IO_logError(const char * str);
 
 
 #endif // IO_H

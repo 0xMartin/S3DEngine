@@ -11,6 +11,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
+#include "api.h"
 
 #include <time.h>
 #include <stdbool.h>
@@ -39,7 +40,7 @@
 
 
 /*------------------------------------CoreEvents--------------------------------------------------*/
-typedef enum {
+typedef S3D_EXPORT enum {
     NONE,
     LEFT,
     RIGHT,
@@ -49,7 +50,7 @@ typedef enum {
 
 
 //key event
-typedef struct {
+typedef S3D_EXPORT struct {
     unsigned char key;  /** pressed/released key*/
     bool ctrl;  /** true -> ctrl pressed */
     bool alt;   /** true -> alt pressed */
@@ -59,7 +60,7 @@ typedef struct {
 } Event_Key;
 
 //mouse envent
-typedef struct {
+typedef S3D_EXPORT struct {
     int button; /** pressed button*/
     int state;  /** button state*/
     int x;  /** x position of cursore*/
@@ -68,7 +69,7 @@ typedef struct {
 } Event_Mouse;
 
 //render event
-typedef struct {
+typedef S3D_EXPORT struct {
     unsigned int window_width;  /** Window width */
     unsigned int window_height; /** Window height */
     GLfloat x; /** camera position X */
@@ -78,7 +79,7 @@ typedef struct {
 } Event_Render;
 
 //resize event
-typedef struct {
+typedef S3D_EXPORT struct {
     double resize_ratio_vertical; /** Resize ratio vertical */
     double resize_ratio_horizontal; /** Resize ratio horizontal */
     unsigned int current_window_width;  /** Window width */
@@ -87,7 +88,7 @@ typedef struct {
 } Event_Resize;
 
 //update event
-typedef struct {
+typedef S3D_EXPORT struct {
     __syscall_slong_t ns_time;  /** current ns system time*/
     __time_t s_time;    /** current sec system time*/
     __syscall_slong_t ns_diff;   /** ns difference */
@@ -98,14 +99,14 @@ typedef struct {
 
 
 /*------------------------------------UI-events---------------------------------------------------*/
-typedef void (*Event_action)(void * sender, const void * evt);
+typedef S3D_EXPORT void (*Event_action)(void * sender, const void * evt);
 
 #define UI_EVENTS_INIT (UI_Events){.focus=false, .hover=false,\
     .enabled=true, .resizable=false, .visible=true, .mousePressAction=NULL,\
     .mouseReleaseAction=NULL, .keyPressedAction=NULL, .keyReleaseAction=NULL,\
     .mouseMovedAction=NULL, .contentChangedAction=NULL}
 
-typedef struct {
+typedef S3D_EXPORT struct {
     //events
     bool focus;
     bool hover;

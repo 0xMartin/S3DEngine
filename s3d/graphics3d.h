@@ -19,7 +19,7 @@
 
 
 /*---------------------------------------Shader-Uniforms------------------------------------------*/
-typedef enum {
+typedef S3D_EXPORT enum {
     OBJECT_SHADER,
     SKYBOX_SHADER,
     IMG_SHADER,
@@ -40,13 +40,13 @@ typedef enum {
 
 
 /*---------------------------------------3D-Objects-----------------------------------------------*/
-typedef struct {
+typedef S3D_EXPORT struct {
     GLfloat x; /** X position*/
     GLfloat y; /** Y position*/
     GLfloat z; /** Z position*/
 } Vertex3;
 
-typedef struct {
+typedef S3D_EXPORT struct {
     Vertex3 * v[3]; /** vertices */
     Point * vt[3]; /** texture coordinates */
     Vertex3 * vn[3]; /** normals */
@@ -56,7 +56,7 @@ typedef struct {
 
 /*-------------------------------------DataBuffer-------------------------------------------------*/
 
-class VertexDataBuffer {
+class S3D_EXPORT VertexDataBuffer {
 public: 
     std::vector<GLfloat> positionBuffer; /** buffer with positions */
     std::vector<GLfloat> normalsBuffer; /** buffer with positions */
@@ -125,7 +125,7 @@ public:
 /*------------------------------------------------------------------------------------------------*/
 
 
-typedef struct {
+typedef S3D_EXPORT struct {
     Vertex3 position;
     Color color;
 } Light;
@@ -134,7 +134,7 @@ typedef struct {
 /**
  * @brief The Graphics3D class
  */
-class Graphics3D : public Graphics2D {
+class S3D_EXPORT Graphics3D : public Graphics2D {
 protected:
     GLuint VBO_position;
     GLuint VBO_normal;

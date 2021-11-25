@@ -1,62 +1,18 @@
-/*
- *
- * Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
- * Copyright (C) 2009  VMware, Inc.  All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef API_H
 #define API_H
 
-
-#if defined(_WIN32) && !defined(__WIN32__) && !defined(__CYGWIN__)
-#define __WIN32__
+#if defined(_MSC_VER) || defined(WIN64) || defined(_WIN64) || defined(__WIN64__) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#  define Q_DECL_EXPORT __declspec(dllexport)
+#  define Q_DECL_IMPORT __declspec(dllimport)
+#else
+#  define Q_DECL_EXPORT     __attribute__((visibility("default")))
+#  define Q_DECL_IMPORT     __attribute__((visibility("default")))
 #endif
 
-#if defined(__WIN32s__) && !defined(__CYGWIN__)
-#  if (defined(_MSC_VER) || defined(__MINGW32__)) && defined(BUILD_GL32) /* tag specify we're building mesa as a DLL */
-#    define S3D_API __declspec(dllexport)
-#  elif (defined(_MSC_VER) || defined(__MINGW32__)) && defined(_DLL) /* tag specifying we're building for DLL runtime support */
-#    define S3D_API __declspec(dllimport)
-#  else /* for use with static link lib build of Win32 edition only */
-#    define S3D_API extern
-#  endif
-#  if defined(__MINGW32__) && defined(GL_NO_STDCALL) || defined(UNDER_CE)  /* The generated DLLs by MingW with STDCALL are not compatible with the ones done by Microsoft's compilers */
-#    define S3D_API_ENTRY
-#  else
-#    define S3D_API_ENTRY __stdcall
-#  endif
-#elif defined(__CYGWIN__) && defined(USE_OPENGL32) /* use native windows opengl32 */
-#  define S3D_API extern
-#  define S3D_API_ENTRY __stdcall
-#elif (defined(__GNUC__) && __GNUC__ >= 4) || (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590))
-#  define S3D_API __attribute__((visibility("default")))
-#  define S3D_API_ENTRY
-#endif /* WIN32 && !CYGWIN */
-
-#ifndef S3D_API
-#define S3D_API extern
-#endif
-
-#ifndef S3D_API_ENTRY
-#define S3D_API_ENTRY
+#if defined(S3D_EXPORT)
+#  define S3D_EXPORT Q_DECL_EXPORT
+#else
+#  define S3D_EXPORT Q_DECL_IMPORT
 #endif
 
 
