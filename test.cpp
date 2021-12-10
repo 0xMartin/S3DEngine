@@ -130,7 +130,7 @@ void DynamicLight::render(Graphics * graphics, const Event_Render *evt) {
 }
 
 void DynamicLight::update(std::vector<Object *> & objects, const Event_Update *evt) {
-    DynamicLight::time += 0.03f;
+    DynamicLight::time += 0.01f;
     Vertex3 p = DynamicLight::defPos;
     GLfloat radius = 10.0;
     Vertex3 v = (Vertex3){
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
     s->getCamera()->setPosition(-4.0, 2.0, 0.0);
 
     //objects with 3D model
-    Texture * tex = core->loadTexture("data/gripen_texture.bmp", false);
+    Texture * tex = core->loadTexture("data/gripen_texture.png", true);
     Gripen * o = new Gripen(tex, (Vertex3){10.0, 4.0, 2.0});
     s->addObject(o);
 
@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 
     //3D image
     tex = core->loadTexture("data/stone.bmp", false);
-    Img3D * i = new Img3D((Vertex3){-2.0, 0.0, 0.0}, tex);
+    Img3D * i = new Img3D((Vertex3){-11.0, 0.0, 0.0}, tex);
     s->addObject(i);
 
 
