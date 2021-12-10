@@ -1,4 +1,5 @@
 # S3D Engine
+Simple C++ game engine based on OpenGL
 
 work in progress ...
 
