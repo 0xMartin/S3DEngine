@@ -66,7 +66,6 @@ void Test::render(Graphics * graphics, const Event_Render *evt) {
 }
 
 
-
 /**
  * @brief The Img3D class
  */
